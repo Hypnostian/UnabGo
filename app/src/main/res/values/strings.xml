@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">UNAB GO</string>
+
+    <!-- Pantalla de carga -->
+    <string name="loading">Cargando...</string>
+
+    <!-- Pantalla principal -->
+    <string name="main_title">UNAB GO!</string>
+    <string name="main_button_1">Quiero ser UNAB</string>
+    <string name="main_button_2">Soy UNAB</string>
+    <string name="main_button_3">Conoce más sobre la UNAB</string>
+
+    <!-- Pantalla de login -->
+    <string name="login_user">Usuario</string>
+    <string name="login_password">Contraseña</string>
+    <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_title">Iniciar sesión</string>
+
+    <!-- Pantalla de perfil -->
+    <string name="profile_title">Perfil</string>
+    <string name="profile_login_button">Iniciar sesión</string>
+    <string name="profile_language">Idioma (%1$s)</string>
+    <string name="profile_rate_us">Califícanos</string>
+    <string name="profile_notifications">Notificaciones</string>
+    <string name="profile_suggestions">Sugerencias</string>
+    <string name="profile_updates">Actualizaciones</string>
+    <string name="profile_data_policy">Política de datos</string>
+    <string name="profile_credits">Créditos</string>
+
+    <!-- Barra inferior -->
+    <string name="bottom_home">Inicio</string>
+    <string name="bottom_banu">Banu-IA</string>
+    <string name="bottom_profile">Perfil</string>
+
+    <!-- Pantalla "Quiero ser UNAB" -->
+    <string name="exploring">Explorando</string>
+    <string name="exploring_text">¿No sabes todavía qué camino tomar? Banu-IA te puede asesorar. Cuéntale tus sueños y virtudes.</string>
+    <string name="programs_tech">Programas Técnicos y Tecnologías</string>
+    <string name="programs_undergrad">Programas de Pregrado</string>
+    <string name="programs_postgrad">Programas de Posgrado</string>
+    <string name="programs_virtual">Programas Virtuales</string>
+    <string name="programs_continued">Programas de Educación Continua</string>
+    <string name="see_more">Ver más en unab.edu.co</string>
+</resources>
