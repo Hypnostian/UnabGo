@@ -2,10 +2,11 @@ package co.edu.unab.sebastianlizcano.unabgo
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -14,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.compose.foundation.clickable
 
 @Composable
 fun ActualizacionesScreen(navController: NavController? = null) {
@@ -37,34 +36,8 @@ fun ActualizacionesScreen(navController: NavController? = null) {
             .fillMaxSize()
             .background(Color(0xFF2F024C))
     ) {
-        // Flecha y botón decorativo
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp, start = 20.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.button1),
-                contentDescription = "Decoración encabezado",
-                modifier = Modifier
-                    .size(36.dp)
-                    .align(Alignment.TopStart)
-            )
 
-            Image(
-                painter = painterResource(id = R.drawable.flecha),
-                contentDescription = "Volver atrás",
-                modifier = Modifier
-                    .padding(start = 8.dp, top = 6.dp)
-                    .size(22.dp)
-                    .align(Alignment.TopStart)
-                    .clickable {
-                        navController?.popBackStack("perfil", inclusive = false)
-                    }
-            )
-        }
-
-        // Contenido principal
+        // Contenido principal (scroll)
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -100,7 +73,6 @@ fun ActualizacionesScreen(navController: NavController? = null) {
 
             Spacer(Modifier.height(24.dp))
 
-            // Tarjeta de contenido
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -130,6 +102,39 @@ fun ActualizacionesScreen(navController: NavController? = null) {
             }
 
             Spacer(Modifier.height(30.dp))
+        }
+
+        // Capa superior: botón decorativo + flecha con área táctil amplia
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp, start = 20.dp)
+                .align(Alignment.TopStart)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.button1),
+                contentDescription = "Decoración encabezado",
+                modifier = Modifier
+                    .size(36.dp)
+                    .align(Alignment.TopStart)
+            )
+
+            // Área táctil más grande que la imagen de la flecha
+            Box(
+                modifier = Modifier
+                    .size(44.dp) // target cómodo para el dedo
+                    .align(Alignment.TopStart)
+                    .clickable { navController?.popBackStack() }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.flecha),
+                    contentDescription = "Volver atrás",
+                    modifier = Modifier
+                        .padding(start = 8.dp, top = 6.dp)
+                        .size(20.dp)
+                        .align(Alignment.TopStart)
+                )
+            }
         }
     }
 }

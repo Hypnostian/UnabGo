@@ -1,11 +1,12 @@
 package co.edu.unab.sebastianlizcano.unabgo
 
 object Routes {
-    const val Splash = "splash"
-    const val Onboarding = "onboarding"
+    const val SPLASH = "splash"
     const val MAIN = "main"
+    const val QUIERO_SER_UNAB = "quieroserunab"
     const val PERFIL = "perfil"
+    const val LOGIN = "login"
     const val CREDITOS = "creditos"
-    const val Actualizaciones = "actualizaciones"
-    const val PoliticaDatos = "politicaDatos"
+    const val ACTUALIZACIONES = "actualizaciones"
+    const val POLITICADATOS = "politicadatos"
 }

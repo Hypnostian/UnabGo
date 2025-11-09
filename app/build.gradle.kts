@@ -47,7 +47,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -68,16 +67,23 @@ dependencies {
 
     // Navegación para Jetpack Compose
     implementation("androidx.navigation:navigation-compose:2.8.0")
+
     // Animaciones de Compose (para el fade/scale del Splash)
     implementation("androidx.compose.animation:animation")
+
     // Corrutinas (para delay, ViewModel, etc.)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
     // ViewModel Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
+
     // Retrofit + Gson
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
     // DataStore Preferences (para persistir idioma)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+
 
 }

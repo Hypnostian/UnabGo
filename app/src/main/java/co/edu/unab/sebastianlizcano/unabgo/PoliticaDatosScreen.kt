@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -37,34 +36,8 @@ fun PoliticaDatosScreen(navController: NavController? = null) {
             .fillMaxSize()
             .background(Color(0xFF2F024C))
     ) {
-        // Flecha y botón decorativo
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp, start = 20.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.button1),
-                contentDescription = "Decoración encabezado",
-                modifier = Modifier
-                    .size(36.dp)
-                    .align(Alignment.TopStart)
-            )
 
-            Image(
-                painter = painterResource(id = R.drawable.flecha),
-                contentDescription = "Volver atrás",
-                modifier = Modifier
-                    .padding(start = 8.dp, top = 6.dp)
-                    .size(22.dp)
-                    .align(Alignment.TopStart)
-                    .clickable {
-                        navController?.popBackStack("perfil", inclusive = false)
-                    }
-            )
-        }
-
-        // Contenido principal
+        // Contenido principal scrollable
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -130,6 +103,39 @@ fun PoliticaDatosScreen(navController: NavController? = null) {
             }
 
             Spacer(Modifier.height(30.dp))
+        }
+
+        // Capa superior: botón decorativo + flecha con área táctil amplia
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp, start = 20.dp)
+                .align(Alignment.TopStart)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.button1),
+                contentDescription = "Decoración encabezado",
+                modifier = Modifier
+                    .size(36.dp)
+                    .align(Alignment.TopStart)
+            )
+
+            // Área táctil más grande para asegurar que funcione el click
+            Box(
+                modifier = Modifier
+                    .size(44.dp) // zona táctil amplia
+                    .align(Alignment.TopStart)
+                    .clickable { navController?.popBackStack() }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.flecha),
+                    contentDescription = "Volver atrás",
+                    modifier = Modifier
+                        .padding(start = 8.dp, top = 6.dp)
+                        .size(20.dp)
+                        .align(Alignment.TopStart)
+                )
+            }
         }
     }
 }

@@ -4,43 +4,51 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.NavHost
+
 @Composable
-fun AppNavHost(navController: NavHostController, startDestination: String = Routes.Splash) {
+fun AppNavHost(navController: NavHostController, startDestination: String = Routes.SPLASH) {
+
     NavHost(navController = navController, startDestination = startDestination) {
 
-        composable(Routes.Splash) {
+        composable(Routes.SPLASH) {
             SplashRoute(
                 onFinished = {
-                    navController.navigate("main") {
-                        popUpTo(Routes.Splash) { inclusive = true }
+                    navController.navigate(Routes.MAIN) {
+                        popUpTo(Routes.SPLASH) { inclusive = true }
                     }
                 }
             )
         }
 
-        composable("main") {
+        composable(Routes.MAIN) {
             MainScreen(navController = navController)
         }
-        composable("quieroSerUnab") {
+
+        composable(Routes.QUIERO_SER_UNAB) {
             QuieroSerUnabScreen(navController = navController)
         }
-        composable("perfil") {
+
+        composable(Routes.PERFIL) {
             PerfilScreen(navController = navController)
         }
-        composable("login") {
-            LoginScreen(navController = navController)
-        }
-        composable(Routes.CREDITOS) { CreditosScreen(navController) }
 
-        composable("actualizaciones") {
+        composable(Routes.LOGIN) {
+            LoginScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+
+        composable(Routes.ACTUALIZACIONES) {
             ActualizacionesScreen(navController = navController)
         }
 
-        composable("politicaDatos") {
+        composable(Routes.POLITICADATOS) {
             PoliticaDatosScreen(navController = navController)
         }
 
-
+        composable(Routes.CREDITOS) {
+            CreditosScreen(navController = navController)
+        }
     }
 }

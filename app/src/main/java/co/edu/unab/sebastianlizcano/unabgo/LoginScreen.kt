@@ -8,6 +8,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -125,9 +127,9 @@ fun LoginScreen(
                 )
             }
 
-            //  Espaciado  entre user - contraseña
             Spacer(Modifier.height(1.dp))
 
+            // Campo contraseña
             PillField(
                 value = password,
                 onValueChange = { password = it },
@@ -143,8 +145,31 @@ fun LoginScreen(
                     .height(65.dp)
             )
 
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(30.dp))
 
+            // Botón Iniciar Sesión
+            Button(
+                onClick = { /* Acción de login aquí */ },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF490077),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(30.dp),
+                modifier = Modifier
+                    .width(250.dp)
+                    .height(50.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.login_title),
+                    fontFamily = openSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            // ¿Olvidaste tu contraseña?
             Text(
                 text = stringResource(R.string.login_forgot_password),
                 fontFamily = openSans,
