@@ -21,6 +21,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -31,12 +32,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import co.edu.unab.sebastianlizcano.unabgo.ui.components.BottomNavBar
 
 @Composable
 fun QuieroSerUnabScreen(
     navController: NavController? = null,
     onBackClick: () -> Unit = { navController?.popBackStack("main", inclusive = false) },
-    onHomeClick: () -> Unit = { navController?.popBackStack("main", inclusive = false) },
     onBanuClick: () -> Unit = { navController?.navigate("banuia") },
     onProfileClick: () -> Unit = { navController?.navigate("perfil") }
 ) {
@@ -54,7 +55,7 @@ fun QuieroSerUnabScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            //Encabezado
+            // Encabezado
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -67,29 +68,28 @@ fun QuieroSerUnabScreen(
                     contentScale = ContentScale.FillBounds
                 )
 
-//Button1 en esquina superior izquierda
+                // Botón decorativo
                 Image(
                     painter = painterResource(id = R.drawable.button1),
                     contentDescription = "Decoración encabezado",
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(start = 20.dp, top = 20.dp)
-                        .size(36.dp) // 🔹 antes 46dp → más pequeño
+                        .size(36.dp)
                 )
 
-// Flecha encima de Button1 (corregida y ajustada)
+                // Flecha atrás
                 Image(
                     painter = painterResource(id = R.drawable.flecha),
                     contentDescription = "Volver atrás",
                     modifier = Modifier
                         .align(Alignment.TopStart)
-                        .padding(start = 28.dp, top = 26.dp) // 🔹 más aire
-                        .size(20.dp) // 🔹 antes 26dp → más pequeña
+                        .padding(start = 28.dp, top = 26.dp)
+                        .size(20.dp)
                         .clickable { onBackClick() }
                 )
 
-
-                // 🔹 Texto del encabezado
+                // Título del encabezado
                 Row(
                     modifier = Modifier
                         .align(Alignment.Center)
@@ -107,7 +107,7 @@ fun QuieroSerUnabScreen(
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
-                            text = "Explorando",
+                            text = stringResource(R.string.exploring),
                             style = TextStyle(
                                 fontSize = 22.sp,
                                 fontFamily = openSans,
@@ -116,7 +116,7 @@ fun QuieroSerUnabScreen(
                             )
                         )
                         Text(
-                            text = "UNAB GO!",
+                            text = stringResource(R.string.main_title),
                             style = TextStyle(
                                 fontSize = 36.sp,
                                 fontFamily = openSans,
@@ -130,7 +130,7 @@ fun QuieroSerUnabScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // 🔹 Texto y Banu pensativo (redirige a BanuIA)
+            // Texto y Banu pensativo (redirige a BanuIA)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
@@ -147,7 +147,7 @@ fun QuieroSerUnabScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "¿No sabes todavía qué camino tomar? Banu-IA te puede asesorar. Cuéntale tus sueños y virtudes. ¡Da Click Aquí!",
+                        text = stringResource(R.string.exploring_text),
                         style = TextStyle(
                             fontSize = 13.sp,
                             fontFamily = openSans,
@@ -172,30 +172,30 @@ fun QuieroSerUnabScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            //Tarjetas de programas con íconos
+            // Tarjetas de programas
             val secciones = listOf(
                 Triple(
-                    "Programas Técnicos y Tecnologías",
+                    stringResource(R.string.programs_tech),
                     "https://unab.edu.co/programas-tecnicos-y-tecnologias/",
                     R.drawable.progtecytecno
                 ),
                 Triple(
-                    "Programas de Pregrado",
+                    stringResource(R.string.programs_undergrad),
                     "https://unab.edu.co/pregrados/",
                     R.drawable.pregradolog
                 ),
                 Triple(
-                    "Programas de Posgrado",
+                    stringResource(R.string.programs_postgrad),
                     "https://unab.edu.co/posgrado/",
                     R.drawable.posgradolog
                 ),
                 Triple(
-                    "Programas Virtuales",
+                    stringResource(R.string.programs_virtual),
                     "https://unab.edu.co/programas-virtuales/",
                     R.drawable.virtualog
                 ),
                 Triple(
-                    "Programas de Educación Continua",
+                    stringResource(R.string.programs_continued),
                     "https://unab.edu.co/educacion-continua/",
                     R.drawable.educontinualog
                 )
@@ -214,92 +214,15 @@ fun QuieroSerUnabScreen(
 
             Spacer(modifier = Modifier.height(120.dp))
         }
-
-        // Barra inferior
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(90.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.rectangle_5),
-                contentDescription = "Barra inferior",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.FillBounds
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 35.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // INICIO
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable {
-                        navController?.popBackStack("main", inclusive = false)
-                    }
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.botoninicio),
-                        contentDescription = "Inicio",
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Text(
-                        text = "Inicio",
-                        fontSize = 16.sp,
-                        fontFamily = openSans,
-                        color = Color.White,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
-                // BANU-IA
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable { onBanuClick() }
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.banu),
-                        contentDescription = "Banu IA",
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Text(
-                        text = "Banu-IA",
-                        fontSize = 16.sp,
-                        fontFamily = openSans,
-                        color = Color.White,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
-                // PERFIL
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable { onProfileClick() }
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.botonperfil),
-                        contentDescription = "Perfil",
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Text(
-                        text = "Perfil",
-                        fontSize = 16.sp,
-                        fontFamily = openSans,
-                        color = Color.White,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-        }
+        BottomNavBar(
+            navController = navController,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
-//Tarjeta expandible con WebView (scroll independiente)
+
+// Tarjeta expandible con WebView
 @Composable
 private fun ExpandableWebViewCard(title: String, url: String, iconRes: Int) {
     var expanded by remember { mutableStateOf(false) }
@@ -321,9 +244,7 @@ private fun ExpandableWebViewCard(title: String, url: String, iconRes: Int) {
             .clickable { expanded = !expanded }
             .padding(18.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(id = iconRes),
                 contentDescription = "Ícono $title",

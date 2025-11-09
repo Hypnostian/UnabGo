@@ -3,20 +3,23 @@ package co.edu.unab.sebastianlizcano.unabgo
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.os.LocaleList
 import java.util.*
 
 object LocaleManager {
     private const val PREF_NAME = "app_prefs"
     private const val KEY_LANGUAGE = "language"
 
+    // ✅ Permite aplicar idioma directamente (usado por PerfilScreen)
     fun setLocale(context: Context, languageCode: String): Context {
         saveLanguage(context, languageCode)
         return updateResources(context, languageCode)
     }
 
-    fun loadLocale(context: Context): Context {
-        val lang = getSavedLanguage(context)
-        return updateResources(context, lang)
+    // ✅ Carga el idioma guardado (usado en MainActivity)
+    fun loadLocale(context: Context, langCode: String? = null): Context {
+        val language = langCode ?: getSavedLanguage(context)
+        return updateResources(context, language)
     }
 
     private fun saveLanguage(context: Context, languageCode: String) {
@@ -34,7 +37,7 @@ object LocaleManager {
         Locale.setDefault(locale)
 
         val config = Configuration(context.resources.configuration)
-        config.setLocale(locale)
+        config.setLocales(LocaleList(locale))
         config.setLayoutDirection(locale)
 
         return context.createConfigurationContext(config)

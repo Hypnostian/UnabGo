@@ -31,6 +31,15 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
         composable("login") {
             LoginScreen(navController = navController)
         }
+        composable(Routes.CREDITOS) { CreditosScreen(navController) }
+
+        composable("actualizaciones") {
+            ActualizacionesScreen(navController = navController)
+        }
+
+        composable("politicaDatos") {
+            PoliticaDatosScreen(navController = navController)
+        }
 
 
     }

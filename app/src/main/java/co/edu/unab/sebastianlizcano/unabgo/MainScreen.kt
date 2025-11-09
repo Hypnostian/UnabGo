@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -27,7 +28,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun MainScreen(
-    navController: NavController, // ✅ agregado para usar navigate()
+    navController: NavController,
     onQuieroSerUnabClick: () -> Unit = {},
     onSoyUnabClick: () -> Unit = {},
     onConoceMasClick: () -> Unit = {}
@@ -66,7 +67,7 @@ fun MainScreen(
 
                 // TÍTULO
                 Text(
-                    text = "UNAB GO!",
+                    text = stringResource(R.string.main_title),
                     fontFamily = openSansBold,
                     fontSize = 45.sp,
                     color = Color.White,
@@ -87,7 +88,7 @@ fun MainScreen(
                         .height(55.dp)
                 ) {
                     Text(
-                        text = "Quiero ser UNAB",
+                        text = stringResource(R.string.main_button_1),
                         fontFamily = openSans,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold
@@ -109,7 +110,7 @@ fun MainScreen(
                         .height(55.dp)
                 ) {
                     Text(
-                        text = "Soy UNAB",
+                        text = stringResource(R.string.main_button_2),
                         fontFamily = openSans,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold
@@ -120,7 +121,7 @@ fun MainScreen(
 
                 // TEXTO INFERIOR
                 Text(
-                    text = "Conoce más sobre la Unab",
+                    text = stringResource(R.string.main_button_3),
                     fontFamily = openSans,
                     fontSize = 20.sp,
                     color = Color.White

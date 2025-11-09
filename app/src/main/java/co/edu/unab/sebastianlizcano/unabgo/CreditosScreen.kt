@@ -2,6 +2,7 @@ package co.edu.unab.sebastianlizcano.unabgo
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -31,6 +32,36 @@ fun CreditosScreen(navController: NavController? = null) {
             .fillMaxSize()
             .background(Color(0xFF2F024C))
     ) {
+        // Flecha y botón decorativo (parte superior)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp, start = 20.dp)
+        ) {
+            // Botón decorativo
+            Image(
+                painter = painterResource(id = R.drawable.button1),
+                contentDescription = "Decoración encabezado",
+                modifier = Modifier
+                    .size(36.dp)
+                    .align(Alignment.TopStart)
+            )
+
+            // Flecha atrás (vuelve al PerfilScreen)
+            Image(
+                painter = painterResource(id = R.drawable.flecha),
+                contentDescription = "Volver atrás",
+                modifier = Modifier
+                    .padding(start = 8.dp, top = 6.dp)
+                    .size(20.dp)
+                    .align(Alignment.TopStart)
+                    .clickable {
+                        navController?.popBackStack("perfil", inclusive = false)
+                    }
+            )
+        }
+
+        // Contenido principal centrado
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -63,13 +94,14 @@ fun CreditosScreen(navController: NavController? = null) {
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Aplicación desarrollada por:\n\nJuan Sebastián Lizcano Jaimes\n Angie Katherine Suarez Ortiz\n\nUniversidad Autónoma de Bucaramanga\n2025",
+                text = "Aplicación desarrollada por:\n\nJuan Sebastián Lizcano Jaimes\nAngie Katherine Suarez Ortiz\n\nUniversidad Autónoma de Bucaramanga\n2025",
                 style = TextStyle(
                     fontSize = 18.sp,
                     color = Color.White,
                     fontFamily = openSans,
                     textAlign = TextAlign.Center
-                )
+                ),
+                textAlign = TextAlign.Center
             )
         }
     }

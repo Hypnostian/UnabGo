@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.style.TextAlign
@@ -84,7 +85,7 @@ fun LoginScreen(
                 )
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    text = "UNAB GO!",
+                    text = stringResource(R.string.main_title),
                     fontFamily = openSans,
                     fontWeight = FontWeight.Bold,
                     fontSize = 45.sp,
@@ -102,7 +103,7 @@ fun LoginScreen(
                 PillField(
                     value = username,
                     onValueChange = { username = it },
-                    placeholder = "Usuario",
+                    placeholder = stringResource(R.string.login_user),
                     textStyle = TextStyle(
                         fontFamily = openSans,
                         fontSize = 24.sp,
@@ -130,7 +131,7 @@ fun LoginScreen(
             PillField(
                 value = password,
                 onValueChange = { password = it },
-                placeholder = "Contraseña",
+                placeholder = stringResource(R.string.login_password),
                 textStyle = TextStyle(
                     fontFamily = openSans,
                     fontSize = 24.sp,
@@ -145,7 +146,7 @@ fun LoginScreen(
             Spacer(Modifier.height(32.dp))
 
             Text(
-                text = "¿Olvidaste tu contraseña?",
+                text = stringResource(R.string.login_forgot_password),
                 fontFamily = openSans,
                 fontSize = 14.sp,
                 color = Color.White,

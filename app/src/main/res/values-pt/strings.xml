@@ -1,0 +1,118 @@
+<resources>
+    <!-- Geral -->
+    <string name="app_name">UNAB GO</string>
+    <string name="loading">Carregando...</string>
+    <string name="back">Voltar</string>
+
+    <!-- Tela principal -->
+    <string name="main_title">UNAB GO!</string>
+    <string name="main_button_1">Quero ser UNAB</string>
+    <string name="main_button_2">Sou UNAB</string>
+    <string name="main_button_3">Saiba mais sobre a UNAB</string>
+
+    <!-- Tela de login -->
+    <string name="login_user">Usuário</string>
+    <string name="login_password">Senha</string>
+    <string name="login_forgot_password">Esqueceu a senha?</string>
+    <string name="login_title">Entrar</string>
+
+    <!-- Tela “Quero ser UNAB” -->
+    <string name="exploring">Explorando</string>
+    <string name="exploring_text">Ainda não sabe qual caminho seguir? A Banu-IA pode orientar você. Conte a ela seus sonhos e qualidades.</string>
+    <string name="programs_tech">Programas Técnicos e Tecnológicos</string>
+    <string name="programs_undergrad">Programas de Graduação</string>
+    <string name="programs_postgrad">Programas de Pós-Graduação</string>
+    <string name="programs_virtual">Programas Virtuais</string>
+    <string name="programs_continued">Educação Continuada</string>
+    <string name="see_more">Ver mais em unab.edu.co</string>
+
+    <!-- Seção “Sou UNAB” -->
+    <string name="card_id">Carteirinha</string>
+    <string name="tema">TEMA</string>
+    <string name="schedule">Horário</string>
+    <string name="checking">Presença</string>
+    <string name="cosmos">Cosmos</string>
+    <string name="teachers">Professores</string>
+    <string name="announcements">Avisos</string>
+    <string name="study_material">Material de Estudo</string>
+    <string name="calculator">Calculadora</string>
+    <string name="map">Mapa UNAB</string>
+    <string name="mi_portal_u">Meu Portal U</string>
+
+    <!-- Banu-IA -->
+    <string name="banu_questions_title">Dúvidas? A Banu pode ajudar você.</string>
+    <string name="banu_questions_section">Perguntas úteis</string>
+    <string name="banu_question_1">Onde posso ver avisos ou notícias importantes?</string>
+    <string name="banu_question_2">Como posso saber minha média geral ou por matéria?</string>
+    <string name="banu_question_3">Onde posso ver minhas tarefas ou projetos designados?</string>
+    <string name="banu_question_4">O que fazer se o código QR do ônibus não funcionar?</string>
+    <string name="banu_question_5">Como posso mostrar minha carteirinha de estudante no app?</string>
+
+    <!-- Respostas da Banu -->
+    <string name="banu_answer_1">No módulo “Avisos – Banu” você verá comunicados oficiais e publicações estudantis.</string>
+    <string name="banu_answer_2">Use a Calculadora de Médias e insira suas notas. O aplicativo calculará automaticamente sua média.</string>
+    <string name="banu_answer_3">No “TEMA UNAB” você encontrará suas atividades, tarefas e progresso acadêmico.</string>
+    <string name="banu_answer_4">Verifique se o GPS está ativado e se há conexão com a internet. Se o problema persistir, entre em contato com o suporte via chat da Banu.</string>
+    <string name="banu_answer_5">Acesse o módulo “Carteirinha Estudantil UNAB” e selecione “Ver carteirinha digital”.</string>
+
+    <!-- Tela de perfil -->
+    <string name="profile_title">Perfil</string>
+    <string name="profile_login_button">Entrar</string>
+    <string name="profile_language">Idioma (%1$s)</string>
+    <string name="profile_rate_us">Avalie-nos</string>
+    <string name="profile_notifications">Notificações</string>
+    <string name="profile_suggestions">Sugestões</string>
+    <string name="profile_updates">Atualizações</string>
+    <string name="profile_data_policy">Política de Dados</string>
+    <string name="profile_credits">Créditos</string>
+    <string name="credits_names">Desenvolvedores: Juan Sebastián Lizcano Jaimes e [Nome da sua parceira]</string>
+    <string name="language_changed">Idioma alterado</string>
+
+    <!-- atualizações -->
+    <string name="updates_title">Versão 1.0 — novembro de 2025</string>
+    <string name="updates_content">Esta é a primeira versão oficial do UNAB GO!, desenvolvida para candidatos, estudantes e professores da UNAB.
+\n\nFuncionalidades atuais:\n• Login com Firebase Authentication.\n• Navegação principal (Início, Quero ser UNAB, Banu-IA, Perfil).\n• Seção interativa Banu-IA.\n• Acesso direto a programas acadêmicos.\n• Suporte multilíngue.\n• Seção de créditos.\n\nPróximas atualizações:\n• Notificações personalizadas.\n• Chat inteligente de IA.\n• Seção “Sou UNAB”.\n• Mapa interativo do campus.</string>
+
+    <!-- Política de Dados -->
+    <string name="data_policy_title">Política de Dados e Privacidade</string>
+    <string name="data_policy_content">UNAB GO! é um aplicativo acadêmico sem fins lucrativos criado para fins educacionais e de apoio à comunidade universitária da UNAB.
+\n\nOs dados utilizados são apenas de caráter acadêmico e não são compartilhados com terceiros.
+\n\nO aplicativo visa fornecer informações, orientação e ferramentas para candidatos, estudantes e professores.</string>
+
+    <!-- Dados do usuário -->
+    <string name="user_name_label">Nome:</string>
+    <string name="user_id_label">Usuário:</string>
+    <string name="user_role_label">Função:</string>
+
+    <!-- Calculadora -->
+    <string name="calculator_title">Calculadora de Médias</string>
+    <string name="average">Média</string>
+    <string name="add_subject">+ Adicionar matéria</string>
+    <string name="subjects_header">Matérias</string>
+    <string name="grades_header">Notas</string>
+    <string name="credits_header">Créditos</string>
+
+    <!-- Horário -->
+    <string name="schedule_title">Horário</string>
+    <string name="add_class">+ Adicionar matéria</string>
+    <string name="days_header">Hora / Segunda / Terça / Quarta / Quinta / Sexta / Sábado / Domingo</string>
+
+    <!-- Biblioteca -->
+    <string name="library_title">Biblioteca</string>
+    <string name="library_text">A Biblioteca Central da UNAB é um espaço de aprendizado e pesquisa. Oferece um ambiente moderno e silencioso com acesso a coleções físicas e digitais.</string>
+
+    <!-- Avisos -->
+    <string name="notice_1_title">Manutenção da Plataforma Educacional</string>
+    <string name="notice_1_body">A plataforma educacional ficará fora do ar para manutenção de sexta-feira, 5 de maio, até quinta-feira, 11 de maio.</string>
+    <string name="notice_2_title">Oficina de Inovação e Criatividade</string>
+    <string name="notice_2_body">Participe da oficina nesta terça-feira, 22 de abril, às 10h no Laboratório de Design. Vagas limitadas!</string>
+    <string name="notice_3_title">Atualização do Cardápio do Refeitório UNAB</string>
+    <string name="notice_3_body">O cardápio agora inclui opções veganas e sem glúten.</string>
+    <string name="notice_4_title">Campanha de Doação de Sangue</string>
+    <string name="notice_5_title">Palestras sobre Democracia e Constitucionalidade</string>
+
+    <!-- Barra inferior -->
+    <string name="bottom_home">Início</string>
+    <string name="bottom_banu">Banu-IA</string>
+    <string name="bottom_profile">Perfil</string>
+</resources>

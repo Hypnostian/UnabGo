@@ -1,8 +1,8 @@
 <resources>
+    <!-- General -->
     <string name="app_name">UNAB GO</string>
-
-    <!-- Pantalla de carga -->
     <string name="loading">Cargando...</string>
+    <string name="back">Volver</string>
 
     <!-- Pantalla principal -->
     <string name="main_title">UNAB GO!</string>
@@ -16,7 +16,46 @@
     <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="login_title">Iniciar sesión</string>
 
-    <!-- Pantalla de perfil -->
+    <!-- Pantalla Quiero ser UNAB -->
+    <string name="exploring">Explorando</string>
+    <string name="exploring_text">¿No sabes todavía qué camino tomar? Banu-IA te puede asesorar. Cuéntale tus sueños y virtudes.</string>
+    <string name="programs_tech">Programas Técnicos y Tecnologías</string>
+    <string name="programs_undergrad">Programas de Pregrado</string>
+    <string name="programs_postgrad">Programas de Posgrado</string>
+    <string name="programs_virtual">Programas Virtuales</string>
+    <string name="programs_continued">Programas de Educación Continua</string>
+    <string name="see_more">Ver más en unab.edu.co</string>
+
+    <!-- Sección Soy UNAB -->
+    <string name="card_id">Carnet</string>
+    <string name="tema">TEMA</string>
+    <string name="schedule">Horario</string>
+    <string name="checking">Checking</string>
+    <string name="cosmos">Cosmos</string>
+    <string name="teachers">Docentes</string>
+    <string name="announcements">Avisos</string>
+    <string name="study_material">Material de estudio</string>
+    <string name="calculator">Calculadora</string>
+    <string name="map">Mapa UNAB</string>
+    <string name="mi_portal_u">Mi Portal U</string>
+
+    <!-- Banu IA -->
+    <string name="banu_questions_title">¿Preguntas? Banu te puede ayudar.</string>
+    <string name="banu_questions_section">Preguntas que te pueden servir</string>
+    <string name="banu_question_1">¿Dónde puedo ver los anuncios o noticias importantes?</string>
+    <string name="banu_question_2">¿Cómo puedo saber mi promedio general o de una materia?</string>
+    <string name="banu_question_3">¿Dónde puedo ver mis tareas o proyectos asignados?</string>
+    <string name="banu_question_4">¿Qué hago si el código QR del bus no funciona?</string>
+    <string name="banu_question_5">¿Cómo puedo mostrar mi carnet estudiantil desde la app?</string>
+
+    <!-- Respuestas de Banu -->
+    <string name="banu_answer_1">En el módulo “Avisos – Banu” verás anuncios oficiales y publicaciones estudiantiles.</string>
+    <string name="banu_answer_2">Usa la Calculadora de Promedios e ingresa tus calificaciones. La app calculará tu promedio automáticamente.</string>
+    <string name="banu_answer_3">En “Tema UNAB” encontrarás tus actividades, entregas y avances académicos.</string>
+    <string name="banu_answer_4">Verifica que el GPS esté activado y tengas conexión a internet. Si el problema persiste, contacta soporte desde el chat de Banu.</string>
+    <string name="banu_answer_5">Ingresa al módulo “Carnet Estudiantil UNAB” y selecciona Ver mi carnet digital.</string>
+
+    <!-- Pantalla Perfil -->
     <string name="profile_title">Perfil</string>
     <string name="profile_login_button">Iniciar sesión</string>
     <string name="profile_language">Idioma (%1$s)</string>
@@ -26,19 +65,54 @@
     <string name="profile_updates">Actualizaciones</string>
     <string name="profile_data_policy">Política de datos</string>
     <string name="profile_credits">Créditos</string>
+    <string name="credits_names">Desarrolladores: Juan Sebastián Lizcano Jaimes y [Nombre de tu compañera]</string>
+    <string name="language_changed">Idioma cambiado</string>
+
+    <!-- Actualizaciones -->
+    <string name="updates_title">Versión 1.0 — Noviembre 2025</string>
+    <string name="updates_content">Esta es la primera versión oficial de UNAB GO!, diseñada para aspirantes, estudiantes y docentes de la UNAB.
+\n\nFuncionalidades actuales:\n• Login con Firebase Authentication.\n• Navegación principal (Inicio, Quiero ser UNAB, Banu-IA, Perfil).\n• Sección Banu-IA interactiva.\n• Acceso directo a programas académicos.\n• Soporte multilenguaje.\n• Sección de créditos.\n\nPróximas actualizaciones:\n• Notificaciones personalizadas.\n• Chat inteligente de Banu-IA.\n• Sección Soy UNAB.\n• Mapa interactivo del campus.</string>
+
+    <!-- Politica de Datos -->
+    <string name="data_policy_title">Política de Datos y Privacidad</string>
+    <string name="data_policy_content">UNAB GO! es una aplicación académica sin ánimo de lucro creada con fines educativos para la comunidad universitaria de la UNAB.
+\n\nLos datos utilizados son únicamente de carácter académico y no se comparten con terceros.
+\n\nEl propósito de la aplicación es ofrecer información, orientación y herramientas de apoyo a aspirantes, estudiantes y docentes.</string>
+
+    <!-- Datos de usuario -->
+    <string name="user_name_label">Nombre:</string>
+    <string name="user_id_label">Usuario:</string>
+    <string name="user_role_label">Rol:</string>
+
+    <!-- Calculadora -->
+    <string name="calculator_title">Calculadora de Promedios</string>
+    <string name="average">Promedio</string>
+    <string name="add_subject">+ Agregar materia</string>
+    <string name="subjects_header">Materias</string>
+    <string name="grades_header">Notas</string>
+    <string name="credits_header">Créditos</string>
+
+    <!-- Horario -->
+    <string name="schedule_title">Horario</string>
+    <string name="add_class">+ Agregar materia</string>
+    <string name="days_header">Hora / Lunes / Martes / Miércoles / Jueves / Viernes / Sábado / Domingo</string>
+
+    <!-- Biblioteca -->
+    <string name="library_title">Biblioteca</string>
+    <string name="library_text">La Biblioteca Central de la UNAB es un espacio para el aprendizaje e investigación. Ofrece un ambiente moderno y silencioso con acceso a colecciones físicas y digitales.</string>
+
+    <!-- Avisos -->
+    <string name="notice_1_title">Plataforma Educativa Inactiva</string>
+    <string name="notice_1_body">La plataforma educativa estará inactiva por mantenimiento desde el viernes 5 de mayo hasta el jueves 11 de mayo.</string>
+    <string name="notice_2_title">Taller de Innovación y Creatividad</string>
+    <string name="notice_2_body">Participa en el taller este martes 22 de abril a las 10:00 a.m. en el Laboratorio de Diseño. ¡Cupos limitados!</string>
+    <string name="notice_3_title">Cambio en el Hostal UNAB</string>
+    <string name="notice_3_body">El menú incluirá opciones veganas y libres de gluten.</string>
+    <string name="notice_4_title">Jornada de Donación de Sangre</string>
+    <string name="notice_5_title">Charlas de Democracia y Constitucionalidad</string>
 
     <!-- Barra inferior -->
     <string name="bottom_home">Inicio</string>
     <string name="bottom_banu">Banu-IA</string>
     <string name="bottom_profile">Perfil</string>
-
-    <!-- Pantalla "Quiero ser UNAB" -->
-    <string name="exploring">Explorando</string>
-    <string name="exploring_text">¿No sabes todavía qué camino tomar? Banu-IA te puede asesorar. Cuéntale tus sueños y virtudes.</string>
-    <string name="programs_tech">Programas Técnicos y Tecnologías</string>
-    <string name="programs_undergrad">Programas de Pregrado</string>
-    <string name="programs_postgrad">Programas de Posgrado</string>
-    <string name="programs_virtual">Programas Virtuales</string>
-    <string name="programs_continued">Programas de Educación Continua</string>
-    <string name="see_more">Ver más en unab.edu.co</string>
 </resources>
