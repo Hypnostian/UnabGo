@@ -25,10 +25,8 @@
     <string name="main_button_3">Learn more about UNAB</string>
 
     <!-- Login Screen -->
-    <string name="login_user">Username</string>
-    <string name="login_password">Password</string>
-    <string name="login_forgot_password">Forgot your password?</string>
-    <string name="login_title">Login</string>
+    <string name="login_with_google">Sign in with Google</string>
+    <string name="login_reminder_text">Remember that you can only sign in using your university email (@unab.edu.co)</string>
 
     <!-- “I want to be UNAB” Screen -->
     <string name="exploring">Exploring</string>

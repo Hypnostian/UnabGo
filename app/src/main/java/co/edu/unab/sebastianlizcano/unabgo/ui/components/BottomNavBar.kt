@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.R
 import co.edu.unab.sebastianlizcano.unabgo.LanguageDataStore
 import co.edu.unab.sebastianlizcano.unabgo.LocaleManager
+import co.edu.unab.sebastianlizcano.unabgo.LocalAppDimens
 import kotlinx.coroutines.launch
 
 @Composable
@@ -30,28 +31,30 @@ fun BottomNavBar(
     navController: NavController?,
     modifier: Modifier = Modifier
 ) {
+    val dimens = LocalAppDimens.current
     val openSans = FontFamily(Font(R.font.open_sans_regular))
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    // Escucha el idioma actual guardado y fuerza recomposición cuando cambia
     var currentLang by remember { mutableStateOf(LocaleManager.getCurrentLanguage(context)) }
     LaunchedEffect(Unit) {
         val dataStore = LanguageDataStore(context)
         dataStore.getLanguage().collect { lang ->
-            if (lang != null && lang != currentLang) {
-                currentLang = lang
-            }
+            if (lang != null && lang != currentLang) currentLang = lang
         }
     }
+
+    val iconSize = (dimens.logoSize * 0.45f).dp
+    val textSize = (dimens.body + 1).sp
+    val barHeight = (dimens.buttonHeight * 1.6f).dp
+    val sidePadding = dimens.gapL.dp
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(90.dp)
+            .height(barHeight)
             .background(Color.Transparent)
     ) {
-        // Fondo de la barra inferior
         Image(
             painter = painterResource(id = R.drawable.rectangle_5),
             contentDescription = "Barra inferior",
@@ -59,22 +62,20 @@ fun BottomNavBar(
             contentScale = ContentScale.FillBounds
         )
 
-        // Contenedor principal con los tres botones
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 35.dp),
+                .padding(horizontal = sidePadding),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             val textStyle = TextStyle(
-                fontSize = 16.sp,
+                fontSize = textSize,
                 fontFamily = openSans,
                 color = Color.White,
                 fontWeight = FontWeight.Medium
             )
 
-            // Botón de Inicio
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.clickable {
@@ -86,15 +87,11 @@ fun BottomNavBar(
                 Image(
                     painter = painterResource(id = R.drawable.botoninicio),
                     contentDescription = stringResource(R.string.bottom_home),
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(iconSize)
                 )
-                Text(
-                    text = stringResource(R.string.bottom_home),
-                    style = textStyle
-                )
+                Text(text = stringResource(R.string.bottom_home), style = textStyle)
             }
 
-            // Botón de Banu-IA
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.clickable {
@@ -106,15 +103,11 @@ fun BottomNavBar(
                 Image(
                     painter = painterResource(id = R.drawable.banu),
                     contentDescription = stringResource(R.string.bottom_banu),
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(iconSize)
                 )
-                Text(
-                    text = stringResource(R.string.bottom_banu),
-                    style = textStyle
-                )
+                Text(text = stringResource(R.string.bottom_banu), style = textStyle)
             }
 
-            // Botón de Perfil
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.clickable {
@@ -126,12 +119,9 @@ fun BottomNavBar(
                 Image(
                     painter = painterResource(id = R.drawable.botonperfil),
                     contentDescription = stringResource(R.string.bottom_profile),
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(iconSize)
                 )
-                Text(
-                    text = stringResource(R.string.bottom_profile),
-                    style = textStyle
-                )
+                Text(text = stringResource(R.string.bottom_profile), style = textStyle)
             }
         }
     }

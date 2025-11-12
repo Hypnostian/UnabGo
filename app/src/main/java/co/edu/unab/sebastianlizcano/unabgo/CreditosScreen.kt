@@ -38,14 +38,6 @@ fun CreditosScreen(navController: NavController? = null) {
                 .fillMaxWidth()
                 .padding(top = 20.dp, start = 20.dp)
         ) {
-            // Botón decorativo
-            Image(
-                painter = painterResource(id = R.drawable.button1),
-                contentDescription = "Decoración encabezado",
-                modifier = Modifier
-                    .size(36.dp)
-                    .align(Alignment.TopStart)
-            )
 
             // Flecha atrás (vuelve al PerfilScreen)
             Image(

@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import co.edu.unab.sebastianlizcano.unabgo.LocalAppDimens
 
 @Composable
 fun MainScreen(
@@ -33,105 +34,106 @@ fun MainScreen(
     onSoyUnabClick: () -> Unit = {},
     onConoceMasClick: () -> Unit = {}
 ) {
-    val gradientTop = Color(0xFF8700DD)
-    val gradientBottom = Color(0xFF490077)
+    val dimens = LocalAppDimens.current
+    val gradientTop = Color(0xFF460073)
+    val gradientBottom = Color(0xFF2F024C)
     val openSans = FontFamily(Font(R.font.open_sans_regular))
     val openSansBold = FontFamily(Font(R.font.open_sans_bold))
 
     Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(gradientTop, gradientBottom)
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(gradientTop, gradientBottom)
-                    )
-                ),
-            contentAlignment = Alignment.Center
+                .padding(horizontal = dimens.gapL.dp)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+            // LOGO
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo UNAB",
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 32.dp)
+                    .size(dimens.logoSize.dp * 2)
+                    .padding(bottom = dimens.gapM.dp),
+                contentScale = ContentScale.Fit
+            )
+
+            // TÍTULO
+            Text(
+                text = stringResource(R.string.main_title),
+                fontFamily = openSansBold,
+                fontSize = dimens.titleXL.sp,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = dimens.gapL.dp)
+            )
+
+            // BOTÓN 1 - Quiero ser UNAB
+            Button(
+                onClick = { navController.navigate("quieroSerUnab") },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = Color(0xFF490077)
+                ),
+                shape = RoundedCornerShape(50.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dimens.buttonHeight.dp)
             ) {
-                // LOGO
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "Logo UNAB",
-                    modifier = Modifier
-                        .size(180.dp)
-                        .padding(bottom = 22.dp),
-                    contentScale = ContentScale.Fit
-                )
-
-                // TÍTULO
                 Text(
-                    text = stringResource(R.string.main_title),
-                    fontFamily = openSansBold,
-                    fontSize = 45.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 38.dp)
-                )
-
-                // BOTÓN 1 - Quiero ser UNAB
-                Button(
-                    onClick = { navController.navigate("quieroSerUnab") },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color(0xFF490077)
-                    ),
-                    shape = RoundedCornerShape(50.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(55.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.main_button_1),
-                        fontFamily = openSans,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(38.dp))
-
-                // BOTÓN 2 - Soy UNAB
-                Button(
-                    onClick = { navController.navigate(Routes.SOY_UNAB) },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color(0xFF490077)
-                    ),
-                    shape = RoundedCornerShape(50.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(55.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.main_button_2),
-                        fontFamily = openSans,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(38.dp))
-
-                // TEXTO INFERIOR
-                Text(
-                    text = stringResource(R.string.main_button_3),
+                    text = stringResource(R.string.main_button_1),
                     fontFamily = openSans,
-                    fontSize = 20.sp,
-                    color = Color.White
+                    fontSize = (dimens.titleL * 1.1f).sp,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
+
+            Spacer(modifier = Modifier.height(dimens.gapL.dp))
+
+            // BOTÓN 2 - Soy UNAB
+            Button(
+                onClick = { navController.navigate(Routes.SOY_UNAB) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = Color(0xFF490077)
+                ),
+                shape = RoundedCornerShape(50.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dimens.buttonHeight.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.main_button_2),
+                    fontFamily = openSans,
+                    fontSize = (dimens.titleL * 1.1f).sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(dimens.gapL.dp))
+
+            // TEXTO INFERIOR
+            Text(
+                text = stringResource(R.string.main_button_3),
+                fontFamily = openSans,
+                fontSize = (dimens.body + 6).sp,
+                color = Color.White
+            )
         }
     }
+}
 
-    @Preview(showBackground = true, showSystemUi = true)
-    @Composable
-    fun MainScreenPreview() {
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun MainScreenPreview() {
 
-    }
+}

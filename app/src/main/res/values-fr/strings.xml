@@ -25,10 +25,8 @@
     <string name="main_button_3">En savoir plus sur l\'UNAB</string>
 
     <!-- Écran de connexion -->
-    <string name="login_user">Nom d\'utilisateur</string>
-    <string name="login_password">Mot de passe</string>
-    <string name="login_forgot_password">Mot de passe oublié ?</string>
-    <string name="login_title">Connexion</string>
+    <string name="login_with_google">Se connecter avec Google</string>
+    <string name="login_reminder_text">N’oubliez pas que vous ne pouvez vous connecter qu’avec votre e-mail universitaire (@unab.edu.co)</string>
 
     <!-- Écran “Je veux être UNAB” -->
     <string name="exploring">Exploration</string>

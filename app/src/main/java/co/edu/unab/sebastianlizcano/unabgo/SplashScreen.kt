@@ -38,8 +38,8 @@ fun SplashRoute(
 
 @Composable
 private fun SplashContent(visible: Boolean) {
-    val gradientTop = Color(0xFF8700DD)
-    val gradientBottom = Color(0xFF490077)
+    val gradientTop = Color(0xFF460073)
+    val gradientBottom = Color(0xFF2F024C)
 
     Box(
         modifier = Modifier

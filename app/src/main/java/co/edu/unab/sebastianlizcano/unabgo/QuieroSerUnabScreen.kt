@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -33,102 +32,33 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.BottomNavBar
+import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
 
 @Composable
 fun QuieroSerUnabScreen(
-    navController: NavController? = null,
-    onBackClick: () -> Unit = { navController?.popBackStack("main", inclusive = false) },
-    onBanuClick: () -> Unit = { navController?.navigate("banuia") },
-    onProfileClick: () -> Unit = { navController?.navigate("perfil") }
+    navController: NavController? = null
 ) {
     val openSans = FontFamily(Font(R.font.open_sans_regular))
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF490077))
+            .background(Color(0xFF2F024C))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 100.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Usa el HeaderBar global
+            HeaderBar(
+                navController = navController,
+                subtitleRes = R.string.header_exploring
+            )
 
-            // Encabezado
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.rectangle_6),
-                    contentDescription = "Encabezado UNAB GO",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.FillBounds
-                )
-
-                // Botón decorativo
-                Image(
-                    painter = painterResource(id = R.drawable.button1),
-                    contentDescription = "Decoración encabezado",
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(start = 20.dp, top = 20.dp)
-                        .size(36.dp)
-                )
-
-                // Flecha atrás
-                Image(
-                    painter = painterResource(id = R.drawable.flecha),
-                    contentDescription = "Volver atrás",
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(start = 28.dp, top = 26.dp)
-                        .size(20.dp)
-                        .clickable { onBackClick() }
-                )
-
-                // Título del encabezado
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo),
-                        contentDescription = "Logo UNAB",
-                        modifier = Modifier
-                            .width(70.dp)
-                            .height(70.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = stringResource(R.string.exploring),
-                            style = TextStyle(
-                                fontSize = 22.sp,
-                                fontFamily = openSans,
-                                fontWeight = FontWeight.Medium,
-                                color = Color.White
-                            )
-                        )
-                        Text(
-                            text = stringResource(R.string.main_title),
-                            style = TextStyle(
-                                fontSize = 36.sp,
-                                fontFamily = openSans,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Texto y Banu pensativo (redirige a BanuIA)
             Row(
@@ -136,14 +66,14 @@ fun QuieroSerUnabScreen(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .clickable { onBanuClick() }
+                    .clickable { navController?.navigate("banuia") }
             ) {
                 Box(
                     modifier = Modifier
                         .width(250.dp)
                         .height(100.dp)
                         .clip(RoundedCornerShape(20.dp))
-                        .background(Color(0xFF6800AA)),
+                        .background(Color(0x805A237B)),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -214,6 +144,8 @@ fun QuieroSerUnabScreen(
 
             Spacer(modifier = Modifier.height(120.dp))
         }
+
+        // Barra inferior fija
         BottomNavBar(
             navController = navController,
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -240,7 +172,7 @@ private fun ExpandableWebViewCard(title: String, url: String, iconRes: Int) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(Color(0xFF6800AA))
+            .background(Color(0x805A237B))
             .clickable { expanded = !expanded }
             .padding(18.dp)
     ) {

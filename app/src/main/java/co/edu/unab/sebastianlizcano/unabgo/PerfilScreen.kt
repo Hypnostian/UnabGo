@@ -43,6 +43,7 @@ import java.util.*
 
 @Composable
 fun PerfilScreen(navController: NavController? = null) {
+    val dimens = LocalAppDimens.current
     val context = LocalContext.current
     val openSans = FontFamily(Font(R.font.open_sans_regular))
     val scope = rememberCoroutineScope()
@@ -58,6 +59,9 @@ fun PerfilScreen(navController: NavController? = null) {
         }
     }
 
+    //Scroll principal para todos los contenidos
+    val scrollState = rememberScrollState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -66,8 +70,8 @@ fun PerfilScreen(navController: NavController? = null) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = 90.dp),
+                .verticalScroll(scrollState)
+                .padding(bottom = (dimens.buttonHeight * 2f).dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             HeaderBar(navController = navController)
@@ -75,8 +79,8 @@ fun PerfilScreen(navController: NavController? = null) {
             // Imagen de perfil + Banu
             Box(
                 modifier = Modifier
-                    .padding(top = 0.dp)
-                    .height(160.dp),
+                    .padding(top = dimens.gapS.dp)
+                    .height((dimens.heroImageSize * 0.8f).dp),
                 contentAlignment = Alignment.Center
             ) {
                 if (user?.photoUrl != null) {
@@ -87,7 +91,7 @@ fun PerfilScreen(navController: NavController? = null) {
                             .build(),
                         contentDescription = "Foto de perfil",
                         modifier = Modifier
-                            .size(120.dp)
+                            .size((dimens.logoSize * 1.3f).dp)
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
@@ -96,7 +100,7 @@ fun PerfilScreen(navController: NavController? = null) {
                         painter = painterResource(id = R.drawable.perfil),
                         contentDescription = "Perfil",
                         modifier = Modifier
-                            .size(150.dp)
+                            .size((dimens.logoSize * 1.5f).dp)
                             .clip(CircleShape)
                     )
                 }
@@ -105,35 +109,33 @@ fun PerfilScreen(navController: NavController? = null) {
                     painter = painterResource(id = R.drawable.banuperfil),
                     contentDescription = "Banu Perfil",
                     modifier = Modifier
-                        .size(70.dp)
+                        .size((dimens.logoSize * 0.8f).dp)
                         .align(Alignment.TopEnd)
-                        .offset(x = (-15).dp, y = (-20).dp)
+                        .offset(x = (-dimens.gapM).dp, y = (-dimens.gapS).dp)
                 )
             }
 
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(dimens.gapS.dp))
 
             if (user != null) {
-                // Nombre + correo
                 Text(
                     text = user.displayName ?: "Usuario UNAB",
                     color = Color.White,
                     fontFamily = openSans,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
+                    fontSize = (dimens.titleL * 0.9f).sp,
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = user.email ?: "",
                     color = Color.White.copy(alpha = 0.8f),
                     fontFamily = openSans,
-                    fontSize = 14.sp,
+                    fontSize = (dimens.body * 0.95f).sp,
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(Modifier.height(14.dp))
+                Spacer(Modifier.height(dimens.gapM.dp))
 
-                // Botón Cerrar sesión
                 Button(
                     onClick = {
                         FirebaseAuth.getInstance().signOut()
@@ -148,20 +150,19 @@ fun PerfilScreen(navController: NavController? = null) {
                     ),
                     shape = RoundedCornerShape(25.dp),
                     modifier = Modifier
-                        .width(150.dp)
-                        .height(42.dp)
+                        .width((dimens.logoSize * 1.6f).dp)
+                        .height((dimens.buttonHeight * 0.8f).dp)
                 ) {
                     Text(
                         text = "Cerrar sesión",
                         fontFamily = openSans,
                         fontWeight = FontWeight.Medium,
-                        fontSize = 15.sp
+                        fontSize = (dimens.body * 1.1f).sp
                     )
                 }
 
-                Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(dimens.gapM.dp))
             } else {
-                // Botón iniciar sesión
                 Button(
                     onClick = { navController?.navigate("login") },
                     colors = ButtonDefaults.buttonColors(
@@ -170,35 +171,34 @@ fun PerfilScreen(navController: NavController? = null) {
                     ),
                     shape = RoundedCornerShape(30.dp),
                     modifier = Modifier
-                        .width(165.dp)
-                        .height(45.dp)
+                        .width((dimens.logoSize * 1.8f).dp)
+                        .height((dimens.buttonHeight * 0.85f).dp)
                 ) {
                     Text(
                         text = stringResource(R.string.profile_login_button),
                         fontFamily = openSans,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp
+                        fontSize = (dimens.body * 1.2f).sp
                     )
                 }
-                Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(dimens.gapM.dp))
             }
 
-            // Panel de opciones
+            //Panel de opciones scrolleable
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color(0xCC5A237B))
-                    .padding(horizontal = 18.dp, vertical = 14.dp)
-                    .weight(1f, fill = true),
+                    .padding(horizontal = dimens.gapM.dp, vertical = dimens.gapS.dp),
                 horizontalAlignment = Alignment.Start
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
                         painter = painterResource(id = R.drawable.translate),
                         contentDescription = "Idioma",
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size((dimens.logoSize * 0.35f).dp)
                     )
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(dimens.gapS.dp))
                     Text(
                         text = when (selectedLang) {
                             "es" -> "Idioma (Español)"
@@ -210,15 +210,19 @@ fun PerfilScreen(navController: NavController? = null) {
                         },
                         color = Color.White,
                         fontFamily = openSans,
-                        fontSize = 16.sp
+                        fontSize = (dimens.body * 1.1f).sp
                     )
                 }
 
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(dimens.gapS.dp))
 
+                //Idiomas en fila horizontal (siempre bien alineados)
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimens.gapS.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     listOf("ES", "EN", "PT", "FR", "KO").forEach { lang ->
                         val code = lang.lowercase(Locale.getDefault())
@@ -245,26 +249,28 @@ fun PerfilScreen(navController: NavController? = null) {
                             Text(
                                 text = lang,
                                 fontFamily = openSans,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                fontSize = (dimens.body * 1f).sp,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
                 }
 
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(dimens.gapM.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
                         painter = painterResource(id = R.drawable.favorite),
                         contentDescription = "Califícanos",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size((dimens.logoSize * 0.3f).dp)
                     )
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(dimens.gapS.dp))
                     Text(
                         text = stringResource(R.string.profile_rate_us),
                         color = Color.White,
                         fontFamily = openSans,
-                        fontSize = 16.sp
+                        fontSize = (dimens.body * 1.1f).sp
                     )
                 }
 
@@ -275,7 +281,7 @@ fun PerfilScreen(navController: NavController? = null) {
                             painter = painterResource(id = R.drawable.star),
                             contentDescription = "star",
                             modifier = Modifier
-                                .size(30.dp)
+                                .size((dimens.logoSize * 0.33f).dp)
                                 .padding(2.dp)
                                 .clickable { rating = i + 1 },
                             alpha = if (i < rating) 1f else 0.3f
@@ -283,7 +289,7 @@ fun PerfilScreen(navController: NavController? = null) {
                     }
                 }
 
-                Spacer(Modifier.height(10.dp))
+                Spacer(Modifier.height(dimens.gapS.dp))
 
                 ProfileOption(R.drawable.notification, stringResource(R.string.profile_notifications)) {
                     val intent = Intent("android.settings.APP_NOTIFICATION_SETTINGS").apply {
@@ -316,6 +322,7 @@ fun PerfilScreen(navController: NavController? = null) {
             }
         }
 
+        // Barra inferior fija
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -328,23 +335,29 @@ fun PerfilScreen(navController: NavController? = null) {
 
 @Composable
 private fun ProfileOption(iconRes: Int, text: String, onClick: () -> Unit) {
+    val dimens = LocalAppDimens.current
     val openSans = FontFamily(Font(R.font.open_sans_regular))
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(vertical = dimens.gapS.dp)
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             painter = painterResource(id = iconRes),
             contentDescription = text,
-            modifier = Modifier.size(26.dp)
+            modifier = Modifier.size((dimens.logoSize * 0.3f).dp)
         )
-        Spacer(Modifier.width(12.dp))
-        Text(text, color = Color.White, fontFamily = openSans, fontSize = 16.sp)
+        Spacer(Modifier.width(dimens.gapS.dp))
+        Text(
+            text,
+            color = Color.White,
+            fontFamily = openSans,
+            fontSize = (dimens.body * 1.1f).sp
+        )
         Spacer(Modifier.weight(1f))
-        Text(">", color = Color.White, fontSize = 18.sp)
+        Text(">", color = Color.White, fontSize = (dimens.titleL * 0.9f).sp)
     }
 }
 

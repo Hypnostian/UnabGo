@@ -26,10 +26,8 @@
     <string name="main_button_3">Conoce más sobre la UNAB</string>
 
     <!-- Pantalla de login -->
-    <string name="login_user">Usuario</string>
-    <string name="login_password">Contraseña</string>
-    <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
-    <string name="login_title">Iniciar sesión</string>
+    <string name="login_with_google">Iniciar sesión con Google</string>
+    <string name="login_reminder_text">Recuerda que solo se puede iniciar sesión con tu correo universitario (@unab.edu.co)</string>
 
     <!-- Pantalla Quiero ser UNAB -->
     <string name="exploring">Explorando</string>

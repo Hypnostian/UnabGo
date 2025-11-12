@@ -25,10 +25,8 @@
     <string name="main_button_3">Saiba mais sobre a UNAB</string>
 
     <!-- Tela de login -->
-    <string name="login_user">Usuário</string>
-    <string name="login_password">Senha</string>
-    <string name="login_forgot_password">Esqueceu a senha?</string>
-    <string name="login_title">Entrar</string>
+    <string name="login_with_google">Entrar com o Google</string>
+    <string name="login_reminder_text">Lembre-se de que só é possível fazer login com seu e-mail universitário (@unab.edu.co)</string>
 
     <!-- Tela “Quero ser UNAB” -->
     <string name="exploring">Explorando</string>

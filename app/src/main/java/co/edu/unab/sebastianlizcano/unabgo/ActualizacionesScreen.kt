@@ -111,13 +111,6 @@ fun ActualizacionesScreen(navController: NavController? = null) {
                 .padding(top = 24.dp, start = 20.dp)
                 .align(Alignment.TopStart)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.button1),
-                contentDescription = "Decoración encabezado",
-                modifier = Modifier
-                    .size(36.dp)
-                    .align(Alignment.TopStart)
-            )
 
             // Área táctil más grande que la imagen de la flecha
             Box(

@@ -34,6 +34,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.delay
+import co.edu.unab.sebastianlizcano.unabgo.LocalAppDimens
 
 private lateinit var auth: FirebaseAuth
 private lateinit var googleSignInClient: GoogleSignInClient
@@ -43,6 +44,7 @@ fun LoginScreen(
     navController: NavController? = null,
     onBackClick: () -> Unit = {}
 ) {
+    val dimens = LocalAppDimens.current
     val purpleTop = Color(0xFF8700DD)
     val purpleBottom = Color(0xFF490077)
     val purpleText = Color(0xFF490077)
@@ -101,11 +103,11 @@ fun LoginScreen(
             onClick = onBackClick,
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = 16.dp, top = 16.dp)
+                .padding(start = dimens.gapM.dp, top = dimens.gapM.dp)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Volver",
+                contentDescription = stringResource(R.string.back),
                 tint = Color.White
             )
         }
@@ -114,7 +116,7 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 38.dp),
+                .padding(horizontal = dimens.gapL.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -126,20 +128,20 @@ fun LoginScreen(
                 Image(
                     painter = painterResource(id = R.drawable.logo),
                     contentDescription = "Logo UNAB",
-                    modifier = Modifier.size(90.dp),
+                    modifier = Modifier.size((dimens.logoSize * 0.9f).dp),
                     contentScale = ContentScale.Fit
                 )
-                Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.width(dimens.gapM.dp))
                 Text(
                     text = stringResource(R.string.main_title),
                     fontFamily = openSans,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 45.sp,
+                    fontSize = (dimens.titleXL * 0.85f).sp,
                     color = Color.White
                 )
             }
 
-            Spacer(Modifier.height(50.dp))
+            Spacer(Modifier.height(dimens.gapL.dp))
 
             // Banu tocando el botón (unidos visualmente)
             Column(
@@ -150,8 +152,8 @@ fun LoginScreen(
                     painter = painterResource(id = R.drawable.medbanu),
                     contentDescription = "Búho Banu",
                     modifier = Modifier
-                        .size(210.dp)
-                        .offset(y = 65.dp), // Banu ligeramente sobre el botón
+                        .size((dimens.heroImageSize * 0.9f).dp)
+                        .offset(y = (dimens.gapM * 3f).dp),
                     contentScale = ContentScale.Fit
                 )
 
@@ -166,23 +168,23 @@ fun LoginScreen(
                     ),
                     shape = RoundedCornerShape(30.dp),
                     modifier = Modifier
-                        .width(280.dp)
-                        .height(55.dp)
-                        .offset(y = (-35).dp) // Subimos el botón para que Banu lo toque
+                        .width((dimens.logoSize * 2.4f).dp)
+                        .height((dimens.buttonHeight * 0.9f).dp)
+                        .offset(y = (-dimens.gapM * 2.5f).dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_google),
                             contentDescription = "Google",
                             modifier = Modifier
-                                .size(28.dp)
-                                .padding(end = 8.dp)
+                                .size((dimens.gapL * 1.1f).dp)
+                                .padding(end = dimens.gapS.dp)
                         )
                         Text(
-                            text = "Iniciar sesión con Google",
+                            text = stringResource(R.string.login_with_google),
                             fontFamily = openSans,
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 18.sp
+                            fontSize = (dimens.body * 0.70f).sp
                         )
                     }
                 }
@@ -190,13 +192,13 @@ fun LoginScreen(
 
             // Texto informativo centrado
             Text(
-                text = "Recuerda que solo se puede iniciar sesión con tu correo universitario (@unab.edu.co)",
+                text = stringResource(R.string.login_reminder_text),
                 fontFamily = openSans,
-                fontSize = 14.sp,
+                fontSize = (dimens.body * 0.95f).sp,
                 color = Color.White,
-                lineHeight = 20.sp,
+                lineHeight = (dimens.body * 1.3f).sp,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = dimens.gapM.dp)
             )
         }
     }

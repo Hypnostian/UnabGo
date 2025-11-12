@@ -19,20 +19,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.R
+import co.edu.unab.sebastianlizcano.unabgo.LocalAppDimens
 
 @Composable
 fun HeaderBar(
     navController: NavController? = null,
     modifier: Modifier = Modifier,
     subtitleRes: Int = R.string.header_exploring,
-    onBackClick: () -> Unit = { navController?.popBackStack("main", inclusive = false) }
+    onBackClick: () -> Unit = { navController?.popBackStack() }
+
 ) {
+    val dimens = LocalAppDimens.current
     val openSans = FontFamily(Font(R.font.open_sans_regular))
+
+    val headerHeight = (dimens.heroImageSize * 0.65f).dp
+    val logoSize = (dimens.logoSize * 0.78f).dp
+    val subtitleSize = (dimens.titleL * 0.9f).sp
+    val titleSize = dimens.titleXL.sp
+    val paddingSide = dimens.gapM.dp
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(140.dp)
+            .height(headerHeight)
     ) {
         // Fondo
         Image(
@@ -42,60 +51,49 @@ fun HeaderBar(
             contentScale = ContentScale.FillBounds
         )
 
-        // Flecha y botón decorativo
-        Image(
-            painter = painterResource(id = R.drawable.button1),
-            contentDescription = "Decoración encabezado",
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 20.dp, top = 20.dp)
-                .size(36.dp)
-        )
+        // Flecha atrás funcional
         Image(
             painter = painterResource(id = R.drawable.flecha),
             contentDescription = "Volver atrás",
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = 28.dp, top = 26.dp)
-                .size(20.dp)
+                .padding(start = (dimens.gapM * 1.4f).dp, top = (dimens.gapM * 1.3f).dp)
+                .size((dimens.gapM * 1.5f).dp)
                 .clickable { onBackClick() }
         )
 
-        // Contenido central (subtítulo arriba, UNAB GO! abajo)
+        // Contenido central
         Row(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = paddingSide),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo UNAB",
                 modifier = Modifier
-                    .width(70.dp)
-                    .height(70.dp),
+                    .size(logoSize),
                 contentScale = ContentScale.Fit
             )
 
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(dimens.gapS.dp))
 
             Column(horizontalAlignment = Alignment.Start) {
-                // Subtítulo dinámico
                 Text(
                     text = stringResource(subtitleRes).uppercase(),
                     style = TextStyle(
-                        fontSize = 20.sp,
+                        fontSize = subtitleSize,
                         fontFamily = openSans,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.White.copy(alpha = 0.95f)
                     )
                 )
 
-                // Título principal (UNAB GO!)
                 Text(
                     text = "UNAB GO!",
                     style = TextStyle(
-                        fontSize = 34.sp,
+                        fontSize = titleSize,
                         fontFamily = openSans,
                         fontWeight = FontWeight.Bold,
                         color = Color.White

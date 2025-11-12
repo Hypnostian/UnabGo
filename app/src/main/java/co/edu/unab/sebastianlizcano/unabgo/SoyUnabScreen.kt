@@ -31,6 +31,7 @@ import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
 
 @Composable
 fun SoyUnabScreen(navController: NavController? = null) {
+    val dimens = LocalAppDimens.current
     val openSans = FontFamily(Font(R.font.open_sans_regular))
     val context = LocalContext.current
 
@@ -43,14 +44,13 @@ fun SoyUnabScreen(navController: NavController? = null) {
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = 100.dp),
+                .padding(bottom = (dimens.buttonHeight * 2f).dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             HeaderBar(navController = navController)
 
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(dimens.gapS.dp))
+            Spacer(modifier = Modifier.height(dimens.gapM.dp))
 
             // Lista de módulos (con direcciones internas y externas)
             val modulos = listOf(
@@ -72,7 +72,7 @@ fun SoyUnabScreen(navController: NavController? = null) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 29.dp),
+                    .padding(horizontal = dimens.gapL.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 for (row in modulos.chunked(3)) {
@@ -89,7 +89,10 @@ fun SoyUnabScreen(navController: NavController? = null) {
                                 navController = navController,
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(horizontal = 5.dp, vertical = 14.dp)
+                                    .padding(
+                                        horizontal = dimens.gapS.dp,
+                                        vertical = dimens.gapM.dp * 0.8f
+                                    )
                             )
                         }
                         repeat(3 - row.size) { Spacer(modifier = Modifier.weight(1f)) }
@@ -98,7 +101,7 @@ fun SoyUnabScreen(navController: NavController? = null) {
             }
         }
 
-        // Barra inferior
+        // Barra inferior fija
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -118,6 +121,7 @@ fun SoyUnabButton(
     navController: NavController?,
     modifier: Modifier = Modifier
 ) {
+    val dimens = LocalAppDimens.current
     val context = LocalContext.current
 
     Card(
@@ -130,6 +134,7 @@ fun SoyUnabButton(
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(destino))
                         context.startActivity(intent)
                     }
+
                     destino.startsWith("app:carnet") -> {
                         // Intento abrir la app del carnet
                         val appPackage = "com.veriddica.vecard"
@@ -138,7 +143,6 @@ fun SoyUnabButton(
                         if (launchIntent != null) {
                             context.startActivity(launchIntent)
                         } else {
-                            // Si no está instalada, abre la página de Play Store
                             val playIntent = Intent(
                                 Intent.ACTION_VIEW,
                                 Uri.parse("https://play.google.com/store/apps/details?id=$appPackage")
@@ -146,7 +150,6 @@ fun SoyUnabButton(
                             try {
                                 context.startActivity(playIntent)
                             } catch (e: ActivityNotFoundException) {
-                                // fallback: abre navegador
                                 context.startActivity(
                                     Intent(
                                         Intent.ACTION_VIEW,
@@ -156,8 +159,9 @@ fun SoyUnabButton(
                             }
                         }
                     }
+
                     destino.startsWith("nav:") -> {
-                        // Navegación interna a otras screens
+                        // Navegación interna
                         val route = destino.removePrefix("nav:")
                         navController?.navigate(route)
                     }
@@ -169,7 +173,7 @@ fun SoyUnabButton(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                .padding(dimens.gapS.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -177,14 +181,14 @@ fun SoyUnabButton(
                 painter = painterResource(id = icono),
                 contentDescription = texto,
                 modifier = Modifier
-                    .size(55.dp)
-                    .padding(bottom = 8.dp)
+                    .size((dimens.logoSize * 0.6f).dp)
+                    .padding(bottom = dimens.gapS.dp)
             )
             Text(
                 text = texto,
                 fontFamily = font,
                 color = Color.White,
-                fontSize = 15.sp,
+                fontSize = (dimens.body * 1.1f).sp,
                 fontWeight = FontWeight.Bold
             )
         }
