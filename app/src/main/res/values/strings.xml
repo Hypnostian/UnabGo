@@ -4,6 +4,21 @@
     <string name="loading">Cargando...</string>
     <string name="back">Volver</string>
 
+    <!-- Subtítulos dinámicos para el HeaderBar -->
+    <string name="header_exploring">Explorando</string>
+    <string name="header_checking">Checking-bus</string>
+    <string name="header_announcements">Avisos UNAB</string>
+    <string name="header_teachers">Docentes</string>
+    <string name="header_study_material">Material de estudio</string>
+    <string name="header_calculator">Calculadora</string>
+    <string name="header_schedule">Horario</string>
+    <string name="header_map">Mapa UNAB</string>
+    <string name="header_biblioteca">Biblioteca</string>
+    <string name="header_cosmos">Cosmos</string>
+    <string name="header_tema">Tema UNAB</string>
+    <string name="header_portal">Mi Portal U</string>
+
+
     <!-- Pantalla principal -->
     <string name="main_title">UNAB GO!</string>
     <string name="main_button_1">Quiero ser UNAB</string>
@@ -34,7 +49,7 @@
     <string name="cosmos">Cosmos</string>
     <string name="teachers">Docentes</string>
     <string name="announcements">Avisos</string>
-    <string name="study_material">Material de estudio</string>
+    <string name="study_material">M. estudio</string>
     <string name="calculator">Calculadora</string>
     <string name="map">Mapa UNAB</string>
     <string name="mi_portal_u">Mi Portal U</string>

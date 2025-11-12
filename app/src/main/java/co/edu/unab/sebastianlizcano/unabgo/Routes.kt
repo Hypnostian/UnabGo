@@ -9,4 +9,13 @@ object Routes {
     const val CREDITOS = "creditos"
     const val ACTUALIZACIONES = "actualizaciones"
     const val POLITICADATOS = "politicadatos"
+    const val SOY_UNAB = "soyunab"
+    const val MATERIAL_ESTUDIO = "materialestudio"
+    const val CHECKING = "checking"
+    const val AVISOS = "avisos"
+    const val DOCENTES = "docentes"
+    const val CALCULADORA = "calculadora"
+    const val HORARIO = "horario"
+    const val MAPA = "mapa"
+
 }

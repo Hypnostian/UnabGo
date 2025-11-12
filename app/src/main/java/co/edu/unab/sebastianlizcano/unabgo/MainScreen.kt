@@ -99,7 +99,7 @@ fun MainScreen(
 
                 // BOTÓN 2 - Soy UNAB
                 Button(
-                    onClick = onSoyUnabClick,
+                    onClick = { navController.navigate(Routes.SOY_UNAB) },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White,
                         contentColor = Color(0xFF490077)

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "877112006375",
+    "project_id": "unabgo",
+    "storage_bucket": "unabgo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:877112006375:android:9095a08185108e29bb7442",
+        "android_client_info": {
+          "package_name": "co.edu.unab.sebastianlizcano.unabgo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "877112006375-n5hruhps2ekf5g3itpjutak165i9ubqh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.edu.unab.sebastianlizcano.unabgo",
+            "certificate_hash": "0e8c17a4ea49e4a6d35ba2bbc1c600fa25296ec0"
+          }
+        },
+        {
+          "client_id": "877112006375-gq0cs5v3kujhr1sa0gltma2rt4rie6co.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgNzgoRghY1TBa4aleWlc9zR8y8GMVtXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "877112006375-gq0cs5v3kujhr1sa0gltma2rt4rie6co.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

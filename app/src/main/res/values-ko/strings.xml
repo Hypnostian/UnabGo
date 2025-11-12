@@ -4,6 +4,20 @@
     <string name="loading">로딩 중...</string>
     <string name="back">뒤로가기</string>
 
+    <!-- HeaderBar용 동적 부제목 -->
+    <string name="header_exploring">탐색 중</string>
+    <string name="header_checking">체킹-버스</string>
+    <string name="header_announcements">UNAB 공지사항</string>
+    <string name="header_teachers">교수진</string>
+    <string name="header_study_material">학습 자료</string>
+    <string name="header_calculator">계산기</string>
+    <string name="header_schedule">시간표</string>
+    <string name="header_map">UNAB 지도</string>
+    <string name="header_biblioteca">도서관</string>
+    <string name="header_cosmos">Cosmos</string>
+    <string name="header_tema">TEMA UNAB</string>
+    <string name="header_portal">Mi Portal U</string>
+
     <!-- 메인 화면 -->
     <string name="main_title">UNAB GO!</string>
     <string name="main_button_1">UNAB이 되고 싶어요</string>

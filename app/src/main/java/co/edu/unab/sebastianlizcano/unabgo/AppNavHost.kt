@@ -50,5 +50,17 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
         composable(Routes.CREDITOS) {
             CreditosScreen(navController = navController)
         }
+        composable(Routes.SOY_UNAB) {
+            SoyUnabScreen(navController = navController)
+        }
+        /*
+        composable(Routes.MATERIAL_ESTUDIO) { MaterialEstudioScreen(navController) }
+        composable(Routes.CALCULADORA) { CalculadoraScreen(navController) }
+        composable(Routes.HORARIO) { HorarioScreen(navController) }
+        composable(Routes.AVISOS) { AvisosScreen(navController) }
+        composable(Routes.DOCENTES) { DocentesScreen(navController) }
+        composable(Routes.CHECKING) { CheckingScreen(navController) }
+        composable(Routes.MAPA) { MapaScreen(navController) }
+         */
     }
 }

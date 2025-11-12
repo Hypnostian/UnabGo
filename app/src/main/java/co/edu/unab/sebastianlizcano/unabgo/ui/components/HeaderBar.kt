@@ -24,6 +24,7 @@ import co.edu.unab.sebastianlizcano.unabgo.R
 fun HeaderBar(
     navController: NavController? = null,
     modifier: Modifier = Modifier,
+    subtitleRes: Int = R.string.header_exploring,
     onBackClick: () -> Unit = { navController?.popBackStack("main", inclusive = false) }
 ) {
     val openSans = FontFamily(Font(R.font.open_sans_regular))
@@ -33,7 +34,7 @@ fun HeaderBar(
             .fillMaxWidth()
             .height(140.dp)
     ) {
-        // Fondo de encabezado
+        // Fondo
         Image(
             painter = painterResource(id = R.drawable.rectangle_6),
             contentDescription = "Encabezado UNAB GO",
@@ -41,7 +42,7 @@ fun HeaderBar(
             contentScale = ContentScale.FillBounds
         )
 
-        // Botón decorativo
+        // Flecha y botón decorativo
         Image(
             painter = painterResource(id = R.drawable.button1),
             contentDescription = "Decoración encabezado",
@@ -50,8 +51,6 @@ fun HeaderBar(
                 .padding(start = 20.dp, top = 20.dp)
                 .size(36.dp)
         )
-
-        // Flecha atrás
         Image(
             painter = painterResource(id = R.drawable.flecha),
             contentDescription = "Volver atrás",
@@ -62,7 +61,7 @@ fun HeaderBar(
                 .clickable { onBackClick() }
         )
 
-        // Logo y título principal
+        // Contenido central (subtítulo arriba, UNAB GO! abajo)
         Row(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -78,17 +77,31 @@ fun HeaderBar(
                 contentScale = ContentScale.Fit
             )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(10.dp))
 
-            Text(
-                text = stringResource(R.string.main_title),
-                style = TextStyle(
-                    fontSize = 36.sp,
-                    fontFamily = openSans,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+            Column(horizontalAlignment = Alignment.Start) {
+                // Subtítulo dinámico
+                Text(
+                    text = stringResource(subtitleRes).uppercase(),
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontFamily = openSans,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White.copy(alpha = 0.95f)
+                    )
                 )
-            )
+
+                // Título principal (UNAB GO!)
+                Text(
+                    text = "UNAB GO!",
+                    style = TextStyle(
+                        fontSize = 34.sp,
+                        fontFamily = openSans,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+            }
         }
     }
 }

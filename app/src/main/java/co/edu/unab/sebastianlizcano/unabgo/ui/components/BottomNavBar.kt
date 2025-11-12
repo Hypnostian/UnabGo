@@ -78,8 +78,8 @@ fun BottomNavBar(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.clickable {
-                    navController?.navigate("main") {
-                        popUpTo("main") { inclusive = true }
+                    navController?.navigate("soyunab") {
+                        popUpTo("soyunab") { inclusive = true }
                     }
                 }
             ) {

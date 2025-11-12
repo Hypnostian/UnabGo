@@ -1,51 +1,95 @@
 package co.edu.unab.sebastianlizcano.unabgo
 
+import android.content.Context
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.*
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.delay
+
+private lateinit var auth: FirebaseAuth
+private lateinit var googleSignInClient: GoogleSignInClient
 
 @Composable
 fun LoginScreen(
     navController: NavController? = null,
-    onBackClick: () -> Unit = {},
-    onForgotPassword: () -> Unit = {}
+    onBackClick: () -> Unit = {}
 ) {
     val purpleTop = Color(0xFF8700DD)
     val purpleBottom = Color(0xFF490077)
     val purpleText = Color(0xFF490077)
+    val openSans = FontFamily(Font(R.font.open_sans_regular))
+    val context = LocalContext.current
 
-    val openSans = FontFamily(
-        Font(R.font.open_sans_regular, weight = FontWeight.Normal, style = FontStyle.Normal),
-    )
+    auth = FirebaseAuth.getInstance()
 
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    // Redirigir automáticamente si ya está logueado
+    val currentUser = auth.currentUser
+    LaunchedEffect(currentUser) {
+        if (currentUser != null) {
+            delay(400)
+            navController?.navigate(Routes.PERFIL) {
+                popUpTo(Routes.LOGIN) { inclusive = true }
+            }
+        }
+    }
+
+    // Configurar Google Sign-In
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken(context.getString(R.string.default_web_client_id))
+        .requestEmail()
+        .build()
+
+    googleSignInClient = GoogleSignIn.getClient(context, gso)
+
+    // Launcher para el inicio de sesión con Google
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.result
+            val email = account.email ?: ""
+            if (email.endsWith("@unab.edu.co")) {
+                firebaseAuthWithGoogle(context, account.idToken!!, navController)
+            } else {
+                Toast.makeText(context, "Solo se permiten cuentas @unab.edu.co", Toast.LENGTH_LONG).show()
+                auth.signOut()
+                googleSignInClient.signOut()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(context, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -66,7 +110,7 @@ fun LoginScreen(
             )
         }
 
-        // Contenido centrado verticalmente
+        // Contenido principal
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -74,7 +118,7 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo + texto
+            // Logo UNAB GO
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
@@ -95,127 +139,84 @@ fun LoginScreen(
                 )
             }
 
-            Spacer(Modifier.height(120.dp))
+            Spacer(Modifier.height(50.dp))
 
-            // Búho + campo Usuario
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+            // Banu tocando el botón (unidos visualmente)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                PillField(
-                    value = username,
-                    onValueChange = { username = it },
-                    placeholder = stringResource(R.string.login_user),
-                    textStyle = TextStyle(
-                        fontFamily = openSans,
-                        fontSize = 24.sp,
-                        color = purpleText,
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(65.dp)
-                )
-
                 Image(
                     painter = painterResource(id = R.drawable.medbanu),
                     contentDescription = "Búho Banu",
                     modifier = Modifier
-                        .size(180.dp)
-                        .offset(y = (-30).dp),
+                        .size(210.dp)
+                        .offset(y = 65.dp), // Banu ligeramente sobre el botón
                     contentScale = ContentScale.Fit
                 )
+
+                Button(
+                    onClick = {
+                        val signInIntent = googleSignInClient.signInIntent
+                        launcher.launch(signInIntent)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = purpleText
+                    ),
+                    shape = RoundedCornerShape(30.dp),
+                    modifier = Modifier
+                        .width(280.dp)
+                        .height(55.dp)
+                        .offset(y = (-35).dp) // Subimos el botón para que Banu lo toque
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_google),
+                            contentDescription = "Google",
+                            modifier = Modifier
+                                .size(28.dp)
+                                .padding(end = 8.dp)
+                        )
+                        Text(
+                            text = "Iniciar sesión con Google",
+                            fontFamily = openSans,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 18.sp
+                        )
+                    }
+                }
             }
 
-            Spacer(Modifier.height(1.dp))
-
-            // Campo contraseña
-            PillField(
-                value = password,
-                onValueChange = { password = it },
-                placeholder = stringResource(R.string.login_password),
-                textStyle = TextStyle(
-                    fontFamily = openSans,
-                    fontSize = 24.sp,
-                    color = purpleText,
-                    textAlign = TextAlign.Center
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(65.dp)
-            )
-
-            Spacer(Modifier.height(30.dp))
-
-            // Botón Iniciar Sesión
-            Button(
-                onClick = { /* Acción de login aquí */ },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF490077),
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(30.dp),
-                modifier = Modifier
-                    .width(250.dp)
-                    .height(50.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.login_title),
-                    fontFamily = openSans,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp
-                )
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            // ¿Olvidaste tu contraseña?
+            // Texto informativo centrado
             Text(
-                text = stringResource(R.string.login_forgot_password),
+                text = "Recuerda que solo se puede iniciar sesión con tu correo universitario (@unab.edu.co)",
                 fontFamily = openSans,
                 fontSize = 14.sp,
                 color = Color.White,
-                modifier = Modifier.clickable { onForgotPassword() }
+                lineHeight = 20.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
     }
 }
 
-// Campo de texto tipo píldora centrado
-@Composable
-private fun PillField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-    textStyle: TextStyle,
-    modifier: Modifier = Modifier
-) {
-    val shape = RoundedCornerShape(58.dp)
-    Box(
-        modifier = modifier
-            .clip(shape)
-            .background(Color.White),
-        contentAlignment = Alignment.Center
-    ) {
-        BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
-            singleLine = true,
-            textStyle = textStyle,
-            decorationBox = { inner ->
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (value.isEmpty()) {
-                        Text(text = placeholder, style = textStyle)
-                    }
-                    inner()
+private fun firebaseAuthWithGoogle(context: Context, idToken: String, navController: NavController?) {
+    val credential = GoogleAuthProvider.getCredential(idToken, null)
+    FirebaseAuth.getInstance().signInWithCredential(credential)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val user = FirebaseAuth.getInstance().currentUser
+                Toast.makeText(context, "Bienvenido ${user?.displayName}", Toast.LENGTH_SHORT).show()
+                // Redirigir al Perfil y eliminar el login del stack
+                navController?.navigate(Routes.PERFIL) {
+                    popUpTo(Routes.LOGIN) { inclusive = true }
                 }
-            },
-            modifier = Modifier.fillMaxSize()
-        )
-    }
+            } else {
+                Toast.makeText(context, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
+            }
+        }
 }
 
 @Preview(showSystemUi = true, showBackground = true)
