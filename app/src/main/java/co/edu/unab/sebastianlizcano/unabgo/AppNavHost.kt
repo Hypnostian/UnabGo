@@ -53,6 +53,10 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
         composable(Routes.SOY_UNAB) {
             SoyUnabScreen(navController = navController)
         }
+        composable(Routes.CHECKING) {
+            CheckingScreen(navController = navController)
+        }
+
         /*
         composable(Routes.MATERIAL_ESTUDIO) { MaterialEstudioScreen(navController) }
         composable(Routes.CALCULADORA) { CalculadoraScreen(navController) }

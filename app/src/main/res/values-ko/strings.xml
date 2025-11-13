@@ -91,10 +91,8 @@
 \n\n앱에서 사용하는 모든 데이터는 학술 목적으로만 사용되며 제3자와 공유되지 않습니다.
 \n\n이 애플리케이션은 지원자, 학생 및 교사를 위한 정보와 지침, 도구를 제공하는 것을 목표로 합니다.</string>
 
-    <!-- 사용자 정보 -->
-    <string name="user_name_label">이름:</string>
-    <string name="user_id_label">사용자:</string>
-    <string name="user_role_label">역할:</string>
+    <!-- Checking-Bus -->
+    <string name="checking_add_capture">체킹 캡처 추가하기</string>
 
     <!-- 계산기 -->
     <string name="calculator_title">평균 계산기</string>

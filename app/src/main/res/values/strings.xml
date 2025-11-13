@@ -92,10 +92,8 @@
 \n\nLos datos utilizados son únicamente de carácter académico y no se comparten con terceros.
 \n\nEl propósito de la aplicación es ofrecer información, orientación y herramientas de apoyo a aspirantes, estudiantes y docentes.</string>
 
-    <!-- Datos de usuario -->
-    <string name="user_name_label">Nombre:</string>
-    <string name="user_id_label">Usuario:</string>
-    <string name="user_role_label">Rol:</string>
+    <!-- Checking-Bus -->
+    <string name="checking_add_capture">Agregar una captura de tu checking</string>
 
     <!-- Calculadora -->
     <string name="calculator_title">Calculadora de Promedios</string>

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.BottomNavBar
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun SoyUnabScreen(navController: NavController? = null) {
@@ -136,10 +137,19 @@ fun SoyUnabButton(
                     }
 
                     destino.startsWith("app:carnet") -> {
-                        // Intento abrir la app del carnet
+
+                        // 🔐 Verificar si hay usuario logueado
+                        val currentUser = FirebaseAuth.getInstance().currentUser
+                        if (currentUser == null) {
+                            // Si NO está logueado → redirigir a Login
+                            navController?.navigate(Routes.LOGIN)
+                            return@clickable
+                        }
+
+                        // Si está logueado → abrir la app del carnet
                         val appPackage = "com.veriddica.vecard"
-                        val launchIntent =
-                            context.packageManager.getLaunchIntentForPackage(appPackage)
+                        val launchIntent = context.packageManager.getLaunchIntentForPackage(appPackage)
+
                         if (launchIntent != null) {
                             context.startActivity(launchIntent)
                         } else {
@@ -147,6 +157,7 @@ fun SoyUnabButton(
                                 Intent.ACTION_VIEW,
                                 Uri.parse("https://play.google.com/store/apps/details?id=$appPackage")
                             )
+
                             try {
                                 context.startActivity(playIntent)
                             } catch (e: ActivityNotFoundException) {
@@ -159,6 +170,7 @@ fun SoyUnabButton(
                             }
                         }
                     }
+
 
                     destino.startsWith("nav:") -> {
                         // Navegación interna

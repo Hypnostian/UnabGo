@@ -2,6 +2,7 @@ package co.edu.unab.sebastianlizcano.unabgo
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -30,6 +32,21 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //OBTENER TOKEN FCM — ACTIVAR CLOUD MESSAGING
+
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.e("UNABGO", "Error obteniendo token FCM", task.exception)
+                    return@addOnCompleteListener
+                }
+
+                val token = task.result
+                Log.d("UNABGO", "TOKEN FCM: $token")
+            }
+
+
         setContent {
 
             // Se ejecuta dentro de un Composable

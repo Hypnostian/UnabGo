@@ -91,10 +91,8 @@
 \n\nOs dados utilizados são apenas de caráter acadêmico e não são compartilhados com terceiros.
 \n\nO aplicativo visa fornecer informações, orientação e ferramentas para candidatos, estudantes e professores.</string>
 
-    <!-- Dados do usuário -->
-    <string name="user_name_label">Nome:</string>
-    <string name="user_id_label">Usuário:</string>
-    <string name="user_role_label">Função:</string>
+    <!-- Checking-Bus -->
+    <string name="checking_add_capture">Adicionar uma captura do seu checking</string>
 
     <!-- Calculadora -->
     <string name="calculator_title">Calculadora de Médias</string>

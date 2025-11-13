@@ -91,10 +91,8 @@
 \n\nAll data handled within the app is academic and not shared with third parties.
 \n\nThe app aims to provide information, guidance, and tools for applicants, students, and teachers.</string>
 
-    <!-- User Data -->
-    <string name="user_name_label">Name:</string>
-    <string name="user_id_label">User:</string>
-    <string name="user_role_label">Role:</string>
+    <!-- Checking-Bus -->
+    <string name="checking_add_capture">Add a capture of your checking</string>
 
     <!-- GPA Calculator -->
     <string name="calculator_title">GPA Calculator</string>

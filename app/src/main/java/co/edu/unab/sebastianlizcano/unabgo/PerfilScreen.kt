@@ -157,7 +157,7 @@ fun PerfilScreen(navController: NavController? = null) {
                         text = "Cerrar sesión",
                         fontFamily = openSans,
                         fontWeight = FontWeight.Medium,
-                        fontSize = (dimens.body * 1.1f).sp
+                        fontSize = (dimens.body * 0.8f).sp
                     )
                 }
 

@@ -91,10 +91,8 @@
 \n\nLes données utilisées sont exclusivement de nature académique et ne sont pas partagées avec des tiers.
 \n\nL’application vise à offrir des informations, des conseils et des outils aux candidats, étudiants et professeurs.</string>
 
-    <!-- Données utilisateur -->
-    <string name="user_name_label">Nom :</string>
-    <string name="user_id_label">Utilisateur :</string>
-    <string name="user_role_label">Rôle :</string>
+    <!-- Checking-Bus -->
+    <string name="checking_add_capture">Ajouter une capture de votre checking</string>
 
     <!-- Calculatrice -->
     <string name="calculator_title">Calculatrice de Moyenne</string>
