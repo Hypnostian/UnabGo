@@ -68,6 +68,10 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
             val url = it.arguments?.getString("url")
             NewsWebScreen(navController = navController, url = url)
         }
+        composable(Routes.MATERIAL_ESTUDIO) {
+            MaterialEstudioScreen(navController = navController)
+        }
+
 
 
         /*composable(
