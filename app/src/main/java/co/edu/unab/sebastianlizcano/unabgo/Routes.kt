@@ -13,6 +13,8 @@ object Routes {
     const val MATERIAL_ESTUDIO = "materialestudio"
     const val CHECKING = "checking"
     const val AVISOS = "avisos"
+    const val NEWS_WEB = "newsWeb"
+
     const val DOCENTES = "docentes"
     const val CALCULADORA = "calculadora"
     const val HORARIO = "horario"

@@ -112,15 +112,14 @@
     <string name="library_text">La Bibliothèque Centrale de l\'UNAB est un espace d\'apprentissage et de recherche. Elle offre un environnement moderne et calme avec accès à des collections physiques et numériques.</string>
 
     <!-- Annonces -->
-    <string name="notice_1_title">Maintenance de la Plateforme Éducative</string>
-    <string name="notice_1_body">La plateforme éducative sera indisponible pour maintenance du vendredi 5 mai au jeudi 11 mai.</string>
-    <string name="notice_2_title">Atelier d\'Innovation et de Créativité</string>
-    <string name="notice_2_body">Participez à l\'atelier ce mardi 22 avril à 10h00 au Laboratoire de Design. Places limitées !</string>
-    <string name="notice_3_title">Mise à jour du Menu du Foyer UNAB</string>
-    <string name="notice_3_body">Le menu comprendra désormais des options véganes et sans gluten.</string>
-    <string name="notice_4_title">Journée de Don du Sang</string>
-    <string name="notice_5_title">Conférences sur la Démocratie et la Constitutionnalité</string>
-
+    <string name="category_institucional">Institutionnel</string>
+    <string name="category_investigacion">Science et Recherche</string>
+    <string name="category_salud">Santé et Technologie</string>
+    <string name="category_ingenieria">Ingénierie et Innovation</string>
+    <string name="category_cultura">Culture et Humanités</string>
+    <string name="category_derecho">Droit, Économie et Affaires</string>
+    <string name="category_impacto">Impact Social</string>
+    <string name="choose_category_message">Veuillez sélectionner une catégorie pour consulter les actualités disponibles.</string>
     <!-- Barre inférieure -->
     <string name="bottom_home">Accueil</string>
     <string name="bottom_banu">Banu-IA</string>

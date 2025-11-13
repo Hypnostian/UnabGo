@@ -1,6 +1,8 @@
 package co.edu.unab.sebastianlizcano.unabgo
 
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -33,8 +35,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //OBTENER TOKEN FCM — ACTIVAR CLOUD MESSAGING
-
+        // =====================================================
+        // 🔥 OBTENER TOKEN FCM — NECESARIO PARA MENÚ MESSAGING
+        // =====================================================
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
@@ -46,13 +49,22 @@ class MainActivity : ComponentActivity() {
                 Log.d("UNABGO", "TOKEN FCM: $token")
             }
 
+        // PEDIR PERMISO DE NOTIFICACIONES (Android 13+)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val permission = android.Manifest.permission.POST_NOTIFICATIONS
+            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(permission), 1001)
+            }
+        }
+
+        // INTERFAZ COMPOSE
 
         setContent {
 
-            // Se ejecuta dentro de un Composable
             val windowSizeClass = calculateWindowSizeClass(activity = this)
 
-            // Configurar escala y dimensiones según el tamaño
+            // Dimensiones responsive según tamaño de pantalla
             val (fontScale, dimens) = when (windowSizeClass.widthSizeClass) {
                 WindowWidthSizeClass.Compact -> 0.92f to AppDimens(
                     titleXL = 38f,

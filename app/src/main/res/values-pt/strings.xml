@@ -112,14 +112,14 @@
     <string name="library_text">A Biblioteca Central da UNAB é um espaço de aprendizado e pesquisa. Oferece um ambiente moderno e silencioso com acesso a coleções físicas e digitais.</string>
 
     <!-- Avisos -->
-    <string name="notice_1_title">Manutenção da Plataforma Educacional</string>
-    <string name="notice_1_body">A plataforma educacional ficará fora do ar para manutenção de sexta-feira, 5 de maio, até quinta-feira, 11 de maio.</string>
-    <string name="notice_2_title">Oficina de Inovação e Criatividade</string>
-    <string name="notice_2_body">Participe da oficina nesta terça-feira, 22 de abril, às 10h no Laboratório de Design. Vagas limitadas!</string>
-    <string name="notice_3_title">Atualização do Cardápio do Refeitório UNAB</string>
-    <string name="notice_3_body">O cardápio agora inclui opções veganas e sem glúten.</string>
-    <string name="notice_4_title">Campanha de Doação de Sangue</string>
-    <string name="notice_5_title">Palestras sobre Democracia e Constitucionalidade</string>
+    <string name="category_institucional">Institucional</string>
+    <string name="category_investigacion">Ciência e Pesquisa</string>
+    <string name="category_salud">Saúde e Tecnologia</string>
+    <string name="category_ingenieria">Engenharia e Inovação</string>
+    <string name="category_cultura">Cultura e Humanidades</string>
+    <string name="category_derecho">Direito, Economia e Negócios</string>
+    <string name="category_impacto">Impacto Social</string>
+    <string name="choose_category_message">Selecione uma categoria para visualizar as notícias disponíveis.</string>
 
     <!-- Barra inferior -->
     <string name="bottom_home">Início</string>

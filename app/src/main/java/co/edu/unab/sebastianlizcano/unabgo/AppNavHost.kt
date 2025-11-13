@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 
 @Composable
 fun AppNavHost(navController: NavHostController, startDestination: String = Routes.SPLASH) {
@@ -56,14 +57,29 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
         composable(Routes.CHECKING) {
             CheckingScreen(navController = navController)
         }
+        composable(Routes.AVISOS) {
+            AvisosScreen(navController)
+        }
 
-        /*
+        composable(
+            route = "newsWeb?url={url}",
+            arguments = listOf(navArgument("url") { defaultValue = "" })
+        ) {
+            val url = it.arguments?.getString("url")
+            NewsWebScreen(navController = navController, url = url)
+        }
+
+
+        /*composable(
+            route = "newsDetail/{newsId}"
+        ) { backStackEntry ->
+            val newsId = backStackEntry.arguments?.getString("newsId") ?: ""
+            NewsDetailScreen(navController, newsId)
+        }
         composable(Routes.MATERIAL_ESTUDIO) { MaterialEstudioScreen(navController) }
         composable(Routes.CALCULADORA) { CalculadoraScreen(navController) }
         composable(Routes.HORARIO) { HorarioScreen(navController) }
-        composable(Routes.AVISOS) { AvisosScreen(navController) }
         composable(Routes.DOCENTES) { DocentesScreen(navController) }
-        composable(Routes.CHECKING) { CheckingScreen(navController) }
         composable(Routes.MAPA) { MapaScreen(navController) }
          */
     }

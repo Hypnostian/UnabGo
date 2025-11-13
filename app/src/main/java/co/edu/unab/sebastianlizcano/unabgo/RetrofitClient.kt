@@ -7,14 +7,14 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    // 🔹 Cliente HTTP con timeout de 5 minutos (300 segundos)
+    //Cliente HTTP con timeout de 5 minutos (300 segundos)
     private val client = OkHttpClient.Builder()
         .connectTimeout(300, TimeUnit.SECONDS) // conexión
         .readTimeout(300, TimeUnit.SECONDS)    // lectura
         .writeTimeout(300, TimeUnit.SECONDS)   // escritura
         .build()
 
-    // 🔹 Retrofit configurado para la UNAB
+    //Retrofit configurado para la UNAB
     val api: UnabApiService by lazy {
         Retrofit.Builder()
             .baseUrl("https://unab.edu.co/") // dominio raíz con "/" al final

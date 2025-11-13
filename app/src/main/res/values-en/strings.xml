@@ -112,14 +112,14 @@
     <string name="library_text">The UNAB Central Library is a space for learning and research. It offers a modern and quiet environment with access to physical and digital collections.</string>
 
     <!-- Announcements -->
-    <string name="notice_1_title">Educational Platform Maintenance</string>
-    <string name="notice_1_body">The educational platform will be down for maintenance from Friday, May 5th to Thursday, May 11th.</string>
-    <string name="notice_2_title">Innovation and Creativity Workshop</string>
-    <string name="notice_2_body">Join the workshop this Tuesday, April 22nd at 10:00 a.m. in the Design Lab. Limited seats available!</string>
-    <string name="notice_3_title">Hostal UNAB Menu Update</string>
-    <string name="notice_3_body">The menu will now include vegan and gluten-free options.</string>
-    <string name="notice_4_title">Blood Donation Day</string>
-    <string name="notice_5_title">Talks on Democracy and Constitutionality</string>
+    <string name="category_institucional">Institutional</string>
+    <string name="category_investigacion">Research and Innovation</string>
+    <string name="category_salud">Health and Technology</string>
+    <string name="category_ingenieria">Engineering and Innovation</string>
+    <string name="category_cultura">Culture and Humanities</string>
+    <string name="category_derecho">Law, Economics and Business</string>
+    <string name="category_impacto">Social Impact</string>
+    <string name="choose_category_message">Please select a category to view the available news.</string>
 
     <!-- Bottom Navigation -->
     <string name="bottom_home">Home</string>

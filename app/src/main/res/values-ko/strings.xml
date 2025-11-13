@@ -112,15 +112,14 @@
     <string name="library_text">UNAB 중앙 도서관은 학습과 연구를 위한 공간입니다. 물리적 및 디지털 자료에 접근할 수 있는 현대적이고 조용한 환경을 제공합니다.</string>
 
     <!-- 공지사항 -->
-    <string name="notice_1_title">교육 플랫폼 점검</string>
-    <string name="notice_1_body">교육 플랫폼은 5월 5일(금)부터 5월 11일(목)까지 점검으로 인해 사용할 수 없습니다.</string>
-    <string name="notice_2_title">혁신 및 창의성 워크숍</string>
-    <string name="notice_2_body">4월 22일(화) 오전 10시에 디자인 연구소에서 열리는 워크숍에 참여하세요. 인원 제한이 있습니다!</string>
-    <string name="notice_3_title">UNAB 식당 메뉴 변경</string>
-    <string name="notice_3_body">이제 메뉴에 비건 및 글루텐 프리 옵션이 포함됩니다.</string>
-    <string name="notice_4_title">헌혈의 날</string>
-    <string name="notice_5_title">민주주의와 헌법 강연</string>
-
+    <string name="category_institucional">기관 소식</string>
+    <string name="category_investigacion">연구 및 혁신</string>
+    <string name="category_salud">보건 및 기술</string>
+    <string name="category_ingenieria">공학 및 혁신</string>
+    <string name="category_cultura">문화 및 인문학</string>
+    <string name="category_derecho">법학, 경제 및 비즈니스</string>
+    <string name="category_impacto">사회적 영향</string>
+    <string name="choose_category_message">이용 가능한 최신 소식을 보려면 카테고리를 선택해주세요.</string>
     <!-- 하단 탐색 바 -->
     <string name="bottom_home">홈</string>
     <string name="bottom_banu">Banu-AI</string>
