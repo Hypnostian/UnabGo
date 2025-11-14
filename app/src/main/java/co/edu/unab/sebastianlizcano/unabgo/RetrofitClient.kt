@@ -1,5 +1,6 @@
 package co.edu.unab.sebastianlizcano.unabgo
 
+import co.edu.unab.sebastianlizcano.unabgo.FutureImplementation.UnabApiService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

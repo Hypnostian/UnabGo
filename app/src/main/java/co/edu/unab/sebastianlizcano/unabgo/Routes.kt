@@ -20,4 +20,10 @@ object Routes {
     const val HORARIO = "horario"
     const val MAPA = "mapa"
 
+    // Crear/editar materia
+    const val SUBJECT_EDITOR = "subjectEditor"
+    const val SUBJECT_EDITOR_WITH_ID = "subjectEditor/{subjectId}"
+
+    // Detalle de notas
+    const val CALCULADORA_DETALLE = "calculatorDetail/{subjectId}"
 }

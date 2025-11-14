@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -108,4 +109,9 @@ dependencies {
     // Detectar el QR (ML Kit) / Lanzar el selector de imágenes (Activity Result API) /
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
     implementation("androidx.activity:activity-compose:1.9.2")
+
+    val roomVersion = "2.8.3"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
 }

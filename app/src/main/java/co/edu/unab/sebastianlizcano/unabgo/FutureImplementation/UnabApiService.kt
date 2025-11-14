@@ -1,4 +1,4 @@
-package co.edu.unab.sebastianlizcano.unabgo
+package co.edu.unab.sebastianlizcano.unabgo.FutureImplementation
 
 import retrofit2.http.GET
 import retrofit2.http.Query
