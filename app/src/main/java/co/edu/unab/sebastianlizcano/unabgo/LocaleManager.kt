@@ -10,13 +10,13 @@ object LocaleManager {
     private const val PREF_NAME = "app_prefs"
     private const val KEY_LANGUAGE = "language"
 
-    // ✅ Permite aplicar idioma directamente (usado por PerfilScreen)
+    //  Permite aplicar idioma directamente (usado por PerfilScreen)
     fun setLocale(context: Context, languageCode: String): Context {
         saveLanguage(context, languageCode)
         return updateResources(context, languageCode)
     }
 
-    // ✅ Carga el idioma guardado (usado en MainActivity)
+    //  Carga el idioma guardado (usado en MainActivity)
     fun loadLocale(context: Context, langCode: String? = null): Context {
         val language = langCode ?: getSavedLanguage(context)
         return updateResources(context, language)

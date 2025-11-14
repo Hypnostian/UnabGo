@@ -86,7 +86,7 @@ fun MaterialEstudioScreen(navController: NavController? = null) {
                 ),
                 Triple(
                     stringResource(R.string.programs_virtual),
-                    "https://drive.google.com/drive/folders/1jLOjP45O3kugfLcpSeMaYVmsb52DbEha?usp=sharing",
+                    "https://drive.google.com/drive/folders/14DFtoee9Qtph4xpMusPbvDc8zZlJKF1C?usp=sharing",
                     R.drawable.virtualog
                 )
             )

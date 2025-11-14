@@ -1,4 +1,4 @@
-package co.edu.unab.sebastianlizcano.unabgo
+package co.edu.unab.sebastianlizcano.unabgo.FutureImplementation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

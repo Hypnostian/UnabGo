@@ -84,6 +84,16 @@
     <string name="updates_title">버전 1.0 — 2025년 11월</string>
     <string name="updates_content">UNAB GO!의 첫 공식 버전입니다. UNAB의 지원자, 학생 및 교사를 위해 설계되었습니다.
 \n\n현재 기능:\n• Firebase 로그인.\n• 주요 섹션 탐색 (홈, UNAB 되기, Banu-IA, 프로필).\n• 인터랙티브 Banu-IA 섹션.\n• 학술 프로그램 바로가기.\n• 다국어 지원.\n• 크레딧 섹션.\n\n예정된 업데이트:\n• 사용자 맞춤 알림.\n• 스마트 AI 채팅.\n• “나는 UNAB” 학생 섹션.\n• 캠퍼스 인터랙티브 지도.</string>
+    <string name="updates_11_content">
+이번 버전에는 다음이 포함됩니다:
+
+• 프로필 화면 수정.
+• “로그아웃” 및 누락된 텍스트 전체 번역.
+• 동적 언어 텍스트 지원 추가.
+• 전체 시스템 안정성 향상.
+• UI 업데이트 및 반응성 개선.
+
+</string>
 
     <!-- 데이터 정책 -->
     <string name="data_policy_title">데이터 및 개인정보 보호정책</string>
@@ -124,4 +134,16 @@
     <string name="bottom_home">홈</string>
     <string name="bottom_banu">Banu-AI</string>
     <string name="bottom_profile">프로필</string>
+
+    <string name="banu_header">Banu-AI</string>
+    <string name="banu_help_title">오늘 무엇을 도와드릴까요?</string>
+    <string name="banu_write_here">메시지를 입력하세요…</string>
+
+    <string name="credits_title">개발 크레딧</string>
+    <string name="credits_text">앱 개발:\n\n후안 세바스티안 리스카노 하이메스\n앤지 캐서린 수아레스 오르티스\n\n우나브 독립대학\n2025</string>
+    <string name="back_button">뒤로가기</string>
+    <string name="unab_logo">UNAB 로고</string>
+
+    <string name="profile_logout">로그아웃</string>
+    <string name="profile_session_closed">세션이 종료되었습니다</string>
 </resources>

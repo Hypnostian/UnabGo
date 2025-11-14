@@ -84,6 +84,16 @@
     <string name="updates_title">Version 1.0 — November 2025</string>
     <string name="updates_content">This is the first official release of UNAB GO!, designed for applicants, students, and teachers of UNAB.
 \n\nCurrent features:\n• Firebase Authentication login.\n• Navigation across main sections (Home, I Want to Be UNAB, Banu-AI, Profile).\n• Interactive Banu-AI section.\n• Direct access to academic programs.\n• Multilanguage support.\n• Credits section.\n\nUpcoming updates:\n• Custom notifications.\n• Smart AI chat.\n• “I’m UNAB” student section.\n• Interactive campus map.</string>
+    <string name="updates_11_content">
+This version includes:
+
+• Fixes in ProfileScreen.
+• Full translation of logout and missing texts.
+• New dynamic-language text support.
+• General system stability improvements.
+• UI updates and better responsiveness.
+
+</string>
 
     <!-- Data Policy -->
     <string name="data_policy_title">Data and Privacy Policy</string>
@@ -125,4 +135,16 @@
     <string name="bottom_home">Home</string>
     <string name="bottom_banu">Banu-AI</string>
     <string name="bottom_profile">Profile</string>
+
+    <string name="banu_header">Banu-AI</string>
+    <string name="banu_help_title">How can I help you today?</string>
+    <string name="banu_write_here">Type a message…</string>
+
+    <string name="credits_title">Development Credits</string>
+    <string name="credits_text">Application developed by:\n\nJuan Sebastián Lizcano Jaimes\nAngie Katherine Suarez Ortiz\n\nAutonomous University of Bucaramanga\n2025</string>
+    <string name="back_button">Go back</string>
+    <string name="unab_logo">UNAB Logo</string>
+
+    <string name="profile_logout">Log out</string>
+    <string name="profile_session_closed">Session closed</string>
 </resources>

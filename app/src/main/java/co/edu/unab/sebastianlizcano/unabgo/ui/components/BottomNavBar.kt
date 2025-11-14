@@ -24,6 +24,7 @@ import co.edu.unab.sebastianlizcano.unabgo.R
 import co.edu.unab.sebastianlizcano.unabgo.LanguageDataStore
 import co.edu.unab.sebastianlizcano.unabgo.LocaleManager
 import co.edu.unab.sebastianlizcano.unabgo.LocalAppDimens
+import co.edu.unab.sebastianlizcano.unabgo.Routes
 import kotlinx.coroutines.launch
 
 @Composable
@@ -95,7 +96,7 @@ fun BottomNavBar(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.clickable {
-                    navController?.navigate("banuia") {
+                    navController?.navigate(Routes.BANU_IA) {
                         popUpTo("main") { inclusive = false }
                     }
                 }

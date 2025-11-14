@@ -1,3 +1,5 @@
+println("DEBUG GRADLE → KEY: ${project.findProperty("OLLAMA_API_KEY")}")
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -18,6 +20,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        //LEER EL API KEY DESDE local.properties Y PASARLO A BuildConfig
+        val ollamaKey = project.providers
+            .gradleProperty("OLLAMA_API_KEY")
+            .orNull ?: ""
+        buildConfigField("String", "OLLAMA_API_KEY", "\"$ollamaKey\"")
+
     }
 
     buildTypes {
@@ -41,6 +50,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true // activa llamados a local properties
     }
 
     composeOptions {
@@ -111,8 +121,12 @@ dependencies {
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
     implementation("androidx.activity:activity-compose:1.9.2")
 
+    // Base de Datos Local sirve en Horario y Calculadora
     val roomVersion = "2.8.3"
 
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
+
+    // Necesario para la IA
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

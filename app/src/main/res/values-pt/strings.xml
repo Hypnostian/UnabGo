@@ -84,6 +84,16 @@
     <string name="updates_title">Versão 1.0 — novembro de 2025</string>
     <string name="updates_content">Esta é a primeira versão oficial do UNAB GO!, desenvolvida para candidatos, estudantes e professores da UNAB.
 \n\nFuncionalidades atuais:\n• Login com Firebase Authentication.\n• Navegação principal (Início, Quero ser UNAB, Banu-IA, Perfil).\n• Seção interativa Banu-IA.\n• Acesso direto a programas acadêmicos.\n• Suporte multilíngue.\n• Seção de créditos.\n\nPróximas atualizações:\n• Notificações personalizadas.\n• Chat inteligente de IA.\n• Seção “Sou UNAB”.\n• Mapa interativo do campus.</string>
+    <string name="updates_11_content">
+Esta versão inclui:
+
+• Correções na tela Perfil.
+• Tradução completa de “Sair” e textos faltantes.
+• Novo suporte para textos dinâmicos multilíngues.
+• Melhoria na estabilidade geral do sistema.
+• Atualizações visuais e melhor responsividade.
+
+</string>
 
     <!-- Política de Dados -->
     <string name="data_policy_title">Política de Dados e Privacidade</string>
@@ -125,4 +135,17 @@
     <string name="bottom_home">Início</string>
     <string name="bottom_banu">Banu-IA</string>
     <string name="bottom_profile">Perfil</string>
+
+    <string name="banu_header">Banu-IA</string>
+    <string name="banu_help_title">Como posso ajudar você hoje?</string>
+    <string name="banu_write_here">Escreva uma mensagem…</string>
+
+    <string name="credits_title">Créditos de desenvolvimento</string>
+    <string name="credits_text">Aplicativo desenvolvido por:\n\nJuan Sebastián Lizcano Jaimes\nAngie Katherine Suarez Ortiz\n\nUniversidade Autônoma de Bucaramanga\n2025</string>
+    <string name="back_button">Voltar</string>
+    <string name="unab_logo">Logo da UNAB</string>
+
+    <string name="profile_logout">Sair</string>
+    <string name="profile_session_closed">Sessão encerrada</string>
+
 </resources>

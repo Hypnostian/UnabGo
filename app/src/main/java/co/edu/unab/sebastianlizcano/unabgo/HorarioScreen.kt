@@ -50,7 +50,7 @@ fun HorarioScreen(
     val uiState by viewModel.uiState.collectAsState()
     val blocks by viewModel.getAllScheduleBlocks(user.uid).collectAsState(initial = emptyList())
 
-    // 🔥 Para eliminar materia
+    // Para eliminar materia
     var subjectToDelete by remember { mutableStateOf<SubjectEntity?>(null) }
 
     Scaffold(

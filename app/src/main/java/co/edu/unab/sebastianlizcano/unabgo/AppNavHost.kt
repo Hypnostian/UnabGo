@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.TeachersViewModel
 import co.edu.unab.sebastianlizcano.unabgo.data.local.UnabGoDatabase
 import co.edu.unab.sebastianlizcano.unabgo.data.repository.AcademicRepository
@@ -178,6 +179,29 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
                 navController = navController,
                 teacherId = teacherId,
                 teacherName = teacherName
+            )
+        }
+        composable(Routes.BANU_IA) {
+            BanuIAScreen(navController = navController)
+        }
+        composable(Routes.MAPA) {
+            MapaInteractivoScreen(navController = navController)
+        }
+
+        composable(
+            route = "${Routes.WEBVIEW_DETAIL}?url={url}&title={title}",
+            arguments = listOf(
+                navArgument("url") { type = NavType.StringType; nullable = false; defaultValue = "https://unab.edu.co" },
+                navArgument("title") { type = NavType.StringType; nullable = false; defaultValue = "Detalle" }
+            )
+        ) { backStackEntry ->
+            val url = backStackEntry.arguments?.getString("url") ?: "https://unab.edu.co"
+            val title = backStackEntry.arguments?.getString("title") ?: "Detalle"
+
+            WebViewDetailScreen(
+                navController = navController,
+                url = url,
+                title = title
             )
         }
 

@@ -51,7 +51,7 @@ fun CheckingScreen(navController: NavController? = null) {
 
     val user = FirebaseAuth.getInstance().currentUser
 
-    // 🔐 Redirigir si NO hay sesión
+    // Redirigir si NO hay sesión
     LaunchedEffect(Unit) {
         if (user == null) {
             navController?.navigate(Routes.LOGIN) {
@@ -69,7 +69,7 @@ fun CheckingScreen(navController: NavController? = null) {
     var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
     val scope = rememberCoroutineScope()
 
-    // 🔄 Cargar QR guardado del archivo interno
+    //  Cargar QR guardado del archivo interno
     LaunchedEffect(user.uid) {
         dataStore.getSavedQR(user.uid).collect { path ->
             path?.let {
@@ -78,7 +78,7 @@ fun CheckingScreen(navController: NavController? = null) {
         }
     }
 
-    // 🖼️ Seleccionar imagen desde galería
+    // Seleccionar imagen desde galería
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -162,7 +162,7 @@ fun CheckingScreen(navController: NavController? = null) {
 
                 Spacer(modifier = Modifier.height(25.dp))
 
-                // ❌ Eliminar QR
+                // Eliminar QR
                 Button(
                     onClick = {
                         scope.launch {
@@ -218,7 +218,7 @@ fun CheckingScreen(navController: NavController? = null) {
 }
 
 //
-// 🔧 MLKit + utilidades
+// MLKit + utilidades
 //
 
 // Evita crashes por coordenadas fuera de rango

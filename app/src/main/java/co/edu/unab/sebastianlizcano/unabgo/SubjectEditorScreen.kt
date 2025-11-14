@@ -55,7 +55,7 @@ fun SubjectEditorScreen(
 
     if (user == null) return
 
-    // 🔹 Bloques existentes del usuario (todas las materias)
+    // Bloques existentes del usuario (todas las materias)
     val existingBlocks by viewModel
         .getAllScheduleBlocks(user.uid)
         .collectAsState(initial = emptyList())
@@ -95,7 +95,7 @@ fun SubjectEditorScreen(
         (7..22).toList()
     }
 
-    // 🔹 Mensaje de conflicto de horario
+    // Mensaje de conflicto de horario
     var conflictMessage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -236,7 +236,7 @@ fun SubjectEditorScreen(
             SaveButton("Guardar materia") {
 
                 // ==========================================
-                // 🔍 VALIDACIÓN DE CHOQUES DE HORARIO
+                //  VALIDACIÓN DE CHOQUES DE HORARIO
                 // ==========================================
                 // Construimos los bloques NUEVOS que se quieren guardar
                 val candidateBlocks = selectedDays.map { day ->
@@ -266,7 +266,7 @@ fun SubjectEditorScreen(
                 }
 
                 // ==========================================
-                // ✅ SI NO HAY CONFLICTO, GUARDAMOS
+                //  SI NO HAY CONFLICTO, GUARDAMOS
                 // ==========================================
                 scope.launch {
 

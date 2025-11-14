@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -32,17 +33,14 @@ fun CreditosScreen(navController: NavController? = null) {
             .fillMaxSize()
             .background(Color(0xFF2F024C))
     ) {
-        // Flecha y botón decorativo (parte superior)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp, start = 20.dp)
         ) {
-
-            // Flecha atrás (vuelve al PerfilScreen)
             Image(
                 painter = painterResource(id = R.drawable.flecha),
-                contentDescription = "Volver atrás",
+                contentDescription = stringResource(R.string.back_button),
                 modifier = Modifier
                     .padding(start = 8.dp, top = 6.dp)
                     .size(20.dp)
@@ -53,7 +51,6 @@ fun CreditosScreen(navController: NavController? = null) {
             )
         }
 
-        // Contenido principal centrado
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -63,7 +60,7 @@ fun CreditosScreen(navController: NavController? = null) {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Logo UNAB",
+                contentDescription = stringResource(R.string.unab_logo),
                 modifier = Modifier
                     .size(100.dp)
                     .clip(RoundedCornerShape(20.dp)),
@@ -73,7 +70,7 @@ fun CreditosScreen(navController: NavController? = null) {
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "Créditos de desarrollo",
+                text = stringResource(R.string.credits_title),
                 style = TextStyle(
                     fontSize = 26.sp,
                     color = Color.White,
@@ -86,12 +83,11 @@ fun CreditosScreen(navController: NavController? = null) {
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Aplicación desarrollada por:\n\nJuan Sebastián Lizcano Jaimes\nAngie Katherine Suarez Ortiz\n\nUniversidad Autónoma de Bucaramanga\n2025",
+                text = stringResource(R.string.credits_text),
                 style = TextStyle(
                     fontSize = 18.sp,
                     color = Color.White,
-                    fontFamily = openSans,
-                    textAlign = TextAlign.Center
+                    fontFamily = openSans
                 ),
                 textAlign = TextAlign.Center
             )

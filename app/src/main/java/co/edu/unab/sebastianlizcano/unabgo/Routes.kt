@@ -27,4 +27,8 @@ object Routes {
     // Detalle de notas
     const val CALCULADORA_DETALLE = "calculatorDetail/{subjectId}"
     const val COMMENTS = "comments"
+    const val BANU_IA = "banu_ia"
+    const val WEBVIEW_DETAIL = "webview_detail"
+
+
 }

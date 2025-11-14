@@ -10,7 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -29,7 +29,12 @@ import androidx.navigation.NavController
 
 @Composable
 fun ActualizacionesScreen(navController: NavController? = null) {
+
     val openSans = FontFamily(Font(R.font.open_sans_regular))
+
+    // Estados expandibles
+    var v1Expanded by remember { mutableStateOf(false) }
+    var v11Expanded by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -37,7 +42,7 @@ fun ActualizacionesScreen(navController: NavController? = null) {
             .background(Color(0xFF2F024C))
     ) {
 
-        // Contenido principal (scroll)
+        // SCROLL COMPLETO
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -47,64 +52,88 @@ fun ActualizacionesScreen(navController: NavController? = null) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            // Encabezado con icono
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.actualiz),
-                    contentDescription = "Ícono Actualizaciones",
-                    modifier = Modifier
-                        .size(30.dp)
-                        .padding(end = 8.dp)
-                )
-                Text(
-                    text = stringResource(R.string.updates_title),
-                    style = TextStyle(
-                        fontSize = 24.sp,
-                        fontFamily = openSans,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    ),
-                    textAlign = TextAlign.Center
-                )
-            }
 
-            Spacer(Modifier.height(24.dp))
-
+            // ========= VERSION 1.1 =========
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .shadow(8.dp, RoundedCornerShape(16.dp)),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0x33FFFFFF)
-                ),
+                    .shadow(8.dp, RoundedCornerShape(16.dp))
+                    .clickable { v11Expanded = !v11Expanded }
+                    .padding(bottom = 24.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0x33FFFFFF)),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier.padding(20.dp)
                 ) {
+
                     Text(
-                        text = stringResource(R.string.updates_content),
+                        text = "Versión 1.1 — Noviembre 2025",
                         style = TextStyle(
-                            fontSize = 17.sp,
+                            fontSize = 24.sp,
                             fontFamily = openSans,
-                            color = Color.White,
-                            lineHeight = 26.sp
-                        ),
-                        textAlign = TextAlign.Start
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
                     )
+
+                    if (v11Expanded) {
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            text = stringResource(R.string.updates_11_content),
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontFamily = openSans,
+                                color = Color.White,
+                                lineHeight = 24.sp
+                            )
+                        )
+                    }
+                }
+            }
+
+            // ========= VERSION 1.0 =========
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(8.dp, RoundedCornerShape(16.dp))
+                    .clickable { v1Expanded = !v1Expanded },
+                colors = CardDefaults.cardColors(containerColor = Color(0x33FFFFFF)),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp)
+                ) {
+
+                    Text(
+                        text = "Versión 1.0 — Noviembre 2025",
+                        style = TextStyle(
+                            fontSize = 24.sp,
+                            fontFamily = openSans,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    )
+
+                    if (v1Expanded) {
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            text = stringResource(R.string.updates_content),
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontFamily = openSans,
+                                color = Color.White,
+                                lineHeight = 24.sp
+                            )
+                        )
+                    }
                 }
             }
 
             Spacer(Modifier.height(30.dp))
         }
 
-        // Capa superior: botón decorativo + flecha con área táctil amplia
+        // Botón de retroceso (capa superior)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -112,10 +141,9 @@ fun ActualizacionesScreen(navController: NavController? = null) {
                 .align(Alignment.TopStart)
         ) {
 
-            // Área táctil más grande que la imagen de la flecha
             Box(
                 modifier = Modifier
-                    .size(44.dp) // target cómodo para el dedo
+                    .size(44.dp)
                     .align(Alignment.TopStart)
                     .clickable { navController?.popBackStack() }
             ) {

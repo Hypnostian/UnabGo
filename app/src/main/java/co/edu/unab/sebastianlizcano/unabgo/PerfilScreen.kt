@@ -139,7 +139,11 @@ fun PerfilScreen(navController: NavController? = null) {
                 Button(
                     onClick = {
                         FirebaseAuth.getInstance().signOut()
-                        Toast.makeText(context, "Sesión cerrada", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.profile_session_closed),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         navController?.navigate(Routes.LOGIN) {
                             popUpTo(Routes.PERFIL) { inclusive = true }
                         }
@@ -154,7 +158,7 @@ fun PerfilScreen(navController: NavController? = null) {
                         .height((dimens.buttonHeight * 0.8f).dp)
                 ) {
                     Text(
-                        text = "Cerrar sesión",
+                        text = stringResource(R.string.profile_logout),
                         fontFamily = openSans,
                         fontWeight = FontWeight.Medium,
                         fontSize = (dimens.body * 0.8f).sp
