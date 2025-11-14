@@ -10,10 +10,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-
+import androidx.lifecycle.viewmodel.compose.viewModel
+import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.TeachersViewModel
 import co.edu.unab.sebastianlizcano.unabgo.data.local.UnabGoDatabase
 import co.edu.unab.sebastianlizcano.unabgo.data.repository.AcademicRepository
 import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.AcademicViewModel
+import androidx.navigation.compose.composable
 
 @Composable
 fun AppNavHost(navController: NavHostController, startDestination: String = Routes.SPLASH) {
@@ -161,5 +163,23 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
                 subjectId = subjectId
             )
         }
+        composable(Routes.DOCENTES) {
+            val teachersViewModel: TeachersViewModel = viewModel()
+            DocentesScreen(navController = navController, viewModel = teachersViewModel)
+        }
+        composable(
+            route = "${Routes.COMMENTS}/{teacherId}/{teacherName}"
+        ) { backStackEntry ->
+
+            val teacherId = backStackEntry.arguments?.getString("teacherId") ?: ""
+            val teacherName = backStackEntry.arguments?.getString("teacherName") ?: ""
+
+            CommentsScreen(
+                navController = navController,
+                teacherId = teacherId,
+                teacherName = teacherName
+            )
+        }
+
     }
 }

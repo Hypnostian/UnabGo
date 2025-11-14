@@ -26,4 +26,5 @@ object Routes {
 
     // Detalle de notas
     const val CALCULADORA_DETALLE = "calculatorDetail/{subjectId}"
+    const val COMMENTS = "comments"
 }
