@@ -1,4 +1,10 @@
-println("DEBUG GRADLE → KEY: ${project.findProperty("OLLAMA_API_KEY")}")
+// Lee local.properties para BuildConfig (los gradleProperty() no leen local.properties)
+import java.util.Properties
+
+val localPropertiesFile = rootProject.file("local.properties")
+val localProperties = Properties().apply {
+    if (localPropertiesFile.exists()) localPropertiesFile.inputStream().use { load(it) }
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -21,10 +27,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        //LEER EL API KEY DESDE local.properties Y PASARLO A BuildConfig
-        val ollamaKey = project.providers
-            .gradleProperty("OLLAMA_API_KEY")
-            .orNull ?: ""
+        // Lee el API key de local.properties → BuildConfig (nunca hardcodeado en el código)
+        val ollamaKey = localProperties.getProperty("OLLAMA_API_KEY", "")
         buildConfigField("String", "OLLAMA_API_KEY", "\"$ollamaKey\"")
 
     }
