@@ -16,6 +16,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.navigation.compose.rememberNavController
+import co.edu.unab.sebastianlizcano.unabgo.data.local.LanguageDataStore
+import co.edu.unab.sebastianlizcano.unabgo.navigation.AppNavHost
+import co.edu.unab.sebastianlizcano.unabgo.ui.theme.AppDimens
+import co.edu.unab.sebastianlizcano.unabgo.ui.theme.LocalAppDimens
+import co.edu.unab.sebastianlizcano.unabgo.utils.LocaleManager
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
