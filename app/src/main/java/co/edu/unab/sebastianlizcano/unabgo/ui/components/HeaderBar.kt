@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.R
-import co.edu.unab.sebastianlizcano.unabgo.LocalAppDimens
+import co.edu.unab.sebastianlizcano.unabgo.ui.theme.LocalAppDimens
 
 @Composable
 fun HeaderBar(

@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.R
-import co.edu.unab.sebastianlizcano.unabgo.LanguageDataStore
-import co.edu.unab.sebastianlizcano.unabgo.LocaleManager
-import co.edu.unab.sebastianlizcano.unabgo.LocalAppDimens
-import co.edu.unab.sebastianlizcano.unabgo.Routes
+import co.edu.unab.sebastianlizcano.unabgo.data.local.LanguageDataStore
+import co.edu.unab.sebastianlizcano.unabgo.navigation.Routes
+import co.edu.unab.sebastianlizcano.unabgo.ui.theme.LocalAppDimens
+import co.edu.unab.sebastianlizcano.unabgo.utils.LocaleManager
 import kotlinx.coroutines.launch
 
 @Composable
