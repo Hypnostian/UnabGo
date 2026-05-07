@@ -11,10 +11,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import co.edu.unab.sebastianlizcano.unabgo.data.local.UnabGoDatabase
-import co.edu.unab.sebastianlizcano.unabgo.data.repository.AcademicRepository
+import co.edu.unab.sebastianlizcano.unabgo.UnabGoApplication
+import co.edu.unab.sebastianlizcano.unabgo.data.repository.TeachersRepository
 import co.edu.unab.sebastianlizcano.unabgo.ui.screen.*
 import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.AcademicViewModel
+import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.CommentsViewModel
 import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.TeachersViewModel
 
 @Composable
@@ -23,24 +24,31 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
     // Contexto
     val context = LocalContext.current
 
-    // Base de datos Room
-    val db = remember { UnabGoDatabase.getInstance(context) }
+    // Obtiene la instancia del Application para acceder a las dependencias globales
+    val app = remember { context.applicationContext as UnabGoApplication } // Manual DI
 
-    // Repositorio académico
-    val academicRepository = remember {
-        AcademicRepository(
-            subjectDao = db.subjectDao(),
-            scheduleDao = db.scheduleDao(),
-            gradesDao = db.gradesDao()
-        )
-    }
+    // Repositorio académico desde Application (Singleton compartido)
+    val academicRepository = remember { app.academicRepository } // Singleton
 
-    // ViewModel académico global para todas las pantallas
+    // Repositorio de docentes desde Application (Singleton compartido — evita 2 conexiones Firestore)
+    val teachersRepository: TeachersRepository = remember { app.teachersRepository } // Singleton
+
+    // ViewModel académico global para todas las pantallas de horario y calculadora
     val academicViewModel: AcademicViewModel = viewModel(
         factory = object : ViewModelProvider.Factory { // Factory Pattern
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
                 return AcademicViewModel(academicRepository) as T // Manual Dependency Injection
+            }
+        }
+    )
+
+    // ViewModel de docentes — comparte el mismo repositorio con CommentsViewModel
+    val teachersViewModel: TeachersViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory { // Factory Pattern
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return TeachersViewModel(teachersRepository) as T // Manual Dependency Injection
             }
         }
     )
@@ -163,26 +171,40 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
                 subjectId = subjectId
             )
         }
+
         composable(Routes.DOCENTES) {
-            val teachersViewModel: TeachersViewModel = viewModel()
-            DocentesScreen(navController = navController, viewModel = teachersViewModel)
+            DocentesScreen(navController = navController, viewModel = teachersViewModel) // Singleton compartido
         }
+
         composable(
             route = "${Routes.COMMENTS}/{teacherId}/{teacherName}"
         ) { backStackEntry ->
 
-            val teacherId = backStackEntry.arguments?.getString("teacherId") ?: ""
+            val teacherId   = backStackEntry.arguments?.getString("teacherId") ?: ""
             val teacherName = backStackEntry.arguments?.getString("teacherName") ?: ""
+
+            // CommentsViewModel comparte el mismo teachersRepository (evita 2 conexiones Firestore)
+            val commentsViewModel: CommentsViewModel = viewModel(
+                factory = object : ViewModelProvider.Factory { // Factory Pattern
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                        @Suppress("UNCHECKED_CAST")
+                        return CommentsViewModel(teachersRepository) as T // Manual Dependency Injection
+                    }
+                }
+            )
 
             CommentsScreen(
                 navController = navController,
-                teacherId = teacherId,
-                teacherName = teacherName
+                teacherId     = teacherId,
+                teacherName   = teacherName,
+                viewModel     = commentsViewModel
             )
         }
+
         composable(Routes.BANU_IA) {
             BanuIAScreen(navController = navController)
         }
+
         composable(Routes.MAPA) {
             MapaInteractivoScreen(navController = navController)
         }
@@ -194,13 +216,13 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
                 navArgument("title") { type = NavType.StringType; nullable = false; defaultValue = "Detalle" }
             )
         ) { backStackEntry ->
-            val url = backStackEntry.arguments?.getString("url") ?: "https://unab.edu.co"
+            val url   = backStackEntry.arguments?.getString("url") ?: "https://unab.edu.co"
             val title = backStackEntry.arguments?.getString("title") ?: "Detalle"
 
             WebViewDetailScreen(
                 navController = navController,
-                url = url,
-                title = title
+                url           = url,
+                title         = title
             )
         }
 

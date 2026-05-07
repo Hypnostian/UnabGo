@@ -1,6 +1,7 @@
 package co.edu.unab.sebastianlizcano.unabgo.data.repository
 
 import co.edu.unab.sebastianlizcano.unabgo.data.local.*
+import co.edu.unab.sebastianlizcano.unabgo.domain.repository.IAcademicRepository
 import kotlinx.coroutines.flow.*
 import kotlin.math.round
 
@@ -18,105 +19,106 @@ class AcademicRepository( // Repository Pattern — fuente única de verdad para
     private val subjectDao: SubjectDao,
     private val scheduleDao: ScheduleDao,
     private val gradesDao: GradesDao
-) {
+) : IAcademicRepository { // Dependency Inversion Principle
 
     // ---------------------------------------------------------
     // MATERIAS
     // ---------------------------------------------------------
 
-    fun getSubjects(userId: String): Flow<List<SubjectEntity>> {
+    override fun getSubjects(userId: String): Flow<List<SubjectEntity>> {
         return subjectDao.getSubjectsForUser(userId)
     }
 
-    fun getSubjectWithSchedule(subjectId: Long): Flow<SubjectWithSchedule> {
+    override fun getSubjectWithSchedule(subjectId: Long): Flow<SubjectWithSchedule> {
         return subjectDao.getSubjectWithSchedule(subjectId)
     }
 
-    fun getSubjectWithGrades(subjectId: Long): Flow<SubjectWithGrades> {
+    override fun getSubjectWithGrades(subjectId: Long): Flow<SubjectWithGrades> {
         return subjectDao.getSubjectWithGrades(subjectId)
     }
 
+    // Método extra no declarado en la interfaz (mantiene compatibilidad hacia atrás)
     suspend fun insertSubject(subject: SubjectEntity): Long {
         return subjectDao.insertSubject(subject)
     }
 
-    suspend fun insertSubjectReturningId(subject: SubjectEntity): Long {
+    override suspend fun insertSubjectReturningId(subject: SubjectEntity): Long {
         return subjectDao.insertReturningId(subject)
     }
 
-    suspend fun updateSubject(subject: SubjectEntity) {
+    override suspend fun updateSubject(subject: SubjectEntity) {
         subjectDao.updateSubject(subject)
     }
 
-    suspend fun deleteSubject(subject: SubjectEntity) {
+    override suspend fun deleteSubject(subject: SubjectEntity) {
         // Room se encargará de borrar categorías y horarios automáticamente
         subjectDao.deleteSubject(subject)
     }
 
 
     // ---------------------------------------------------------
-    //HORARIOS
+    // HORARIOS
     // ---------------------------------------------------------
 
-    fun getBlocksForSubject(subjectId: Long): Flow<List<ScheduleBlockEntity>> {
+    override fun getBlocksForSubject(subjectId: Long): Flow<List<ScheduleBlockEntity>> {
         return scheduleDao.getBlocksForSubject(subjectId)
     }
 
-    suspend fun insertBlock(block: ScheduleBlockEntity) {
+    override suspend fun insertBlock(block: ScheduleBlockEntity) {
         scheduleDao.insertBlock(block)
     }
 
-    suspend fun updateBlock(block: ScheduleBlockEntity) {
+    override suspend fun updateBlock(block: ScheduleBlockEntity) {
         scheduleDao.updateBlock(block)
     }
 
-    suspend fun deleteBlock(block: ScheduleBlockEntity) {
+    override suspend fun deleteBlock(block: ScheduleBlockEntity) {
         scheduleDao.deleteBlock(block)
     }
 
 
     // ---------------------------------------------------------
-    //CATEGORÍAS
+    // CATEGORÍAS
     // ---------------------------------------------------------
 
     fun getCategories(subjectId: Long): Flow<List<GradeCategoryEntity>> {
         return gradesDao.getCategoriesForSubject(subjectId)
     }
 
-    suspend fun insertCategory(cat: GradeCategoryEntity): Long {
+    override suspend fun insertCategory(cat: GradeCategoryEntity): Long {
         return gradesDao.insertCategory(cat)
     }
 
-    suspend fun updateCategory(cat: GradeCategoryEntity) {
+    override suspend fun updateCategory(cat: GradeCategoryEntity) {
         gradesDao.updateCategory(cat)
     }
 
-    suspend fun deleteCategory(cat: GradeCategoryEntity) {
+    override suspend fun deleteCategory(cat: GradeCategoryEntity) {
         gradesDao.deleteCategory(cat)
     }
 
     // ---------------------------------------------------------
-    //ÍTEMS DE NOTA
+    // ÍTEMS DE NOTA
     // ---------------------------------------------------------
 
     fun getItems(categoryId: Long): Flow<List<GradeItemEntity>> {
         return gradesDao.getItemsForCategory(categoryId)
     }
 
-    suspend fun insertItem(item: GradeItemEntity): Long {
+    override suspend fun insertItem(item: GradeItemEntity): Long {
         return gradesDao.insertItem(item)
     }
 
-    suspend fun updateItem(item: GradeItemEntity) {
+    override suspend fun updateItem(item: GradeItemEntity) {
         gradesDao.updateItem(item)
     }
 
-    suspend fun deleteItem(item: GradeItemEntity) {
+    override suspend fun deleteItem(item: GradeItemEntity) {
         gradesDao.deleteItem(item)
     }
 
     // ---------------------------------------------------------
-    //CÁLCULOS DE PROMEDIOS
+    // CÁLCULOS DE PROMEDIOS
     // ---------------------------------------------------------
 
     /**
@@ -127,7 +129,7 @@ class AcademicRepository( // Repository Pattern — fuente única de verdad para
      *
      * Devuelve null si no tiene notas todavía.
      */
-    fun computeSubjectAverage(subject: SubjectWithGrades): Float? {
+    override fun computeSubjectAverage(subject: SubjectWithGrades): Float? {
         if (subject.categories.isEmpty()) return null
 
         var total = 0f
@@ -159,7 +161,7 @@ class AcademicRepository( // Repository Pattern — fuente única de verdad para
      *
      * promedioGeneral = sum(promedioMateria * creditos) / sum(creditos)
      */
-    fun computeGlobalAverage(
+    override fun computeGlobalAverage(
         subjects: List<SubjectEntity>,
         subjectAverages: Map<Long, Float?>
     ): Float? {

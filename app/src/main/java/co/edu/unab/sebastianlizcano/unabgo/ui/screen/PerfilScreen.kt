@@ -1,15 +1,15 @@
 package co.edu.unab.sebastianlizcano.unabgo.ui.screen
 
+// MVVM — estado de idioma gestionado por SettingsViewModel
+// Separation of Responsibilities — lógica de DataStore extraída del Composable
+
 import co.edu.unab.sebastianlizcano.unabgo.R
-import co.edu.unab.sebastianlizcano.unabgo.data.local.LanguageDataStore
 import co.edu.unab.sebastianlizcano.unabgo.ui.theme.LocalAppDimens
 import co.edu.unab.sebastianlizcano.unabgo.navigation.Routes
+import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.SettingsViewModel
 
-import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
-import android.os.LocaleList
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,34 +37,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.BottomNavBar
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Locale
 
 @Composable
-fun PerfilScreen(navController: NavController? = null) {
-    val dimens = LocalAppDimens.current
-    val context = LocalContext.current
+fun PerfilScreen(
+    navController: NavController? = null,
+    settingsViewModel: SettingsViewModel = viewModel() // ViewModel (MVVM)
+) {
+    val dimens   = LocalAppDimens.current
+    val context  = LocalContext.current
     val openSans = FontFamily(Font(R.font.open_sans_regular))
-    val scope = rememberCoroutineScope()
-    val dataStore = remember { LanguageDataStore(context) }
-    var selectedLang by remember { mutableStateOf("es") }
 
     val user = FirebaseAuth.getInstance().currentUser
 
+    // Cargar idioma guardado al entrar a la pantalla
     LaunchedEffect(Unit) {
-        dataStore.getLanguage().collect { lang ->
-            selectedLang = lang ?: "es"
-            setLocale(context, selectedLang)
-        }
+        settingsViewModel.loadLanguage(context) // ViewModel (MVVM)
     }
 
-    //Scroll principal para todos los contenidos
+    // Observer Pattern — la UI reacciona al cambio de idioma
+    val selectedLang by settingsViewModel.selectedLanguage.collectAsState()
+
     val scrollState = rememberScrollState()
 
     Box(
@@ -173,7 +173,7 @@ fun PerfilScreen(navController: NavController? = null) {
                 Spacer(Modifier.height(dimens.gapM.dp))
             } else {
                 Button(
-                    onClick = { navController?.navigate("login") },
+                    onClick = { navController?.navigate(Routes.LOGIN) },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White,
                         contentColor = Color(0xFF490077)
@@ -193,7 +193,7 @@ fun PerfilScreen(navController: NavController? = null) {
                 Spacer(Modifier.height(dimens.gapM.dp))
             }
 
-            //Panel de opciones scrolleable
+            // Panel de opciones scrolleable
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -225,7 +225,7 @@ fun PerfilScreen(navController: NavController? = null) {
 
                 Spacer(Modifier.height(dimens.gapS.dp))
 
-                //Idiomas en fila horizontal (siempre bien alineados)
+                // Idiomas en fila horizontal
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -237,16 +237,12 @@ fun PerfilScreen(navController: NavController? = null) {
                         val code = lang.lowercase(Locale.getDefault())
                         Button(
                             onClick = {
-                                scope.launch {
-                                    dataStore.saveLanguage(code)
-                                    selectedLang = code
-                                    setLocale(context, code)
-                                    Toast.makeText(
-                                        context,
-                                        context.getString(R.string.language_changed),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                settingsViewModel.setLanguage(context, code) // ViewModel (MVVM)
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.language_changed),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (selectedLang == code) Color.White else Color.Transparent,
@@ -368,13 +364,4 @@ private fun ProfileOption(iconRes: Int, text: String, onClick: () -> Unit) {
         Spacer(Modifier.weight(1f))
         Text(">", color = Color.White, fontSize = (dimens.titleL * 0.9f).sp)
     }
-}
-
-fun setLocale(context: Context, langCode: String) {
-    val locale = Locale(langCode)
-    Locale.setDefault(locale)
-    val config = Configuration(context.resources.configuration)
-    config.setLocales(LocaleList(locale))
-    context.createConfigurationContext(config)
-    context.resources.updateConfiguration(config, context.resources.displayMetrics)
 }

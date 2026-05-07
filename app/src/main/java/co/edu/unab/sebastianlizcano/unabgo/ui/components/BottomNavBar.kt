@@ -80,8 +80,8 @@ fun BottomNavBar(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.clickable {
-                    navController?.navigate("soyunab") {
-                        popUpTo("soyunab") { inclusive = true }
+                    navController?.navigate(Routes.SOY_UNAB) { // Routes.SOY_UNAB elimina el string hardcodeado
+                        popUpTo(Routes.SOY_UNAB) { inclusive = true }
                     }
                 }
             ) {
@@ -97,7 +97,7 @@ fun BottomNavBar(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.clickable {
                     navController?.navigate(Routes.BANU_IA) {
-                        popUpTo("main") { inclusive = false }
+                        popUpTo(Routes.MAIN) { inclusive = false } // Routes.MAIN elimina el string hardcodeado
                     }
                 }
             ) {
@@ -112,7 +112,7 @@ fun BottomNavBar(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.clickable {
-                    navController?.navigate("perfil") {
+                    navController?.navigate(Routes.PERFIL) { // Routes.PERFIL elimina el string hardcodeado
                         launchSingleTop = true
                     }
                 }

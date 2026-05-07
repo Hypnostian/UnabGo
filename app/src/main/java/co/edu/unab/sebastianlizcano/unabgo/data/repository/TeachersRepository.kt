@@ -5,24 +5,24 @@ package co.edu.unab.sebastianlizcano.unabgo.data.repository
 
 import co.edu.unab.sebastianlizcano.unabgo.data.remote.Comment
 import co.edu.unab.sebastianlizcano.unabgo.data.remote.Teacher
+import co.edu.unab.sebastianlizcano.unabgo.domain.repository.ITeachersRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 // Manual Dependency Injection — db se inyecta con valor por defecto (Singleton de Firebase)
 class TeachersRepository(
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance() // Singleton (Firebase)
-) {
+) : ITeachersRepository { // Dependency Inversion Principle
 
     /**
      * Observer Pattern (Flow) — emite la lista de docentes en tiempo real.
      * Cancela el listener de Firestore cuando el Flow se cierra.
      */
-    fun getTeachersFlow(): Flow<List<Teacher>> = callbackFlow { // Observer Pattern
+    override fun getTeachersFlow(): Flow<List<Teacher>> = callbackFlow { // Observer Pattern
         val registration = db.collection("teachers")
             .addSnapshotListener { snapshots, error ->
                 if (error != null) { close(error); return@addSnapshotListener }
@@ -43,7 +43,7 @@ class TeachersRepository(
     /**
      * Observer Pattern (Flow) — emite los comentarios de un docente en tiempo real.
      */
-    fun getCommentsFlow(teacherId: String): Flow<List<Comment>> = callbackFlow { // Observer Pattern
+    override fun getCommentsFlow(teacherId: String): Flow<List<Comment>> = callbackFlow { // Observer Pattern
         val registration = db.collection("teachers")
             .document(teacherId)
             .collection("comments")
@@ -59,7 +59,7 @@ class TeachersRepository(
     }
 
     /** Agrega un comentario y actualiza el contador de manera transaccional. */
-    suspend fun addComment(teacherId: String, text: String): Boolean =
+    override suspend fun addComment(teacherId: String, text: String): Boolean =
         suspendCancellableCoroutine { cont ->
             val payload = hashMapOf(
                 "text"      to text,
@@ -84,7 +84,7 @@ class TeachersRepository(
     }
 
     /** Actualiza la calificación de un docente. */
-    suspend fun updateRating(teacherId: String, rating: Double): Boolean =
+    override suspend fun updateRating(teacherId: String, rating: Double): Boolean =
         suspendCancellableCoroutine { cont ->
             db.collection("teachers").document(teacherId)
                 .update("rating", rating)

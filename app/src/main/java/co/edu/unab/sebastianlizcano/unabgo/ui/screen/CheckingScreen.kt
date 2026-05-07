@@ -1,15 +1,12 @@
 package co.edu.unab.sebastianlizcano.unabgo.ui.screen
 
-// Separation of Responsibilities — lógica de QR delegada a utils/QrUtils.kt
+// Separation of Responsibilities — lógica de QR delegada a CheckingViewModel
+// MVVM — estado gestionado por CheckingViewModel, UI solo observa y delega
 
 import co.edu.unab.sebastianlizcano.unabgo.R
-import co.edu.unab.sebastianlizcano.unabgo.data.local.CheckingDataStore
 import co.edu.unab.sebastianlizcano.unabgo.navigation.Routes
-import co.edu.unab.sebastianlizcano.unabgo.utils.loadSavedQR
-import co.edu.unab.sebastianlizcano.unabgo.utils.processQRCodeFromUri
-import co.edu.unab.sebastianlizcano.unabgo.utils.saveQRBitmap
+import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.CheckingViewModel
 
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,15 +35,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.BottomNavBar
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
-import java.io.File
 
 @Composable
-fun CheckingScreen(navController: NavController? = null) {
+fun CheckingScreen(
+    navController: NavController? = null,
+    viewModel: CheckingViewModel = viewModel() // ViewModel (MVVM)
+) {
 
     val user = FirebaseAuth.getInstance().currentUser
 
@@ -63,31 +62,21 @@ fun CheckingScreen(navController: NavController? = null) {
 
     val context   = LocalContext.current
     val openSans  = FontFamily(Font(R.font.open_sans_regular))
-    val dataStore = remember { CheckingDataStore(context) } // DataStore Pattern
-    val scope     = rememberCoroutineScope()
 
-    var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
-
-    // Cargar QR guardado del archivo interno al iniciar
+    // Cargar QR guardado al iniciar
     LaunchedEffect(user.uid) {
-        dataStore.getSavedQR(user.uid).collect { path ->
-            path?.let { qrBitmap = loadSavedQR(it) } // Utility (QrUtils)
-        }
+        viewModel.loadSavedQrCode(context, user.uid) // ViewModel (MVVM)
     }
+
+    val uiState by viewModel.uiState.collectAsState() // Observer Pattern (StateFlow)
+    val qrBitmap = uiState.qrBitmap
 
     // Seleccionar imagen desde galería
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            scope.launch {
-                val qr = processQRCodeFromUri(context, it) // Utility (QrUtils)
-                if (qr != null) {
-                    val savedPath = saveQRBitmap(context, qr, user.uid) // Utility (QrUtils)
-                    dataStore.saveQR(user.uid, savedPath)
-                    qrBitmap = qr
-                }
-            }
+            viewModel.processAndSaveQr(context, it, user.uid) // delegado al ViewModel
         }
     }
 
@@ -113,10 +102,10 @@ fun CheckingScreen(navController: NavController? = null) {
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Icon(
-                            imageVector     = Icons.Default.Add,
+                            imageVector        = Icons.Default.Add,
                             contentDescription = "Agregar imagen",
-                            tint            = Color(0xFF490077),
-                            modifier        = Modifier.size(60.dp)
+                            tint               = Color(0xFF490077),
+                            modifier           = Modifier.size(60.dp)
                         )
                     }
                 }
@@ -131,7 +120,7 @@ fun CheckingScreen(navController: NavController? = null) {
                 )
             } else {
                 Image(
-                    bitmap             = qrBitmap!!.asImageBitmap(),
+                    bitmap             = qrBitmap.asImageBitmap(),
                     contentDescription = "QR",
                     modifier           = Modifier
                         .size(220.dp)
@@ -142,27 +131,43 @@ fun CheckingScreen(navController: NavController? = null) {
                 Spacer(modifier = Modifier.height(25.dp))
                 Button(
                     onClick = {
-                        scope.launch {
-                            qrBitmap = null
-                            dataStore.clearQR(user.uid)
-                            File(context.filesDir, "qr_${user.uid}.png").let { if (it.exists()) it.delete() }
-                        }
+                        viewModel.deleteQr(context, user.uid) // delegado al ViewModel
                     },
                     colors   = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color(0xFF490077)),
                     shape    = RoundedCornerShape(20.dp),
-                    modifier = Modifier.width(170.dp).height(45.dp)
+                    modifier = Modifier
+                        .width(170.dp)
+                        .height(45.dp)
                 ) {
                     Text("Eliminar QR", fontFamily = openSans, fontSize = 16.sp)
                 }
             }
 
             Spacer(modifier = Modifier.height(25.dp))
-            Text(text = user.displayName ?: "", color = Color.White, fontFamily = openSans, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text(text = user.email ?: "",       color = Color.White.copy(alpha = 0.9f), fontFamily = openSans, fontSize = 14.sp)
+            Text(
+                text       = user.displayName ?: "",
+                color      = Color.White,
+                fontFamily = openSans,
+                fontWeight = FontWeight.Bold,
+                fontSize   = 18.sp
+            )
+            Text(
+                text       = user.email ?: "",
+                color      = Color.White.copy(alpha = 0.9f),
+                fontFamily = openSans,
+                fontSize   = 14.sp
+            )
         }
 
-        HeaderBar(navController = navController, subtitleRes = R.string.header_checking, modifier = Modifier.align(Alignment.TopCenter))
-        BottomNavBar(navController = navController, modifier = Modifier.align(Alignment.BottomCenter))
+        HeaderBar(
+            navController = navController,
+            subtitleRes   = R.string.header_checking,
+            modifier      = Modifier.align(Alignment.TopCenter)
+        )
+        BottomNavBar(
+            navController = navController,
+            modifier      = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 

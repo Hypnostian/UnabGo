@@ -3,6 +3,8 @@ package co.edu.unab.sebastianlizcano.unabgo.data.repository
 // Repository Pattern — centraliza toda la comunicación con la API de Ollama (Banu IA)
 // Separation of Responsibilities — aísla la lógica HTTP del ViewModel
 
+import co.edu.unab.sebastianlizcano.unabgo.BuildConfig
+import co.edu.unab.sebastianlizcano.unabgo.domain.repository.IBanuRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -11,13 +13,13 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
-class BanuRepository {
+class BanuRepository : IBanuRepository { // Dependency Inversion Principle
 
     // Builder Pattern — construye el cliente HTTP con configuración por defecto
     private val client = OkHttpClient() // Singleton (OkHttp reutilizable)
 
-    // ⚠️ Mover a BuildConfig o local.properties antes de producción
-    private val apiKey    = "49db39dc6efa46c0b65f35ba88f08f1c.52ll61K6XXP8KWWeIIpWumre"
+    // Clave leída desde local.properties → BuildConfig (nunca hardcodeada en el código)
+    private val apiKey    = BuildConfig.OLLAMA_API_KEY // Secure: from local.properties
     private val modelName = "deepseek-v3.1:671b-cloud"
     private val apiUrl    = "https://ollama.com/api/generate"
 
@@ -25,7 +27,7 @@ class BanuRepository {
      * Envía la pregunta del usuario a Ollama Cloud y retorna la respuesta de texto.
      * Lanza excepción si la red o la API falla.
      */
-    suspend fun ask(userQuestion: String): String = withContext(Dispatchers.IO) {
+    override suspend fun ask(userQuestion: String): String = withContext(Dispatchers.IO) {
         val body = buildRequestBody(userQuestion)
             .toRequestBody("application/json".toMediaType())
 
