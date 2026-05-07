@@ -14,7 +14,7 @@ import kotlin.math.round
  * Une los DAOs para exponer funciones completas hacia el ViewModel.
  */
 
-class AcademicRepository(
+class AcademicRepository( // Repository Pattern — fuente única de verdad para datos académicos locales
     private val subjectDao: SubjectDao,
     private val scheduleDao: ScheduleDao,
     private val gradesDao: GradesDao

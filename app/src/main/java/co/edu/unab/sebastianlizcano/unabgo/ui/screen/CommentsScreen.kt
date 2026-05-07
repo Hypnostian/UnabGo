@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
-import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.Comment
+import co.edu.unab.sebastianlizcano.unabgo.data.remote.Comment
 import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.CommentsViewModel
 
 @Composable

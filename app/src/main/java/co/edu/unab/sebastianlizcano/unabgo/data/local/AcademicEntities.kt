@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.Flow
     tableName = "subjects",
     indices = [Index(value = ["userId"])]
 )
-data class SubjectEntity(
+data class SubjectEntity( // Entity (Room) + DTO
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val userId: String,
     val name: String,
@@ -43,7 +43,7 @@ data class SubjectEntity(
     ],
     indices = [Index("subjectId")]
 )
-data class ScheduleBlockEntity(
+data class ScheduleBlockEntity( // Entity (Room) + DTO
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val subjectId: Long,
     val dayOfWeek: Int,
@@ -68,7 +68,7 @@ data class ScheduleBlockEntity(
     ],
     indices = [Index("subjectId")]
 )
-data class GradeCategoryEntity(
+data class GradeCategoryEntity( // Entity (Room) + DTO
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val subjectId: Long,
     val name: String,
@@ -91,7 +91,7 @@ data class GradeCategoryEntity(
     ],
     indices = [Index("categoryId")]
 )
-data class GradeItemEntity(
+data class GradeItemEntity( // Entity (Room) + DTO
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val categoryId: Long,
     val name: String,

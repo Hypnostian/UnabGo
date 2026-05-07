@@ -37,10 +37,10 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
 
     // ViewModel académico global para todas las pantallas
     val academicViewModel: AcademicViewModel = viewModel(
-        factory = object : ViewModelProvider.Factory {
+        factory = object : ViewModelProvider.Factory { // Factory Pattern
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
-                return AcademicViewModel(academicRepository) as T
+                return AcademicViewModel(academicRepository) as T // Manual Dependency Injection
             }
         }
     )

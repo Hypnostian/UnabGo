@@ -1,117 +1,54 @@
 package co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel
 
+// ViewModel (MVVM) — expone el estado de docentes a la UI
+// Separation of Responsibilities — delega acceso a datos a TeachersRepository
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
+import androidx.lifecycle.viewModelScope
 import co.edu.unab.sebastianlizcano.unabgo.data.remote.Teacher
+import co.edu.unab.sebastianlizcano.unabgo.data.repository.TeachersRepository
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
 
-class TeachersViewModel : ViewModel() {
+// Manual Dependency Injection — repositorio inyectado con valor por defecto
+class TeachersViewModel(
+    private val repository: TeachersRepository = TeachersRepository() // Manual DI
+) : ViewModel() {
 
-    private val db = FirebaseFirestore.getInstance()
+    // Observer Pattern (Compose State) — la UI se recompone al cambiar estos valores
+    var teachers     by mutableStateOf<List<Teacher>>(emptyList()); private set
+    var isLoading    by mutableStateOf(true);                        private set
+    var errorMessage by mutableStateOf<String?>(null);               private set
 
-    var teachers by mutableStateOf<List<Teacher>>(emptyList())
-        private set
+    init { observeTeachers() }
 
-    var isLoading by mutableStateOf(true)
-        private set
-
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
-
-    private var registration: ListenerRegistration? = null
-
-    init {
-        subscribeTeachers()
-    }
-
-    /**
-     * Escucha en tiempo real la lista de profesores
-     */
-    private fun subscribeTeachers() {
-        registration?.remove()
-
-        registration = db.collection("teachers")
-            .addSnapshotListener { snapshots, e ->
-                if (e != null) {
+    /** Observer Pattern — suscribe al Flow de Firestore y actualiza estado. */
+    private fun observeTeachers() {
+        viewModelScope.launch {
+            repository.getTeachersFlow()          // Repository Pattern
+                .catch { e ->
                     errorMessage = e.message
-                    isLoading = false
-                    return@addSnapshotListener
+                    isLoading    = false
                 }
-
-                val list = snapshots?.documents?.map { doc ->
-                    Teacher(
-                        id = doc.id,
-                        fullName = doc.getString("fullName") ?: "",
-                        rating = doc.getDouble("rating") ?: 0.0,
-                        photoUrl = doc.getString("photoUrl"),
-                        commentsCount = (doc.getLong("commentsCount") ?: 0L).toInt()
-                    )
-                } ?: emptyList()
-
-                teachers = list
-                isLoading = false
-            }
+                .collect { list ->
+                    teachers  = list
+                    isLoading = false
+                }
+        }
     }
 
-    /**
-     * AGREGAR COMENTARIO A UN DOCENTE
-     * teachers/{teacherId}/comments/{autoId}
-     */
     fun addComment(teacherId: String, text: String, onResult: (Boolean) -> Unit) {
-        if (text.isBlank()) {
-            onResult(false)
-            return
-        }
-
-        val comment = hashMapOf(
-            "text" to text,
-            "timestamp" to System.currentTimeMillis()
-        )
-
-        // Guardar comentario
-        db.collection("teachers")
-            .document(teacherId)
-            .collection("comments")
-            .add(comment)
-            .addOnSuccessListener {
-                // Actualizar contador de comentarios en teachers/{id}
-                incrementCommentsCount(teacherId)
-                onResult(true)
-            }
-            .addOnFailureListener {
-                onResult(false)
-            }
-    }
-
-    /**
-     * SUMAR UN COMENTARIO AL CONTADOR
-     */
-    private fun incrementCommentsCount(teacherId: String) {
-        val teacherRef = db.collection("teachers").document(teacherId)
-
-        db.runTransaction { transaction ->
-            val snapshot = transaction.get(teacherRef)
-            val current = snapshot.getLong("commentsCount") ?: 0L
-            transaction.update(teacherRef, "commentsCount", current + 1)
+        viewModelScope.launch {
+            onResult(repository.addComment(teacherId, text))
         }
     }
 
-    /**
-     * ACTUALIZAR CALIFICACIÓN (RATING)
-     */
     fun updateRating(teacherId: String, rating: Double, onResult: (Boolean) -> Unit) {
-        db.collection("teachers")
-            .document(teacherId)
-            .update("rating", rating)
-            .addOnSuccessListener { onResult(true) }
-            .addOnFailureListener { onResult(false) }
-    }
-
-    override fun onCleared() {
-        registration?.remove()
-        super.onCleared()
+        viewModelScope.launch {
+            onResult(repository.updateRating(teacherId, rating))
+        }
     }
 }

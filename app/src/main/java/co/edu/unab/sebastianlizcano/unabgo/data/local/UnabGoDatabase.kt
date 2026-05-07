@@ -33,11 +33,11 @@ abstract class UnabGoDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        private var INSTANCE: UnabGoDatabase? = null
+        private var INSTANCE: UnabGoDatabase? = null // Singleton
 
-        fun getInstance(context: Context): UnabGoDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
+        fun getInstance(context: Context): UnabGoDatabase { // Singleton
+            return INSTANCE ?: synchronized(this) { // Thread-safe Singleton (Double-Check Locking)
+                val instance = Room.databaseBuilder( // Builder Pattern
                     context.applicationContext,
                     UnabGoDatabase::class.java,
                     "unab_go_database"

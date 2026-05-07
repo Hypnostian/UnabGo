@@ -6,7 +6,7 @@ import android.content.res.Resources
 import android.os.LocaleList
 import java.util.*
 
-object LocaleManager {
+object LocaleManager { // Singleton
     private const val PREF_NAME = "app_prefs"
     private const val KEY_LANGUAGE = "language"
 

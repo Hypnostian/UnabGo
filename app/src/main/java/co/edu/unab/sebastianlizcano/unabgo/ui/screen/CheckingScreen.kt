@@ -1,15 +1,16 @@
 package co.edu.unab.sebastianlizcano.unabgo.ui.screen
 
+// Separation of Responsibilities — lógica de QR delegada a utils/QrUtils.kt
+
 import co.edu.unab.sebastianlizcano.unabgo.R
 import co.edu.unab.sebastianlizcano.unabgo.data.local.CheckingDataStore
 import co.edu.unab.sebastianlizcano.unabgo.navigation.Routes
+import co.edu.unab.sebastianlizcano.unabgo.utils.loadSavedQR
+import co.edu.unab.sebastianlizcano.unabgo.utils.processQRCodeFromUri
+import co.edu.unab.sebastianlizcano.unabgo.utils.saveQRBitmap
 
-import android.content.Context
-import android.graphics.*
-import android.graphics.ImageDecoder
+import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -41,14 +42,8 @@ import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.BottomNavBar
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.common.InputImage
-import kotlinx.coroutines.*
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.launch
 import java.io.File
-import java.io.FileOutputStream
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 @Composable
 fun CheckingScreen(navController: NavController? = null) {
@@ -66,19 +61,17 @@ fun CheckingScreen(navController: NavController? = null) {
 
     if (user == null) return  // Evita mostrar UI sin sesión
 
-    val context = LocalContext.current
-    val openSans = FontFamily(Font(R.font.open_sans_regular))
-    val dataStore = remember { CheckingDataStore(context) }
+    val context   = LocalContext.current
+    val openSans  = FontFamily(Font(R.font.open_sans_regular))
+    val dataStore = remember { CheckingDataStore(context) } // DataStore Pattern
+    val scope     = rememberCoroutineScope()
 
     var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
-    val scope = rememberCoroutineScope()
 
-    //  Cargar QR guardado del archivo interno
+    // Cargar QR guardado del archivo interno al iniciar
     LaunchedEffect(user.uid) {
         dataStore.getSavedQR(user.uid).collect { path ->
-            path?.let {
-                qrBitmap = loadSavedQR(it)
-            }
+            path?.let { qrBitmap = loadSavedQR(it) } // Utility (QrUtils)
         }
     }
 
@@ -88,31 +81,21 @@ fun CheckingScreen(navController: NavController? = null) {
     ) { uri: Uri? ->
         uri?.let {
             scope.launch {
-                val qr = processQRCodeFromUri(context, it)
+                val qr = processQRCodeFromUri(context, it) // Utility (QrUtils)
                 if (qr != null) {
-
-                    // Guardar QR recortado como archivo interno
-                    val savedPath = saveQRBitmap(context, qr, user.uid)
-
-                    // Guardar referencia en DataStore
+                    val savedPath = saveQRBitmap(context, qr, user.uid) // Utility (QrUtils)
                     dataStore.saveQR(user.uid, savedPath)
-
-                    // Mostrar en pantalla
                     qrBitmap = qr
                 }
             }
         }
     }
 
-    // --------------------
-    // UI
-    // --------------------
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF2F024C))
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -120,69 +103,53 @@ fun CheckingScreen(navController: NavController? = null) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
-            // ➕ Si NO hay QR → mostrar botón
             if (qrBitmap == null) {
                 Card(
                     modifier = Modifier
                         .size(130.dp)
                         .clickable { galleryLauncher.launch("image/*") },
-                    shape = CircleShape,
+                    shape  = CircleShape,
                     colors = CardDefaults.cardColors(containerColor = Color(0xAAFFFFFF))
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Icon(
-                            imageVector = Icons.Default.Add,
+                            imageVector     = Icons.Default.Add,
                             contentDescription = "Agregar imagen",
-                            tint = Color(0xFF490077),
-                            modifier = Modifier.size(60.dp)
+                            tint            = Color(0xFF490077),
+                            modifier        = Modifier.size(60.dp)
                         )
                     }
                 }
-
                 Spacer(modifier = Modifier.height(20.dp))
-
                 Text(
-                    text = stringResource(R.string.checking_add_capture),
-                    color = Color.White,
+                    text       = stringResource(R.string.checking_add_capture),
+                    color      = Color.White,
                     fontFamily = openSans,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp,
-                    textAlign = TextAlign.Center
+                    fontSize   = 18.sp,
+                    textAlign  = TextAlign.Center
                 )
-            }
-
-            // 🟩 Mostrar QR guardado
-            else {
+            } else {
                 Image(
-                    bitmap = qrBitmap!!.asImageBitmap(),
+                    bitmap             = qrBitmap!!.asImageBitmap(),
                     contentDescription = "QR",
-                    modifier = Modifier
+                    modifier           = Modifier
                         .size(220.dp)
                         .clip(RoundedCornerShape(20.dp))
                         .background(Color.White),
-                    contentScale = ContentScale.Fit
+                    contentScale       = ContentScale.Fit
                 )
-
                 Spacer(modifier = Modifier.height(25.dp))
-
-                // Eliminar QR
                 Button(
                     onClick = {
                         scope.launch {
                             qrBitmap = null
                             dataStore.clearQR(user.uid)
-
-                            // eliminar archivo
-                            val file = File(context.filesDir, "qr_${user.uid}.png")
-                            if (file.exists()) file.delete()
+                            File(context.filesDir, "qr_${user.uid}.png").let { if (it.exists()) it.delete() }
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color(0xFF490077)
-                    ),
-                    shape = RoundedCornerShape(20.dp),
+                    colors   = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color(0xFF490077)),
+                    shape    = RoundedCornerShape(20.dp),
                     modifier = Modifier.width(170.dp).height(45.dp)
                 ) {
                     Text("Eliminar QR", fontFamily = openSans, fontSize = 16.sp)
@@ -190,107 +157,15 @@ fun CheckingScreen(navController: NavController? = null) {
             }
 
             Spacer(modifier = Modifier.height(25.dp))
-
-            // 👤 Datos del usuario
-            Text(
-                text = user.displayName ?: "",
-                color = Color.White,
-                fontFamily = openSans,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            )
-
-            Text(
-                text = user.email ?: "",
-                color = Color.White.copy(alpha = 0.9f),
-                fontFamily = openSans,
-                fontSize = 14.sp
-            )
+            Text(text = user.displayName ?: "", color = Color.White, fontFamily = openSans, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Text(text = user.email ?: "",       color = Color.White.copy(alpha = 0.9f), fontFamily = openSans, fontSize = 14.sp)
         }
 
-        HeaderBar(
-            navController = navController,
-            subtitleRes = R.string.header_checking,
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
-
-        BottomNavBar(
-            navController = navController,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+        HeaderBar(navController = navController, subtitleRes = R.string.header_checking, modifier = Modifier.align(Alignment.TopCenter))
+        BottomNavBar(navController = navController, modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
-
-//
-// MLKit + utilidades
-//
-
-// Evita crashes por coordenadas fuera de rango
-fun safeCrop(bitmap: Bitmap, box: Rect): Bitmap? {
-    val x = box.left.coerceIn(0, bitmap.width - 1)
-    val y = box.top.coerceIn(0, bitmap.height - 1)
-    val width = box.width().coerceAtMost(bitmap.width - x)
-    val height = box.height().coerceAtMost(bitmap.height - y)
-
-    if (width <= 0 || height <= 0) return null
-
-    return try {
-        Bitmap.createBitmap(bitmap, x, y, width, height)
-    } catch (e: Exception) {
-        null
-    }
-}
-
-suspend fun processQRCodeFromUri(context: Context, uri: Uri): Bitmap? {
-    return withContext(Dispatchers.IO) {
-        try {
-            val bitmap = loadBitmapFromUri(context, uri)
-            val image = InputImage.fromBitmap(bitmap, 0)
-            val barcodes = BarcodeScanning.getClient().process(image).await()
-
-            if (barcodes.isNotEmpty()) {
-                val box = barcodes.first().boundingBox ?: return@withContext null
-                return@withContext safeCrop(bitmap, box)
-            }
-            null
-        } catch (e: Exception) {
-            null
-        }
-    }
-}
-
-fun saveQRBitmap(context: Context, bitmap: Bitmap, uid: String): String {
-    val file = File(context.filesDir, "qr_${uid}.png")
-    FileOutputStream(file).use { out ->
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-    }
-    return file.absolutePath
-}
-
-fun loadSavedQR(path: String): Bitmap? {
-    return try {
-        BitmapFactory.decodeFile(path)
-    } catch (e: Exception) {
-        null
-    }
-}
-
-fun loadBitmapFromUri(context: Context, uri: Uri): Bitmap {
-    return if (Build.VERSION.SDK_INT >= 28) {
-        ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri))
-    } else {
-        MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-    }
-}
-
-suspend fun <T> com.google.android.gms.tasks.Task<T>.await(): T =
-    suspendCancellableCoroutine { cont ->
-        addOnSuccessListener { cont.resume(it, null) }
-        addOnFailureListener { cont.resumeWithException(it) }
-    }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun CheckingScreenPreview() {
-    CheckingScreen()
-}
+fun CheckingScreenPreview() { CheckingScreen() }

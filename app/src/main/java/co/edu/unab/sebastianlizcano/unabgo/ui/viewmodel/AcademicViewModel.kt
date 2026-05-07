@@ -20,12 +20,12 @@ data class SubjectDetailState(
     val average: Float? = null
 )
 
-class AcademicViewModel(
-    private val repository: AcademicRepository
+class AcademicViewModel( // ViewModel (MVVM)
+    private val repository: AcademicRepository // Repository Pattern + Manual DI
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(AcademicUiState())
-    val uiState: StateFlow<AcademicUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(AcademicUiState()) // Observer Pattern (StateFlow)
+    val uiState: StateFlow<AcademicUiState> = _uiState.asStateFlow() // Observer Pattern
 
     private val _detailState = MutableStateFlow(SubjectDetailState())
     val detailState: StateFlow<SubjectDetailState> = _detailState.asStateFlow()
