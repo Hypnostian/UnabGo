@@ -121,14 +121,12 @@
     <string name="library_title">도서관</string>
     <string name="library_text">UNAB 중앙 도서관은 학습과 연구를 위한 공간입니다. 물리적 및 디지털 자료에 접근할 수 있는 현대적이고 조용한 환경을 제공합니다.</string>
 
-    <!-- 공지사항 -->
+    <!-- 뉴스 카테고리 -->
+    <string name="category_all">전체 뉴스</string>
     <string name="category_institucional">기관 소식</string>
-    <string name="category_investigacion">연구 및 혁신</string>
-    <string name="category_salud">보건 및 기술</string>
-    <string name="category_ingenieria">공학 및 혁신</string>
-    <string name="category_cultura">문화 및 인문학</string>
-    <string name="category_derecho">법학, 경제 및 비즈니스</string>
-    <string name="category_impacto">사회적 영향</string>
+    <string name="category_investigacion">연구</string>
+    <string name="category_cultura">예술 및 문화</string>
+    <string name="category_impacto">임팩트 스토리</string>
     <string name="choose_category_message">이용 가능한 최신 소식을 보려면 카테고리를 선택해주세요.</string>
     <!-- 하단 탐색 바 -->
     <string name="bottom_home">홈</string>

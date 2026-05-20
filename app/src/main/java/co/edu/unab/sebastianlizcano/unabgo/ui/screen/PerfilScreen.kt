@@ -8,6 +8,7 @@ import co.edu.unab.sebastianlizcano.unabgo.ui.theme.LocalAppDimens
 import co.edu.unab.sebastianlizcano.unabgo.navigation.Routes
 import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.SettingsViewModel
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -237,12 +238,16 @@ fun PerfilScreen(
                         val code = lang.lowercase(Locale.getDefault())
                         Button(
                             onClick = {
-                                settingsViewModel.setLanguage(context, code) // ViewModel (MVVM)
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.language_changed),
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                // Cambia el idioma y RECREA la Activity para que stringResource()
+                                // lea los recursos con la nueva Configuration.
+                                settingsViewModel.setLanguage(context, code) {
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.language_changed),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    (context as? Activity)?.recreate()
+                                }
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (selectedLang == code) Color.White else Color.Transparent,

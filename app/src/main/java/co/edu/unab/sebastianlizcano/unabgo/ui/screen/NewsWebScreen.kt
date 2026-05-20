@@ -1,15 +1,16 @@
 package co.edu.unab.sebastianlizcano.unabgo.ui.screen
 
 import co.edu.unab.sebastianlizcano.unabgo.R
+import co.edu.unab.sebastianlizcano.unabgo.utils.LockOrientationPortrait
 
 import android.annotation.SuppressLint
 import android.webkit.WebChromeClient
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.viewinterop.AndroidView
@@ -22,7 +23,10 @@ fun NewsWebScreen(
     navController: NavController?,
     url: String?
 ) {
-    val finalUrl = url ?: "https://unab.edu.co/noticias/"
+    val finalUrl = url?.takeIf { it.isNotBlank() } ?: "https://unab.edu.co/noticias/"
+
+    // Fuerza la orientación vertical mientras se muestra esta pantalla
+    LockOrientationPortrait()
 
     Box(
         modifier = Modifier
@@ -36,15 +40,36 @@ fun NewsWebScreen(
 
             HeaderBar(
                 navController = navController,
-                subtitleRes = R.string.announcements
+                subtitleRes   = R.string.announcements
             )
 
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
-                factory = { context ->
-                    WebView(context).apply {
-                        settings.javaScriptEnabled = true
-                        webViewClient = WebViewClient()
+                factory  = { ctx ->
+                    WebView(ctx).apply {
+                        // Configuración mobile-responsive
+                        with(settings) {
+                            javaScriptEnabled            = true
+                            domStorageEnabled            = true
+                            useWideViewPort              = true     // respeta <meta viewport>
+                            loadWithOverviewMode         = true     // arranca ajustado a la pantalla
+                            builtInZoomControls          = true
+                            displayZoomControls          = false    // sin botones +/- visibles
+                            javaScriptCanOpenWindowsAutomatically = true
+                            cacheMode                    = WebSettings.LOAD_DEFAULT
+                            mediaPlaybackRequiresUserGesture = false
+                            mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+                            // Forzar layout estilo móvil
+                            layoutAlgorithm  = WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING
+                            // User-Agent móvil para que WordPress entregue el sitio responsive
+                            userAgentString  = userAgentString
+                                .replace("; wv", "")
+                                .let { ua ->
+                                    if (ua.contains("Mobile")) ua
+                                    else "$ua Mobile"
+                                }
+                        }
+                        webViewClient   = WebViewClient()
                         webChromeClient = WebChromeClient()
                         loadUrl(finalUrl)
                     }
@@ -53,3 +78,5 @@ fun NewsWebScreen(
         }
     }
 }
+
+// LockOrientationPortrait y findActivity ahora viven en utils/OrientationUtils.kt

@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.BottomNavBar
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
+import co.edu.unab.sebastianlizcano.unabgo.ui.theme.LocalAppDimens
+import co.edu.unab.sebastianlizcano.unabgo.utils.LockOrientationPortrait
 
 data class ProgramaItem(
     val title: String,
@@ -38,6 +40,10 @@ data class ProgramaItem(
 fun QuieroSerUnabScreen(navController: NavController) {
 
     val openSans = FontFamily(Font(R.font.open_sans_regular))
+    val dimens   = LocalAppDimens.current
+
+    // Bloqueamos la pantalla en vertical, asi se ve igual en cualquier dispositivo
+    LockOrientationPortrait()
 
     val programas = listOf(
         ProgramaItem(
@@ -76,13 +82,15 @@ fun QuieroSerUnabScreen(navController: NavController) {
 
             HeaderBar(
                 navController = navController,
-                subtitleRes = R.string.header_exploring
+                subtitleRes   = R.string.header_exploring
             )
 
+            // LazyColumn ocupa el espacio restante; padding inferior dimensionado al BottomNavBar
+            // para que ningún card quede oculto detrás de él.
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 70.dp),
+                    .padding(bottom = (dimens.buttonHeight * 1.9f).dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
@@ -90,7 +98,7 @@ fun QuieroSerUnabScreen(navController: NavController) {
 
                 items(programas) { item ->
 
-                    val encodedUrl = Uri.encode(item.url)
+                    val encodedUrl   = Uri.encode(item.url)
                     val encodedTitle = Uri.encode(item.title)
 
                     ProgramaCard(item = item, onClick = {
@@ -102,7 +110,7 @@ fun QuieroSerUnabScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                item { Spacer(modifier = Modifier.height(40.dp)) }
+                item { Spacer(modifier = Modifier.height(20.dp)) }
             }
         }
 
@@ -124,7 +132,7 @@ fun ProgramaCard(item: ProgramaItem, onClick: () -> Unit) {
             .fillMaxWidth()
             .clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = Color(0x805A237B)),
-        shape = CardDefaults.shape
+        shape  = CardDefaults.shape
     ) {
         Row(
             modifier = Modifier.padding(18.dp),

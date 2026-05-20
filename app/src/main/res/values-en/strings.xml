@@ -121,14 +121,12 @@ This version includes:
     <string name="library_title">Library</string>
     <string name="library_text">The UNAB Central Library is a space for learning and research. It offers a modern and quiet environment with access to physical and digital collections.</string>
 
-    <!-- Announcements -->
-    <string name="category_institucional">Institutional</string>
-    <string name="category_investigacion">Research and Innovation</string>
-    <string name="category_salud">Health and Technology</string>
-    <string name="category_ingenieria">Engineering and Innovation</string>
-    <string name="category_cultura">Culture and Humanities</string>
-    <string name="category_derecho">Law, Economics and Business</string>
-    <string name="category_impacto">Social Impact</string>
+    <!-- News categories -->
+    <string name="category_all">All news</string>
+    <string name="category_institucional">Institutional News</string>
+    <string name="category_investigacion">Research</string>
+    <string name="category_cultura">Art and Culture</string>
+    <string name="category_impacto">Stories with Impact</string>
     <string name="choose_category_message">Please select a category to view the available news.</string>
 
     <!-- Bottom Navigation -->

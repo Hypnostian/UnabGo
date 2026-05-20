@@ -2,6 +2,7 @@ package co.edu.unab.sebastianlizcano.unabgo.ui.screen
 
 import co.edu.unab.sebastianlizcano.unabgo.R
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,31 +28,31 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.BottomNavBar
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
+import co.edu.unab.sebastianlizcano.unabgo.ui.theme.LocalAppDimens
 
 @Composable
 fun AvisosScreen(navController: NavController? = null) {
 
     val openSans = FontFamily(Font(R.font.open_sans_regular))
+    val dimens   = LocalAppDimens.current
 
-    // Categorías traducidas desde strings
+    // Nuevas categorías oficiales (UNAB 2026) — URLs actualizadas
+    val categoryAll       = stringResource(R.string.category_all)
+    val categoryInst      = stringResource(R.string.category_institucional)
+    val categoryInv       = stringResource(R.string.category_investigacion)
+    val categoryCultura   = stringResource(R.string.category_cultura)
+    val categoryImpacto   = stringResource(R.string.category_impacto)
+
     val categorias = listOf(
-        stringResource(R.string.category_institucional),
-        stringResource(R.string.category_investigacion),
-        stringResource(R.string.category_salud),
-        stringResource(R.string.category_ingenieria),
-        stringResource(R.string.category_cultura),
-        stringResource(R.string.category_derecho),
-        stringResource(R.string.category_impacto)
+        categoryAll, categoryInst, categoryInv, categoryCultura, categoryImpacto
     )
 
     val urlCategorias = mapOf(
-        stringResource(R.string.category_institucional) to "https://unab.edu.co/category/institucional/",
-        stringResource(R.string.category_investigacion) to "https://unab.edu.co/category/investigacion/",
-        stringResource(R.string.category_salud) to "https://unab.edu.co/category/salud/",
-        stringResource(R.string.category_ingenieria) to "https://unab.edu.co/category/ingenieria/",
-        stringResource(R.string.category_cultura) to "https://unab.edu.co/category/cultura-y-humanidades/",
-        stringResource(R.string.category_derecho) to "https://unab.edu.co/category/derecho-y-negocios/",
-        stringResource(R.string.category_impacto) to "https://unab.edu.co/category/impacto-social/"
+        categoryAll     to "https://unab.edu.co/noticias/",
+        categoryInst    to "https://unab.edu.co/category/actualidad-institucional/",
+        categoryInv     to "https://unab.edu.co/category/investigacion/",
+        categoryCultura to "https://unab.edu.co/category/arte-cultura/",
+        categoryImpacto to "https://unab.edu.co/category/historias-con-impacto/"
     )
 
     var categoriaSeleccionada by remember { mutableStateOf("") }
@@ -65,7 +66,8 @@ fun AvisosScreen(navController: NavController? = null) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 90.dp)
+                // espacio suficiente para que el BottomNavBar no tape contenido
+                .padding(bottom = (dimens.buttonHeight * 1.8f).dp)
         ) {
 
             HeaderBar(
@@ -91,8 +93,9 @@ fun AvisosScreen(navController: NavController? = null) {
                             .padding(end = 12.dp)
                             .clickable {
                                 categoriaSeleccionada = categoria
-                                val url = urlCategorias[categoria]!!
-                                navController?.navigate("newsWeb?url=$url")
+                                val url = urlCategorias[categoria] ?: return@clickable
+                                val encoded = Uri.encode(url)
+                                navController?.navigate("newsWeb?url=$encoded")
                             },
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
@@ -118,7 +121,7 @@ fun AvisosScreen(navController: NavController? = null) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight()
+                    .weight(1f)
                     .padding(horizontal = 30.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -144,7 +147,9 @@ fun AvisosScreen(navController: NavController? = null) {
         }
 
         Box(
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
         ) {
             BottomNavBar(navController)
         }

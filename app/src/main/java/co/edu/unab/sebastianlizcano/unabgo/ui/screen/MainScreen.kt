@@ -4,9 +4,6 @@ import co.edu.unab.sebastianlizcano.unabgo.R
 import co.edu.unab.sebastianlizcano.unabgo.navigation.Routes
 
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -82,7 +79,7 @@ fun MainScreen(
 
             // BOTÓN 1 - Quiero ser UNAB
             Button(
-                onClick = { navController.navigate("quieroSerUnab") },
+                onClick = { navController.navigate(Routes.QUIERO_SER_UNAB) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
                     contentColor = Color(0xFF490077)
