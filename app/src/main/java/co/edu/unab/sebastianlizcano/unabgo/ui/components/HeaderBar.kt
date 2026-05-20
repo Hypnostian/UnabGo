@@ -41,6 +41,11 @@ fun HeaderBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            // statusBarsPadding(): respeta el alto del status bar del dispositivo
+            //   - En celulares con notch (la mayoria) se mantiene como antes.
+            //   - En emuladores sin notch o pantallas pequenas, la flecha ya NO
+            //     queda detras del reloj/iconos del sistema.
+            .statusBarsPadding()
             .height(headerHeight)
     ) {
         // Fondo
@@ -51,16 +56,21 @@ fun HeaderBar(
             contentScale = ContentScale.FillBounds
         )
 
-        // Flecha atrás funcional
-        Image(
-            painter = painterResource(id = R.drawable.flecha),
-            contentDescription = "Volver atrás",
+        // Flecha atrás funcional — area de toque ampliada (44x44 dp minimo recomendado)
+        Box(
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = (dimens.gapM * 1.4f).dp, top = (dimens.gapM * 1.3f).dp)
-                .size((dimens.gapM * 1.5f).dp)
-                .clickable { onBackClick() }
-        )
+                .padding(start = dimens.gapS.dp, top = dimens.gapS.dp)
+                .size(44.dp)
+                .clickable { onBackClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.flecha),
+                contentDescription = "Volver atrás",
+                modifier = Modifier.size((dimens.gapM * 1.5f).dp)
+            )
+        }
 
         // Contenido central
         Row(

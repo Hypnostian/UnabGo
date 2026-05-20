@@ -43,19 +43,24 @@
         android:theme="@style/Theme.UnabGo">
 
         <!--
-            screenOrientation=portrait fijo en el Manifest evita el overlay
-            "Gira tu telefono para ver el contenido" que muestran MIUI/HyperOS
-            cuando se cambia la orientacion en runtime con setRequestedOrientation().
+            screenOrientation=userPortrait (soft-lock):
+              - En PORTRAIT funciona como "portrait" normal en cualquier celular.
+              - PERO el sistema NO activa el overlay "Gira tu telefono" que aparece
+                en Android 14/15/16 emulators y dispositivos Xiaomi cuando se usa
+                "portrait" estricto. El sistema simplemente respeta la preferencia
+                del usuario en cuanto a rotacion.
 
             resizeableActivity=true le indica al sistema que la app soporta tamanos
             de ventana variables (foldables, multitask, escritorio), de modo que
-            NO entra en compatibility mode y por lo tanto no muestra ese overlay.
+            NO entra en compatibility mode.
+
+            configChanges: la app maneja los cambios de configuracion sin reinicios.
         -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
+            android:screenOrientation="userPortrait"
             android:resizeableActivity="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density|locale|fontScale|layoutDirection|uiMode|keyboardHidden"
             android:theme="@style/Theme.UnabGo">

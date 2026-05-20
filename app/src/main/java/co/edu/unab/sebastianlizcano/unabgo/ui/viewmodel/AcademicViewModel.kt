@@ -203,6 +203,16 @@ class AcademicViewModel( // ViewModel (MVVM)
     }
 
     /**
+     * Elimina TODOS los bloques de horario de una materia.
+     * Usado al editar una materia: borramos los bloques antiguos y agregamos los nuevos
+     * para que el usuario no acabe con bloques duplicados.
+     */
+    suspend fun deleteAllBlocksForSubject(subjectId: Long) {
+        val current = repository.getBlocksForSubject(subjectId).firstOrNull() ?: return
+        current.forEach { repository.deleteBlock(it) }
+    }
+
+    /**
      * Obtiene todos los bloques de todas las materias del usuario.
      */
     fun getAllScheduleBlocks(userId: String): Flow<List<ScheduleBlockEntity>> {

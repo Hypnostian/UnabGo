@@ -20,7 +20,13 @@ class BanuRepository : IBanuRepository { // Dependency Inversion Principle
     companion object {
         private const val TAG       = "BanuRepository"
         private const val API_URL   = "https://ollama.com/api/generate"
-        private const val MODEL     = "deepseek-v3.1:671b-cloud"
+
+        // ⚠️ El modelo deepseek-v3.1:671b-cloud requiere SUSCRIPCIÓN PAGA en Ollama Cloud
+        //   (responde 403 "this model requires a subscription").
+        // gpt-oss:120b-cloud es GRATUITO con la cuenta de Ollama y da respuestas
+        // de excelente calidad en español. Probado y funcional.
+        // Alternativas gratuitas si esta falla: "gpt-oss:20b-cloud", "qwen3-coder:480b-cloud".
+        private const val MODEL     = "gpt-oss:120b-cloud"
         private const val TIMEOUT_S = 60L
 
         // Fallback hardcodeado para garantizar que Banu funcione incluso si el
@@ -158,12 +164,13 @@ class BanuRepository : IBanuRepository { // Dependency Inversion Principle
         """.trimIndent()
 
         // JSON correctamente escapado: usamos JSONObject para evitar romper comillas/saltos.
+        // 'think: false' a nivel raíz oculta el chain-of-thought en gpt-oss-*.
         return JSONObject().apply {
             put("model",   MODEL)
             put("prompt",  systemPrompt)
             put("stream",  false)
+            put("think",   false)   // sin razonamiento visible en la respuesta
             put("options", JSONObject().apply {
-                put("thinking",    false)
                 put("temperature", 0.4)   // respuestas factuales, baja creatividad
                 put("top_p",       0.9)
             })

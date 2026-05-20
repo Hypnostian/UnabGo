@@ -33,7 +33,6 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 // 12 colores armónicos que destacan sobre el fondo morado #2F024C
-// Todos tienen buen contraste con texto blanco/negro.
 private data class SubjectColor(val name: String, val value: Color)
 
 private val SUBJECT_COLORS = listOf(
@@ -51,6 +50,12 @@ private val SUBJECT_COLORS = listOf(
     SubjectColor("Lavanda",    Color(0xFFC9B6FF))
 )
 
+// Estructura para horario por día (hora inicio + hora fin)
+private data class DayHours(val start: Int, val end: Int)
+
+private const val DEFAULT_START = 8
+private const val DEFAULT_END   = 10
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubjectEditorScreen(
@@ -63,6 +68,7 @@ fun SubjectEditorScreen(
     val scope    = rememberCoroutineScope()
 
     val user = FirebaseAuth.getInstance().currentUser
+    val isEditing = subjectId != null && subjectId != 0L
 
     LaunchedEffect(user) {
         if (user == null) {
@@ -76,29 +82,70 @@ fun SubjectEditorScreen(
 
     if (user == null) return
 
-    // Bloques existentes del usuario (todas las materias)
     val existingBlocks by viewModel
         .getAllScheduleBlocks(user.uid)
         .collectAsState(initial = emptyList())
 
-    // Estado de la materia
+    // ===== Estado del formulario =====
     var subjectName   by remember { mutableStateOf("") }
     var credits       by remember { mutableStateOf("3") }
     var location      by remember { mutableStateOf("") }
     var selectedColor by remember { mutableStateOf(SUBJECT_COLORS[0].value) }
+    var selectedDays  by remember { mutableStateOf(setOf<Int>()) }
 
-    // Días seleccionados (1=Lun, 7=Dom)
-    var selectedDays by remember { mutableStateOf(setOf<Int>()) }
+    // Modo horario unico vs distinto por dia
+    var sameScheduleAllDays by remember { mutableStateOf(true) }
 
-    // UNA sola franja horaria que aplica a TODOS los días seleccionados (intuitivo)
-    var startHour by remember { mutableStateOf(8) }
-    var endHour   by remember { mutableStateOf(10) }
+    // Modo unico: una sola hora global
+    var globalStart by remember { mutableStateOf(DEFAULT_START) }
+    var globalEnd   by remember { mutableStateOf(DEFAULT_END) }
 
-    var expandedStart by remember { mutableStateOf(false) }
-    var expandedEnd   by remember { mutableStateOf(false) }
+    // Modo por dia: hora por cada dia seleccionado
+    val perDayHours = remember { mutableStateMapOf<Int, DayHours>() }
 
-    // Mensaje de validación
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var dataLoaded   by remember { mutableStateOf(!isEditing) }
+
+    // ===== Cargar datos existentes al EDITAR =====
+    LaunchedEffect(isEditing, subjectId) {
+        if (isEditing && subjectId != null) {
+            viewModel.loadSubjectDetail(subjectId)
+        }
+    }
+
+    val detailState by viewModel.detailState.collectAsState()
+
+    // Cuando carga el detalle de la materia a editar, prellenamos el formulario.
+    LaunchedEffect(detailState.subject, detailState.schedule) {
+        val s = detailState.subject
+        if (isEditing && !dataLoaded && s != null && s.id == subjectId) {
+            subjectName   = s.name
+            credits       = s.credits.toString()
+            selectedColor = Color(s.color.toInt())
+
+            val blocks = detailState.schedule
+            selectedDays = blocks.map { it.dayOfWeek }.toSet()
+
+            // Llenar horarios por día
+            perDayHours.clear()
+            blocks.forEach { b ->
+                perDayHours[b.dayOfWeek] = DayHours(b.startMinutes / 60, b.endMinutes / 60)
+            }
+
+            // Detectar si todos los días tienen el mismo horario
+            val unique = blocks.map { it.startMinutes to it.endMinutes }.distinct()
+            sameScheduleAllDays = unique.size <= 1
+            if (sameScheduleAllDays && blocks.isNotEmpty()) {
+                globalStart = blocks.first().startMinutes / 60
+                globalEnd   = blocks.first().endMinutes / 60
+            }
+
+            // Ubicación: tomamos la del primer bloque (asumiendo es la misma para todos)
+            location = blocks.firstOrNull()?.location.orEmpty()
+
+            dataLoaded = true
+        }
+    }
 
     Scaffold(
         containerColor = Color(0xFF2F024C),
@@ -120,7 +167,7 @@ fun SubjectEditorScreen(
             Spacer(Modifier.height(dimens.gapM.dp))
 
             Text(
-                text       = if (subjectId == null || subjectId == 0L) "Nueva materia" else "Editar materia",
+                text       = if (isEditing) "Editar materia" else "Nueva materia",
                 color      = Color.White,
                 fontFamily = openSans,
                 fontWeight = FontWeight.SemiBold,
@@ -130,16 +177,14 @@ fun SubjectEditorScreen(
 
             Spacer(Modifier.height(dimens.gapM.dp))
 
-            // === Nombre, créditos, ubicación ===
             LabeledField("Nombre de la materia", subjectName) { subjectName = it }
 
             Spacer(Modifier.height(dimens.gapM.dp))
 
-            LabeledField("Créditos", credits) { credits = it }
+            LabeledField("Créditos", credits) { credits = it.filter { c -> c.isDigit() } }
 
             Spacer(Modifier.height(dimens.gapL.dp))
 
-            // === Color (grid 4x3 con 12 colores) ===
             SectionTitle("Color de la materia")
             Spacer(Modifier.height(10.dp))
             ColorPickerGrid(
@@ -149,7 +194,7 @@ fun SubjectEditorScreen(
 
             Spacer(Modifier.height(dimens.gapL.dp))
 
-            // === Días de clase (estilo Google Calendar) ===
+            // ===== Días de clase =====
             SectionTitle("Días de clase")
             Spacer(Modifier.height(6.dp))
             Text(
@@ -164,52 +209,89 @@ fun SubjectEditorScreen(
                 selectedDays  = selectedDays,
                 accentColor   = selectedColor,
                 onDayToggle   = { day ->
-                    selectedDays = if (day in selectedDays) selectedDays - day
-                                   else selectedDays + day
+                    selectedDays = if (day in selectedDays) {
+                        perDayHours.remove(day)
+                        selectedDays - day
+                    } else {
+                        // Inicializa la hora del nuevo día (copia las globales)
+                        if (!sameScheduleAllDays && !perDayHours.containsKey(day)) {
+                            perDayHours[day] = DayHours(globalStart, globalEnd)
+                        }
+                        selectedDays + day
+                    }
                 }
             )
 
             Spacer(Modifier.height(dimens.gapL.dp))
 
-            // === Horario ===
+            // ===== Horario =====
             SectionTitle("Horario")
             Spacer(Modifier.height(6.dp))
-            Text(
-                text       = "Esta franja horaria aplica a todos los días seleccionados",
-                color      = Color.White.copy(alpha = 0.7f),
-                fontFamily = openSans,
-                fontSize   = 12.sp,
-                modifier   = Modifier.padding(horizontal = 20.dp)
-            )
-            Spacer(Modifier.height(10.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                HourDropdown(
-                    label     = "Inicia",
-                    value     = startHour,
-                    hours     = (6..21).toList(),
-                    expanded  = expandedStart,
-                    onExpand  = { expandedStart = it },
-                    onSelect  = { h ->
-                        startHour = h
-                        if (endHour <= h) endHour = (h + 1).coerceAtMost(22)
-                    },
-                    modifier  = Modifier.weight(1f)
+            // Toggle: misma hora todos los días vs hora distinta por día
+            ScheduleModeToggle(
+                same = sameScheduleAllDays,
+                onChange = { newValue ->
+                    sameScheduleAllDays = newValue
+                    if (!newValue) {
+                        // Cambia a modo "por día": inicializa con la hora global
+                        selectedDays.forEach { d ->
+                            if (!perDayHours.containsKey(d)) {
+                                perDayHours[d] = DayHours(globalStart, globalEnd)
+                            }
+                        }
+                    }
+                }
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            if (sameScheduleAllDays) {
+                // ----- MODO 1: una sola franja para todos los días -----
+                Text(
+                    text       = "Esta franja aplica a todos los días seleccionados",
+                    color      = Color.White.copy(alpha = 0.7f),
+                    fontFamily = openSans,
+                    fontSize   = 12.sp,
+                    modifier   = Modifier.padding(horizontal = 20.dp)
                 )
-                HourDropdown(
-                    label     = "Termina",
-                    value     = endHour,
-                    hours     = ((startHour + 1)..22).toList(),
-                    expanded  = expandedEnd,
-                    onExpand  = { expandedEnd = it },
-                    onSelect  = { endHour = it },
-                    modifier  = Modifier.weight(1f)
+                Spacer(Modifier.height(10.dp))
+
+                HourRangePicker(
+                    startHour = globalStart,
+                    endHour   = globalEnd,
+                    onChange  = { s, e ->
+                        globalStart = s
+                        globalEnd   = e
+                    }
                 )
+            } else {
+                // ----- MODO 2: una franja por cada día -----
+                if (selectedDays.isEmpty()) {
+                    Text(
+                        text       = "Primero selecciona los días arriba",
+                        color      = Color.White.copy(alpha = 0.65f),
+                        fontFamily = openSans,
+                        fontSize   = 12.sp,
+                        modifier   = Modifier.padding(horizontal = 20.dp)
+                    )
+                } else {
+                    selectedDays.sorted().forEach { day ->
+                        val dayLabel = dayLongName(day)
+                        val current  = perDayHours[day] ?: DayHours(DEFAULT_START, DEFAULT_END)
+
+                        DayScheduleRow(
+                            dayName     = dayLabel,
+                            startHour   = current.start,
+                            endHour     = current.end,
+                            accentColor = selectedColor,
+                            onChange    = { s, e ->
+                                perDayHours[day] = DayHours(s, e)
+                            }
+                        )
+                        Spacer(Modifier.height(10.dp))
+                    }
+                }
             }
 
             Spacer(Modifier.height(dimens.gapM.dp))
@@ -218,24 +300,35 @@ fun SubjectEditorScreen(
 
             Spacer(Modifier.height(dimens.gapL.dp))
 
-            // === Resumen visual antes de guardar ===
+            // Preview de la materia
             if (selectedDays.isNotEmpty() && subjectName.isNotBlank()) {
                 SubjectPreview(
                     name      = subjectName,
                     color     = selectedColor,
                     days      = selectedDays,
-                    startHour = startHour,
-                    endHour   = endHour,
+                    same      = sameScheduleAllDays,
+                    globalStart = globalStart,
+                    globalEnd   = globalEnd,
+                    perDayHours = perDayHours,
                     location  = location
                 )
                 Spacer(Modifier.height(dimens.gapL.dp))
             }
 
-            // === Botón guardar ===
+            // Botón guardar
             SaveButton(
-                label       = if (subjectId == null || subjectId == 0L) "Crear materia" else "Guardar cambios",
+                label       = if (isEditing) "Guardar cambios" else "Crear materia",
                 accentColor = selectedColor
             ) {
+                // Construir los bloques candidatos según el modo
+                val candidateBlocks = selectedDays.map { day ->
+                    val s = if (sameScheduleAllDays) globalStart else
+                        perDayHours[day]?.start ?: globalStart
+                    val e = if (sameScheduleAllDays) globalEnd else
+                        perDayHours[day]?.end ?: globalEnd
+                    Triple(day, s * 60, e * 60)
+                }
+
                 // Validaciones
                 when {
                     subjectName.isBlank() ->
@@ -244,17 +337,17 @@ fun SubjectEditorScreen(
                         errorMessage = "Los créditos deben ser un número mayor a 0."
                     selectedDays.isEmpty() ->
                         errorMessage = "Selecciona al menos un día de clase."
-                    endHour <= startHour ->
-                        errorMessage = "La hora de fin debe ser mayor que la de inicio."
+                    candidateBlocks.any { it.third <= it.second } ->
+                        errorMessage = "La hora de fin debe ser mayor que la de inicio en todos los días."
                     else -> {
-                        // Verificar choques de horario
-                        val startMinutes = startHour * 60
-                        val endMinutes   = endHour * 60
-                        val hasConflict  = selectedDays.any { day ->
+                        // Conflictos con OTRAS materias (se excluyen los bloques de ESTA materia
+                        // si estamos editando — para que no marque conflicto consigo misma)
+                        val hasConflict = candidateBlocks.any { (day, startMin, endMin) ->
                             existingBlocks.any { block ->
+                                block.subjectId != (subjectId ?: -1L) &&
                                 block.dayOfWeek == day &&
-                                startMinutes < block.endMinutes &&
-                                endMinutes   > block.startMinutes
+                                startMin < block.endMinutes &&
+                                endMin   > block.startMinutes
                             }
                         }
                         if (hasConflict) {
@@ -262,7 +355,6 @@ fun SubjectEditorScreen(
                             return@SaveButton
                         }
 
-                        // Todo OK - guardar
                         scope.launch {
                             val argb =
                                 ((selectedColor.alpha * 255).toInt() shl 24) or
@@ -273,17 +365,23 @@ fun SubjectEditorScreen(
                             val savedId = viewModel.saveSubject(
                                 id      = subjectId,
                                 userId  = user.uid,
-                                name    = subjectName,
+                                name    = subjectName.trim(),
                                 color   = argb.toLong(),
                                 credits = credits.toIntOrNull() ?: 3
                             )
 
-                            selectedDays.forEach { day ->
+                            // Al editar, borramos primero los bloques antiguos
+                            if (isEditing) {
+                                viewModel.deleteAllBlocksForSubject(savedId)
+                            }
+
+                            // Agregamos los nuevos bloques
+                            candidateBlocks.forEach { (day, sMin, eMin) ->
                                 viewModel.addScheduleBlock(
                                     subjectId    = savedId,
                                     day          = day,
-                                    startMinutes = startMinutes,
-                                    endMinutes   = endMinutes,
+                                    startMinutes = sMin,
+                                    endMinutes   = eMin,
                                     location     = location
                                 )
                             }
@@ -299,18 +397,11 @@ fun SubjectEditorScreen(
             Spacer(Modifier.height(dimens.gapL.dp * 2))
         }
 
-        // Diálogo de error
         if (errorMessage != null) {
             AlertDialog(
                 onDismissRequest = { errorMessage = null },
                 title = { Text("No se pudo guardar", fontFamily = openSans) },
-                text  = {
-                    Text(
-                        text       = errorMessage ?: "",
-                        fontFamily = openSans,
-                        fontSize   = 14.sp
-                    )
-                },
+                text  = { Text(errorMessage ?: "", fontFamily = openSans, fontSize = 14.sp) },
                 confirmButton = {
                     TextButton(onClick = { errorMessage = null }) {
                         Text("Entendido", fontFamily = openSans)
@@ -322,8 +413,20 @@ fun SubjectEditorScreen(
 }
 
 // ======================================================
-// COMPONENTES REUTILIZABLES
+// COMPONENTES
 // ======================================================
+
+private fun dayLongName(day: Int): String = when (day) {
+    1 -> "Lunes";   2 -> "Martes";   3 -> "Miércoles"
+    4 -> "Jueves";  5 -> "Viernes";  6 -> "Sábado";   7 -> "Domingo"
+    else -> "Día $day"
+}
+
+private fun dayShortName(day: Int): String = when (day) {
+    1 -> "Lun"; 2 -> "Mar"; 3 -> "Mié"
+    4 -> "Jue"; 5 -> "Vie"; 6 -> "Sáb"; 7 -> "Dom"
+    else -> "?"
+}
 
 @Composable
 private fun SectionTitle(text: String) {
@@ -361,10 +464,50 @@ private fun LabeledField(label: String, value: String, onValueChange: (String) -
     }
 }
 
-/**
- * Selector de días estilo Google Calendar: chips circulares L M M J V S D.
- * Visual feedback con el color de la materia.
- */
+@Composable
+private fun ScheduleModeToggle(
+    same: Boolean,
+    onChange: (Boolean) -> Unit
+) {
+    val openSans = FontFamily(Font(R.font.open_sans_regular))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.White.copy(alpha = 0.08f))
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text       = "Misma hora todos los días",
+                color      = Color.White,
+                fontFamily = openSans,
+                fontSize   = 14.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = if (same) "La franja aplica a todos los días seleccionados"
+                       else      "Cada día tiene su propio horario",
+                color      = Color.White.copy(alpha = 0.7f),
+                fontFamily = openSans,
+                fontSize   = 12.sp
+            )
+        }
+        Switch(
+            checked = same,
+            onCheckedChange = onChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor   = Color.White,
+                checkedTrackColor   = Color(0xFF8E5BFF),
+                uncheckedThumbColor = Color.White,
+                uncheckedTrackColor = Color.White.copy(alpha = 0.25f)
+            )
+        )
+    }
+}
+
 @Composable
 private fun DayPickerCalendarStyle(
     selectedDays: Set<Int>,
@@ -383,14 +526,11 @@ private fun DayPickerCalendarStyle(
         days.forEachIndexed { index, label ->
             val dayNumber = index + 1
             val selected  = dayNumber in selectedDays
-
             Box(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(
-                        color = if (selected) accentColor else Color.White.copy(alpha = 0.10f)
-                    )
+                    .background(if (selected) accentColor else Color.White.copy(alpha = 0.10f))
                     .border(
                         width = 1.5.dp,
                         color = if (selected) accentColor else Color.White.copy(alpha = 0.35f),
@@ -411,10 +551,6 @@ private fun DayPickerCalendarStyle(
     }
 }
 
-/**
- * Grid de 12 colores en 3 filas de 4 columnas.
- * El color seleccionado muestra un checkmark blanco.
- */
 @Composable
 private fun ColorPickerGrid(
     selectedColor: Color,
@@ -460,6 +596,110 @@ private fun ColorPickerGrid(
     }
 }
 
+/** Selector de hora inicio/fin lado a lado (modo "misma hora"). */
+@Composable
+private fun HourRangePicker(
+    startHour: Int,
+    endHour: Int,
+    onChange: (Int, Int) -> Unit
+) {
+    var expandedStart by remember { mutableStateOf(false) }
+    var expandedEnd   by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        HourDropdown(
+            label    = "Inicia",
+            value    = startHour,
+            hours    = (6..21).toList(),
+            expanded = expandedStart,
+            onExpand = { expandedStart = it },
+            onSelect = { newStart ->
+                val newEnd = if (endHour <= newStart) (newStart + 1).coerceAtMost(22) else endHour
+                onChange(newStart, newEnd)
+            },
+            modifier = Modifier.weight(1f)
+        )
+        HourDropdown(
+            label    = "Termina",
+            value    = endHour,
+            hours    = ((startHour + 1)..22).toList(),
+            expanded = expandedEnd,
+            onExpand = { expandedEnd = it },
+            onSelect = { newEnd -> onChange(startHour, newEnd) },
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+/** Fila con día + selector inicio/fin (modo "horas distintas"). */
+@Composable
+private fun DayScheduleRow(
+    dayName: String,
+    startHour: Int,
+    endHour: Int,
+    accentColor: Color,
+    onChange: (Int, Int) -> Unit
+) {
+    val openSans = FontFamily(Font(R.font.open_sans_regular))
+    var expandedStart by remember { mutableStateOf(false) }
+    var expandedEnd   by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.White.copy(alpha = 0.07f))
+            .padding(12.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .clip(CircleShape)
+                    .background(accentColor)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text       = dayName,
+                color      = Color.White,
+                fontFamily = openSans,
+                fontWeight = FontWeight.SemiBold,
+                fontSize   = 14.sp
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            HourDropdown(
+                label    = "Inicia",
+                value    = startHour,
+                hours    = (6..21).toList(),
+                expanded = expandedStart,
+                onExpand = { expandedStart = it },
+                onSelect = { newStart ->
+                    val newEnd = if (endHour <= newStart) (newStart + 1).coerceAtMost(22) else endHour
+                    onChange(newStart, newEnd)
+                },
+                modifier = Modifier.weight(1f)
+            )
+            HourDropdown(
+                label    = "Termina",
+                value    = endHour,
+                hours    = ((startHour + 1)..22).toList(),
+                expanded = expandedEnd,
+                onExpand = { expandedEnd = it },
+                onSelect = { newEnd -> onChange(startHour, newEnd) },
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HourDropdown(
@@ -474,8 +714,8 @@ private fun HourDropdown(
     val openSans = FontFamily(Font(R.font.open_sans_regular))
 
     Column(modifier = modifier) {
-        Text(text = label, color = Color.White, fontFamily = openSans, fontSize = 14.sp)
-        Spacer(Modifier.height(6.dp))
+        Text(text = label, color = Color.White, fontFamily = openSans, fontSize = 13.sp)
+        Spacer(Modifier.height(4.dp))
 
         ExposedDropdownMenuBox(
             expanded = expanded,
@@ -488,7 +728,7 @@ private fun HourDropdown(
                 modifier      = Modifier
                     .menuAnchor()
                     .fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp),
+                shape         = RoundedCornerShape(10.dp),
                 trailingIcon  = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor   = Color.White,
@@ -497,7 +737,6 @@ private fun HourDropdown(
                     unfocusedIndicatorColor = Color.Transparent
                 )
             )
-
             ExposedDropdownMenu(
                 expanded         = expanded,
                 onDismissRequest = { onExpand(false) }
@@ -516,21 +755,28 @@ private fun HourDropdown(
     }
 }
 
-/**
- * Tarjeta de preview que muestra cómo se verá la materia antes de guardarla.
- */
 @Composable
 private fun SubjectPreview(
     name: String,
     color: Color,
     days: Set<Int>,
-    startHour: Int,
-    endHour: Int,
+    same: Boolean,
+    globalStart: Int,
+    globalEnd: Int,
+    perDayHours: Map<Int, DayHours>,
     location: String
 ) {
     val openSans = FontFamily(Font(R.font.open_sans_regular))
-    val dayNames = mapOf(1 to "Lun", 2 to "Mar", 3 to "Mié", 4 to "Jue", 5 to "Vie", 6 to "Sáb", 7 to "Dom")
-    val daysText = days.sorted().joinToString(", ") { dayNames[it] ?: "" }
+
+    val scheduleText = if (same) {
+        val daysText = days.sorted().joinToString(", ") { dayShortName(it) }
+        "$daysText · %02d:00 – %02d:00".format(globalStart, globalEnd)
+    } else {
+        days.sorted().joinToString(" · ") { d ->
+            val hrs = perDayHours[d] ?: DayHours(globalStart, globalEnd)
+            "${dayShortName(d)} %02d:00–%02d:00".format(hrs.start, hrs.end)
+        }
+    }
 
     Card(
         modifier = Modifier
@@ -539,9 +785,7 @@ private fun SubjectPreview(
         colors = CardDefaults.cardColors(containerColor = color),
         shape  = RoundedCornerShape(14.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text       = name,
                 color      = Color.White,
@@ -551,10 +795,10 @@ private fun SubjectPreview(
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text       = "$daysText · %02d:00 – %02d:00".format(startHour, endHour),
+                text       = scheduleText,
                 color      = Color.White.copy(alpha = 0.95f),
                 fontFamily = openSans,
-                fontSize   = 14.sp
+                fontSize   = 13.sp
             )
             if (location.isNotBlank()) {
                 Spacer(Modifier.height(2.dp))
@@ -562,7 +806,7 @@ private fun SubjectPreview(
                     text       = location,
                     color      = Color.White.copy(alpha = 0.85f),
                     fontFamily = openSans,
-                    fontSize   = 13.sp
+                    fontSize   = 12.sp
                 )
             }
         }
@@ -572,7 +816,6 @@ private fun SubjectPreview(
 @Composable
 private fun SaveButton(label: String, accentColor: Color, onClick: () -> Unit) {
     val openSans = FontFamily(Font(R.font.open_sans_regular))
-
     Button(
         onClick  = onClick,
         modifier = Modifier
