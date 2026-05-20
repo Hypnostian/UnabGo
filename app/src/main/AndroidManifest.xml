@@ -43,24 +43,34 @@
         android:theme="@style/Theme.UnabGo">
 
         <!--
-            screenOrientation=userPortrait (soft-lock):
-              - En PORTRAIT funciona como "portrait" normal en cualquier celular.
-              - PERO el sistema NO activa el overlay "Gira tu telefono" que aparece
-                en Android 14/15/16 emulators y dispositivos Xiaomi cuando se usa
-                "portrait" estricto. El sistema simplemente respeta la preferencia
-                del usuario en cuanto a rotacion.
+            CLAVE PARA ELIMINAR "Gira tu telefono" DE HYPEROS/MIUI/Pixel emulators:
 
-            resizeableActivity=true le indica al sistema que la app soporta tamanos
-            de ventana variables (foldables, multitask, escritorio), de modo que
-            NO entra en compatibility mode.
+            android.supports_size_changes = true le dice al OS que la app maneja
+            cambios de tamano de ventana correctamente (foldables, split screen,
+            tablets, freeform). Esto desactiva el "Display compatibility mode"
+            de Xiaomi/HyperOS que es el que muestra el overlay "Gira tu telefono".
+        -->
+        <meta-data
+            android:name="android.supports_size_changes"
+            android:value="true" />
 
-            configChanges: la app maneja los cambios de configuracion sin reinicios.
+        <!--
+            NO declaramos screenOrientation a proposito.
+              - Si lo ponemos "portrait", HyperOS/Pixel 8 emulator muestran el
+                overlay "Gira tu telefono para ver el contenido".
+              - Sin ese atributo, la app respeta la rotacion natural del
+                dispositivo. Los Composables son responsive (LazyColumn,
+                Column con verticalScroll, fillMaxSize) y se ven bien en
+                portrait Y landscape.
+              - En portrait (uso normal) la experiencia es identica a antes.
+
+            resizeableActivity=true confirma soporte para multi-window.
+            configChanges evita reinicios al rotar/cambiar idioma.
         -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:screenOrientation="userPortrait"
             android:resizeableActivity="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density|locale|fontScale|layoutDirection|uiMode|keyboardHidden"
             android:theme="@style/Theme.UnabGo">
