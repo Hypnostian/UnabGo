@@ -142,34 +142,48 @@ fun SoyUnabButton(
 
                     destino.startsWith("app:carnet") -> {
 
-                        // 🔐 Verificar si hay usuario logueado
+                        // Verificar si hay usuario logueado
                         val currentUser = FirebaseAuth.getInstance().currentUser
                         if (currentUser == null) {
-                            // Si NO está logueado → redirigir a Login
                             navController?.navigate(Routes.LOGIN)
                             return@clickable
                         }
 
-                        // Si está logueado → abrir la app del carnet
-                        val appPackage = "com.veriddica.vecard"
-                        val launchIntent = context.packageManager.getLaunchIntentForPackage(appPackage)
+                        // Lista de posibles package names para la app de carnet UNAB
+                        // (Veridda VECard puede tener varios nombres según la versión).
+                        // Estos package names DEBEN estar declarados en <queries> del Manifest
+                        // para que Android 11+ permita verificar si están instalados.
+                        val candidatePackages = listOf(
+                            "com.veriddica.vecard",
+                            "co.edu.unab.vecard",
+                            "co.edu.unab.carnet"
+                        )
+
+                        // Buscar la primera app instalada
+                        val launchIntent = candidatePackages
+                            .firstNotNullOfOrNull { pkg ->
+                                context.packageManager.getLaunchIntentForPackage(pkg)
+                            }
 
                         if (launchIntent != null) {
+                            // App instalada -> abrirla
+                            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             context.startActivity(launchIntent)
                         } else {
-                            val playIntent = Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("https://play.google.com/store/apps/details?id=$appPackage")
-                            )
-
+                            // No instalada -> intentar Play Store (primero con market://, luego https)
+                            val playPackage = candidatePackages.first()
+                            val marketUri = Uri.parse("market://details?id=$playPackage")
+                            val marketIntent = Intent(Intent.ACTION_VIEW, marketUri)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             try {
-                                context.startActivity(playIntent)
+                                context.startActivity(marketIntent)
                             } catch (e: ActivityNotFoundException) {
+                                val webUri = Uri.parse(
+                                    "https://play.google.com/store/apps/details?id=$playPackage"
+                                )
                                 context.startActivity(
-                                    Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("https://play.google.com/store/apps/details?id=$appPackage")
-                                    )
+                                    Intent(Intent.ACTION_VIEW, webUri)
+                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 )
                             }
                         }

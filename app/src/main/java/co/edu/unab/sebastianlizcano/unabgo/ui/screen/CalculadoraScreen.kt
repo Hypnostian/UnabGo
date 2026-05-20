@@ -5,18 +5,22 @@ import co.edu.unab.sebastianlizcano.unabgo.ui.theme.LocalAppDimens
 import co.edu.unab.sebastianlizcano.unabgo.navigation.Routes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -32,12 +36,29 @@ import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.AcademicViewModel
 import com.google.firebase.auth.FirebaseAuth
 import java.util.Locale
 
+/**
+ * Devuelve un color según el valor del promedio (escala 0-5):
+ *   >= 3.5  -> verde (excelente)
+ *   3.0-3.49 -> amarillo (aprobado justo)
+ *   < 3.0   -> rojo (en riesgo)
+ *   null    -> gris claro
+ */
+private fun colorForAverage(avg: Float?): Color = when {
+    avg == null    -> Color(0xFFAAAAAA)
+    avg >= 3.5f    -> Color(0xFF4ADE80)  // verde
+    avg >= 3.0f    -> Color(0xFFFACC15)  // amarillo
+    else           -> Color(0xFFF87171)  // rojo
+}
+
+private fun formatGrade(value: Float?): String =
+    value?.let { String.format(Locale.getDefault(), "%.2f", it) } ?: "--"
+
 @Composable
 fun CalculadoraScreen(
     navController: NavController,
     viewModel: AcademicViewModel
 ) {
-    val dimens = LocalAppDimens.current
+    val dimens   = LocalAppDimens.current
     val openSans = FontFamily(Font(R.font.open_sans_regular))
 
     val user = FirebaseAuth.getInstance().currentUser
@@ -56,152 +77,185 @@ fun CalculadoraScreen(
 
     val uiState by viewModel.uiState.collectAsState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF2F024C))
-    ) {
+    Scaffold(
+        containerColor = Color(0xFF2F024C),
+        bottomBar = { BottomNavBar(navController = navController) },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate(Routes.SUBJECT_EDITOR) },
+                containerColor = Color(0xFF8E5BFF),
+                contentColor   = Color.White,
+                shape = CircleShape
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Agregar materia")
+            }
+        }
+    ) { innerPadding ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 90.dp)
+                .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
 
             HeaderBar(
                 navController = navController,
-                // Puedes cambiar este string más adelante por uno específico de calculadora
-                subtitleRes = R.string.header_schedule
+                subtitleRes   = R.string.header_schedule
             )
 
-            Spacer(modifier = Modifier.height(dimens.gapM.dp))
+            Spacer(Modifier.height(dimens.gapM.dp))
 
-            // Promedio global en círculo
-            GlobalAverageCircle(
-                average = uiState.globalAverage,
-                openSans = openSans
+            // ===== Promedio global con visual =====
+            GlobalAverageCard(
+                average     = uiState.globalAverage,
+                openSans    = openSans,
+                subjectsCount = uiState.subjects.size
             )
 
-            Spacer(modifier = Modifier.height(dimens.gapL.dp))
+            Spacer(Modifier.height(dimens.gapL.dp))
 
-            // Lista de materias
             if (uiState.subjects.isEmpty()) {
-                EmptySubjectsMessage(openSans = openSans)
+                EmptySubjectsMessage(openSans)
             } else {
                 SubjectsAverageList(
-                    subjects = uiState.subjects,
+                    subjects        = uiState.subjects,
                     subjectAverages = uiState.subjectAverages,
-                    openSans = openSans,
-                    onDetailClick = { subjectId ->
-                        navController.navigate("calculatorDetail/$subjectId")
-                    },
-                    onEditClick = { subjectId ->
-                        navController.navigate("subjectEditor/$subjectId")
-                    }
+                    openSans        = openSans,
+                    onDetailClick   = { id -> navController.navigate("calculatorDetail/$id") },
+                    onEditClick     = { id -> navController.navigate("subjectEditor/$id") }
                 )
             }
 
-            Spacer(modifier = Modifier.height(dimens.gapL.dp))
-
-            // Botón para agregar materia
-            Button(
-                onClick = { navController.navigate(Routes.SUBJECT_EDITOR) },
-                modifier = Modifier
-                    .padding(horizontal = 32.dp)
-                    .height(dimens.buttonHeight.dp)
-                    .fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF5A237B),
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "Agregar materia",
-                    fontFamily = openSans,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = (dimens.body * 1.05f).sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(dimens.gapM.dp))
-        }
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-        ) {
-            BottomNavBar(navController = navController)
+            Spacer(Modifier.height(dimens.gapL.dp * 2))
         }
     }
 }
 
-@Composable
-private fun GlobalAverageCircle(
-    average: Float?,
-    openSans: FontFamily
-) {
-    val averageText = average?.let { String.format(Locale.getDefault(), "%.2f", it) } ?: "--"
+// ======================================================
+// COMPONENTES
+// ======================================================
 
-    Column(
+@Composable
+private fun GlobalAverageCard(
+    average: Float?,
+    openSans: FontFamily,
+    subjectsCount: Int
+) {
+    val avgColor = colorForAverage(average)
+    val avgText  = formatGrade(average)
+    val message  = when {
+        average == null      -> "Aún no hay notas registradas"
+        average >= 4.0f      -> "¡Excelente!"
+        average >= 3.5f      -> "¡Vas muy bien!"
+        average >= 3.0f      -> "Vas aprobando"
+        else                 -> "¡Ánimo, puedes mejorar!"
+    }
+
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(horizontal = 16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF3A105D)),
+        shape  = RoundedCornerShape(20.dp)
     ) {
-        Text(
-            text = "Promedio global",
-            color = Color.White,
-            fontFamily = openSans,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Box(
+        Column(
             modifier = Modifier
-                .size(140.dp)
-                .background(Color(0xFF5A237B), shape = CircleShape),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = averageText,
-                color = Color.White,
+                text       = "Promedio acumulado",
+                color      = Color.White,
                 fontFamily = openSans,
-                fontWeight = FontWeight.Bold,
-                fontSize = 32.sp,
-                textAlign = TextAlign.Center
+                fontSize   = 15.sp,
+                fontWeight = FontWeight.SemiBold
             )
+
+            Spacer(Modifier.height(14.dp))
+
+            // Círculo de promedio con borde de color según valor
+            Box(
+                modifier = Modifier
+                    .size(140.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF2F024C))
+                    .border(width = 6.dp, color = avgColor, shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text       = avgText,
+                        color      = Color.White,
+                        fontFamily = openSans,
+                        fontWeight = FontWeight.Bold,
+                        fontSize   = 36.sp
+                    )
+                    Text(
+                        text       = "de 5.00",
+                        color      = Color.White.copy(alpha = 0.7f),
+                        fontFamily = openSans,
+                        fontSize   = 12.sp
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            Text(
+                text       = message,
+                color      = avgColor,
+                fontFamily = openSans,
+                fontWeight = FontWeight.SemiBold,
+                fontSize   = 14.sp
+            )
+
+            if (subjectsCount > 0) {
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text       = "$subjectsCount ${if (subjectsCount == 1) "materia registrada" else "materias registradas"}",
+                    color      = Color.White.copy(alpha = 0.6f),
+                    fontFamily = openSans,
+                    fontSize   = 12.sp
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun EmptySubjectsMessage(openSans: FontFamily) {
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(horizontal = 16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.08f)),
+        shape  = RoundedCornerShape(16.dp)
     ) {
-        Text(
-            text = "Aún no has registrado materias.",
-            color = Color.White,
-            fontFamily = openSans,
-            fontSize = 14.sp,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "Agrega una materia para comenzar a calcular tu promedio.",
-            color = Color.White.copy(alpha = 0.8f),
-            fontFamily = openSans,
-            fontSize = 13.sp,
-            textAlign = TextAlign.Center
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text       = "Aún no has registrado materias",
+                color      = Color.White,
+                fontFamily = openSans,
+                fontWeight = FontWeight.SemiBold,
+                fontSize   = 15.sp,
+                textAlign  = TextAlign.Center
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text       = "Toca el botón + para crear tu primera materia y empezar a calcular tu promedio.",
+                color      = Color.White.copy(alpha = 0.75f),
+                fontFamily = openSans,
+                fontSize   = 13.sp,
+                textAlign  = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -213,30 +267,26 @@ private fun SubjectsAverageList(
     onDetailClick: (Long) -> Unit,
     onEditClick: (Long) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    ) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         Text(
-            text = "Promedio por materia",
-            color = Color.White,
+            text       = "Promedio por materia",
+            color      = Color.White,
             fontFamily = openSans,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(bottom = 8.dp)
+            fontSize   = 16.sp,
+            modifier   = Modifier.padding(bottom = 10.dp)
         )
 
         subjects.forEach { subject ->
             val avg = subjectAverages[subject.id]
             SubjectAverageCard(
-                subject = subject,
-                average = avg,
-                openSans = openSans,
+                subject       = subject,
+                average       = avg,
+                openSans      = openSans,
                 onDetailClick = { onDetailClick(subject.id) },
-                onEditClick = { onEditClick(subject.id) }
+                onEditClick   = { onEditClick(subject.id) }
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
         }
     }
 }
@@ -249,89 +299,79 @@ private fun SubjectAverageCard(
     onDetailClick: () -> Unit,
     onEditClick: () -> Unit
 ) {
-    val avgText = average?.let { String.format(Locale.getDefault(), "%.2f", it) } ?: "--"
+    val avgText  = formatGrade(average)
+    val avgColor = colorForAverage(average)
+    val subjectColor = Color(subject.color.toInt())
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF3A105D)
-        ),
-        shape = RoundedCornerShape(12.dp)
+        modifier = Modifier.fillMaxWidth().clickable { onDetailClick() },
+        colors   = CardDefaults.cardColors(containerColor = Color(0xFF3A105D)),
+        shape    = RoundedCornerShape(14.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
+            modifier = Modifier.fillMaxWidth().padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            // Color de la materia
+            // Color de la materia (chip vertical)
             Box(
                 modifier = Modifier
-                    .size(22.dp)
-                    .background(Color(subject.color.toInt()), shape = RoundedCornerShape(6.dp))
+                    .size(width = 6.dp, height = 48.dp)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(subjectColor)
             )
 
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(Modifier.width(12.dp))
 
             // Nombre y créditos
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = subject.name,
-                    color = Color.White,
+                    text       = subject.name,
+                    color      = Color.White,
                     fontFamily = openSans,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp
+                    fontSize   = 15.sp
                 )
                 Text(
-                    text = "${subject.credits} créditos",
-                    color = Color.White.copy(alpha = 0.8f),
+                    text       = "${subject.credits} créditos",
+                    color      = Color.White.copy(alpha = 0.7f),
                     fontFamily = openSans,
-                    fontSize = 12.sp
+                    fontSize   = 12.sp
                 )
             }
 
-            // Promedio de la materia
-            Column(
-                horizontalAlignment = Alignment.End
-            ) {
+            // Promedio con color
+            Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = avgText,
-                    color = Color.White,
+                    text       = avgText,
+                    color      = avgColor,
                     fontFamily = openSans,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    fontSize   = 20.sp
                 )
                 Text(
-                    text = "Promedio",
-                    color = Color.White.copy(alpha = 0.7f),
+                    text       = "Promedio",
+                    color      = Color.White.copy(alpha = 0.6f),
                     fontFamily = openSans,
-                    fontSize = 11.sp
+                    fontSize   = 10.sp
                 )
             }
 
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(Modifier.width(8.dp))
 
-            // Botón editar
             IconButton(onClick = onEditClick) {
                 Icon(
-                    imageVector = Icons.Filled.Edit,
+                    imageVector        = Icons.Filled.Edit,
                     contentDescription = "Editar materia",
-                    tint = Color.White
+                    tint               = Color.White.copy(alpha = 0.8f)
                 )
             }
-
-            // Botón detalle
-            IconButton(onClick = onDetailClick) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowForward,
-                    contentDescription = "Ver detalle",
-                    tint = Color.White
-                )
-            }
+            Icon(
+                imageVector        = Icons.Filled.ChevronRight,
+                contentDescription = "Ver detalle",
+                tint               = Color.White.copy(alpha = 0.6f)
+            )
         }
     }
 }
+

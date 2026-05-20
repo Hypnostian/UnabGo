@@ -48,7 +48,9 @@ fun CreditosScreen(navController: NavController? = null) {
                     .size(20.dp)
                     .align(Alignment.TopStart)
                     .clickable {
-                        navController?.popBackStack("perfil", inclusive = false)
+                        // popBackStack() simple: vuelve a la pantalla anterior, sea cual sea.
+                        // Antes usaba popBackStack("perfil", false) y rompía si venías de otro flujo.
+                        navController?.popBackStack()
                     }
             )
         }

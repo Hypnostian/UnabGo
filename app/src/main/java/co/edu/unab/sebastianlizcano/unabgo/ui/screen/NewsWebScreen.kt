@@ -1,7 +1,6 @@
 package co.edu.unab.sebastianlizcano.unabgo.ui.screen
 
 import co.edu.unab.sebastianlizcano.unabgo.R
-import co.edu.unab.sebastianlizcano.unabgo.utils.LockOrientationPortrait
 
 import android.annotation.SuppressLint
 import android.webkit.WebChromeClient
@@ -24,9 +23,7 @@ fun NewsWebScreen(
     url: String?
 ) {
     val finalUrl = url?.takeIf { it.isNotBlank() } ?: "https://unab.edu.co/noticias/"
-
-    // Fuerza la orientación vertical mientras se muestra esta pantalla
-    LockOrientationPortrait()
+    // Orientación portrait gestionada por el Manifest (android:screenOrientation="portrait")
 
     Box(
         modifier = Modifier

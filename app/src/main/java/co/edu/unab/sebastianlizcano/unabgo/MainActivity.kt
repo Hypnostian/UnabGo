@@ -41,18 +41,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // =====================================================
-        // 🔥 OBTENER TOKEN FCM — NECESARIO PARA MENÚ MESSAGING
+        // OBTENER TOKEN FCM — Wrap en try/catch para que la app no crashee
+        // si Firebase no está inicializado (ej. cuota Spark agotada).
         // =====================================================
-        FirebaseMessaging.getInstance().token
-            .addOnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Log.e("UNABGO", "Error obteniendo token FCM", task.exception)
-                    return@addOnCompleteListener
+        try {
+            FirebaseMessaging.getInstance().token
+                .addOnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Log.w("UNABGO", "Token FCM no disponible: ${task.exception?.message}")
+                        return@addOnCompleteListener
+                    }
+                    Log.d("UNABGO", "TOKEN FCM: ${task.result}")
                 }
-
-                val token = task.result
-                Log.d("UNABGO", "TOKEN FCM: $token")
-            }
+        } catch (e: Exception) {
+            Log.w("UNABGO", "Firebase Messaging no disponible: ${e.message}")
+        }
 
         // PEDIR PERMISO DE NOTIFICACIONES (Android 13+)
 

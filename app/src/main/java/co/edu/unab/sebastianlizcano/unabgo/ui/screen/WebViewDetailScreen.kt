@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
-import co.edu.unab.sebastianlizcano.unabgo.utils.LockOrientationPortrait
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -22,9 +21,7 @@ fun WebViewDetailScreen(
     url: String,
     title: String
 ) {
-    // Forzar orientación vertical mientras se muestra el WebView
-    LockOrientationPortrait()
-
+    // Orientación gestionada por el Manifest
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -9,13 +9,16 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -29,9 +32,23 @@ import co.edu.unab.sebastianlizcano.unabgo.ui.viewmodel.AcademicViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
-private data class DaySchedule(
-    val startHour: Int,
-    val endHour: Int
+// 12 colores armónicos que destacan sobre el fondo morado #2F024C
+// Todos tienen buen contraste con texto blanco/negro.
+private data class SubjectColor(val name: String, val value: Color)
+
+private val SUBJECT_COLORS = listOf(
+    SubjectColor("Violeta",    Color(0xFF8E5BFF)),
+    SubjectColor("Magenta",    Color(0xFFE94BC4)),
+    SubjectColor("Rosa",       Color(0xFFFF6B9D)),
+    SubjectColor("Coral",      Color(0xFFFF7B5C)),
+    SubjectColor("Naranja",    Color(0xFFFF9F40)),
+    SubjectColor("Amarillo",   Color(0xFFFFCC4D)),
+    SubjectColor("Verde lima", Color(0xFFA8DA52)),
+    SubjectColor("Esmeralda",  Color(0xFF2EC4B6)),
+    SubjectColor("Turquesa",   Color(0xFF4CC9F0)),
+    SubjectColor("Azul",       Color(0xFF4361EE)),
+    SubjectColor("Índigo",     Color(0xFF7209B7)),
+    SubjectColor("Lavanda",    Color(0xFFC9B6FF))
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,9 +58,9 @@ fun SubjectEditorScreen(
     viewModel: AcademicViewModel,
     subjectId: Long? = null
 ) {
-    val dimens = LocalAppDimens.current
+    val dimens   = LocalAppDimens.current
     val openSans = FontFamily(Font(R.font.open_sans_regular))
-    val scope = rememberCoroutineScope()
+    val scope    = rememberCoroutineScope()
 
     val user = FirebaseAuth.getInstance().currentUser
 
@@ -65,46 +82,27 @@ fun SubjectEditorScreen(
         .collectAsState(initial = emptyList())
 
     // Estado de la materia
-    var subjectName by remember { mutableStateOf("") }
-    var credits by remember { mutableStateOf("3") }
-    var selectedColor by remember { mutableStateOf(Color(0xFF6C3FB8)) }
+    var subjectName   by remember { mutableStateOf("") }
+    var credits       by remember { mutableStateOf("3") }
+    var location      by remember { mutableStateOf("") }
+    var selectedColor by remember { mutableStateOf(SUBJECT_COLORS[0].value) }
 
-    // Días seleccionados
+    // Días seleccionados (1=Lun, 7=Dom)
     var selectedDays by remember { mutableStateOf(setOf<Int>()) }
 
-    // Día actualmente enfocado para editar horas
-    var focusedDay by remember { mutableStateOf<Int?>(null) }
+    // UNA sola franja horaria que aplica a TODOS los días seleccionados (intuitivo)
+    var startHour by remember { mutableStateOf(8) }
+    var endHour   by remember { mutableStateOf(10) }
 
-    // Horarios por día
-    val scheduleByDay = remember { mutableStateMapOf<Int, DaySchedule>() }
-
-    // Estados dropdown
     var expandedStart by remember { mutableStateOf(false) }
-    var expandedEnd by remember { mutableStateOf(false) }
+    var expandedEnd   by remember { mutableStateOf(false) }
 
-    val defaultStart = 8
-    val defaultEnd = 10
-
-    val currentStartHour: Int? = focusedDay?.let { day ->
-        scheduleByDay[day]?.startHour ?: defaultStart
-    }
-    val currentEndHour: Int? = focusedDay?.let { day ->
-        scheduleByDay[day]?.endHour ?: defaultEnd
-    }
-
-    val startHours = (6..21).toList()
-    val endHours: List<Int> = if (currentStartHour != null) {
-        ((currentStartHour + 1)..22).toList().ifEmpty { listOf(currentStartHour + 1) }
-    } else {
-        (7..22).toList()
-    }
-
-    // Mensaje de conflicto de horario
-    var conflictMessage by remember { mutableStateOf<String?>(null) }
+    // Mensaje de validación
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
         containerColor = Color(0xFF2F024C),
-        bottomBar = { BottomNavBar(navController = navController) }
+        bottomBar      = { BottomNavBar(navController = navController) }
     ) { innerPadding ->
 
         Column(
@@ -116,221 +114,206 @@ fun SubjectEditorScreen(
 
             HeaderBar(
                 navController = navController,
-                subtitleRes = R.string.header_schedule
+                subtitleRes   = R.string.header_schedule
             )
 
-            Spacer(modifier = Modifier.height(dimens.gapM.dp))
+            Spacer(Modifier.height(dimens.gapM.dp))
 
             Text(
-                text = "Crear materia",
-                color = Color.White,
+                text       = if (subjectId == null || subjectId == 0L) "Nueva materia" else "Editar materia",
+                color      = Color.White,
                 fontFamily = openSans,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = (dimens.titleL * 0.9f).sp,
-                modifier = Modifier.padding(horizontal = 20.dp)
+                fontSize   = (dimens.titleL * 0.9f).sp,
+                modifier   = Modifier.padding(horizontal = 20.dp)
             )
 
-            Spacer(modifier = Modifier.height(dimens.gapM.dp))
+            Spacer(Modifier.height(dimens.gapM.dp))
 
+            // === Nombre, créditos, ubicación ===
             LabeledField("Nombre de la materia", subjectName) { subjectName = it }
 
-            Spacer(modifier = Modifier.height(dimens.gapM.dp))
+            Spacer(Modifier.height(dimens.gapM.dp))
 
             LabeledField("Créditos", credits) { credits = it }
 
-            Spacer(modifier = Modifier.height(dimens.gapM.dp))
+            Spacer(Modifier.height(dimens.gapL.dp))
 
-            Text(
-                text = "Color de la materia",
-                color = Color.White,
-                fontFamily = openSans,
-                fontSize = 15.sp,
-                modifier = Modifier.padding(horizontal = 20.dp)
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-
-            ColorPickerRow(
-                selectedColor = selectedColor,
+            // === Color (grid 4x3 con 12 colores) ===
+            SectionTitle("Color de la materia")
+            Spacer(Modifier.height(10.dp))
+            ColorPickerGrid(
+                selectedColor   = selectedColor,
                 onColorSelected = { selectedColor = it }
             )
 
-            Spacer(modifier = Modifier.height(dimens.gapL.dp))
+            Spacer(Modifier.height(dimens.gapL.dp))
 
+            // === Días de clase (estilo Google Calendar) ===
+            SectionTitle("Días de clase")
+            Spacer(Modifier.height(6.dp))
             Text(
-                text = "Horario",
-                color = Color.White,
+                text       = "Toca los días en que se dicta la materia",
+                color      = Color.White.copy(alpha = 0.7f),
                 fontFamily = openSans,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(horizontal = 20.dp)
+                fontSize   = 12.sp,
+                modifier   = Modifier.padding(horizontal = 20.dp)
             )
-
-            Spacer(modifier = Modifier.height(dimens.gapM.dp))
-
-            MultiDayPicker(
-                selectedDays = selectedDays,
-                focusedDay = focusedDay,
-                onDayClick = { day ->
-                    val newSet = selectedDays.toMutableSet()
-
-                    if (newSet.contains(day)) {
-                        newSet.remove(day)
-                        scheduleByDay.remove(day)
-                        focusedDay = newSet.firstOrNull()
-                    } else {
-                        newSet.add(day)
-                        if (!scheduleByDay.containsKey(day)) {
-                            scheduleByDay[day] = DaySchedule(defaultStart, defaultEnd)
-                        }
-                        focusedDay = day
-                    }
-                    selectedDays = newSet.toSet()
+            Spacer(Modifier.height(10.dp))
+            DayPickerCalendarStyle(
+                selectedDays  = selectedDays,
+                accentColor   = selectedColor,
+                onDayToggle   = { day ->
+                    selectedDays = if (day in selectedDays) selectedDays - day
+                                   else selectedDays + day
                 }
             )
 
-            Spacer(modifier = Modifier.height(dimens.gapM.dp))
+            Spacer(Modifier.height(dimens.gapL.dp))
 
-            HourDropdown(
-                label = "Hora inicio",
-                currentHour = currentStartHour,
-                hours = startHours,
-                enabled = focusedDay != null,
-                expanded = expandedStart,
-                onExpandedChange = { expandedStart = it },
-                onSelect = { newHour ->
-                    val day = focusedDay ?: return@HourDropdown
-                    val current = scheduleByDay[day] ?: DaySchedule(defaultStart, defaultEnd)
-                    val correctedEnd =
-                        if (current.endHour <= newHour) newHour + 1 else current.endHour
-                    scheduleByDay[day] = DaySchedule(
-                        startHour = newHour,
-                        endHour = correctedEnd.coerceAtMost(22)
-                    )
-                }
+            // === Horario ===
+            SectionTitle("Horario")
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text       = "Esta franja horaria aplica a todos los días seleccionados",
+                color      = Color.White.copy(alpha = 0.7f),
+                fontFamily = openSans,
+                fontSize   = 12.sp,
+                modifier   = Modifier.padding(horizontal = 20.dp)
             )
+            Spacer(Modifier.height(10.dp))
 
-            Spacer(modifier = Modifier.height(dimens.gapM.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                HourDropdown(
+                    label     = "Inicia",
+                    value     = startHour,
+                    hours     = (6..21).toList(),
+                    expanded  = expandedStart,
+                    onExpand  = { expandedStart = it },
+                    onSelect  = { h ->
+                        startHour = h
+                        if (endHour <= h) endHour = (h + 1).coerceAtMost(22)
+                    },
+                    modifier  = Modifier.weight(1f)
+                )
+                HourDropdown(
+                    label     = "Termina",
+                    value     = endHour,
+                    hours     = ((startHour + 1)..22).toList(),
+                    expanded  = expandedEnd,
+                    onExpand  = { expandedEnd = it },
+                    onSelect  = { endHour = it },
+                    modifier  = Modifier.weight(1f)
+                )
+            }
 
-            HourDropdown(
-                label = "Hora fin",
-                currentHour = currentEndHour,
-                hours = endHours,
-                enabled = focusedDay != null,
-                expanded = expandedEnd,
-                onExpandedChange = { expandedEnd = it },
-                onSelect = { newHour ->
-                    val day = focusedDay ?: return@HourDropdown
-                    val current = scheduleByDay[day] ?: DaySchedule(defaultStart, defaultEnd)
-                    val finalEnd = maxOf(newHour, current.startHour + 1)
-                    scheduleByDay[day] = DaySchedule(
-                        startHour = current.startHour,
-                        endHour = finalEnd.coerceAtMost(22)
-                    )
-                }
-            )
-
-            Spacer(modifier = Modifier.height(dimens.gapM.dp))
-
-            var location by remember { mutableStateOf("") }
+            Spacer(Modifier.height(dimens.gapM.dp))
 
             LabeledField("Ubicación (opcional)", location) { location = it }
 
-            Spacer(modifier = Modifier.height(dimens.gapL.dp))
+            Spacer(Modifier.height(dimens.gapL.dp))
 
-            SaveButton("Guardar materia") {
+            // === Resumen visual antes de guardar ===
+            if (selectedDays.isNotEmpty() && subjectName.isNotBlank()) {
+                SubjectPreview(
+                    name      = subjectName,
+                    color     = selectedColor,
+                    days      = selectedDays,
+                    startHour = startHour,
+                    endHour   = endHour,
+                    location  = location
+                )
+                Spacer(Modifier.height(dimens.gapL.dp))
+            }
 
-                // ==========================================
-                //  VALIDACIÓN DE CHOQUES DE HORARIO
-                // ==========================================
-                // Construimos los bloques NUEVOS que se quieren guardar
-                val candidateBlocks = selectedDays.map { day ->
-                    val s = scheduleByDay[day] ?: DaySchedule(defaultStart, defaultEnd)
-                    val startMinutes = s.startHour * 60
-                    val endMinutes = s.endHour * 60
-                    Triple(day, startMinutes, endMinutes)
-                }
-
-                // Si no hay días seleccionados, no hay conflicto de horario
-                if (candidateBlocks.isNotEmpty()) {
-                    val hasConflict = candidateBlocks.any { (day, startMin, endMin) ->
-                        existingBlocks.any { block ->
-                            block.dayOfWeek == day &&
-                                    // rango solapado: [startMin, endMin) vs [block.start, block.end)
-                                    startMin < block.endMinutes &&
-                                    endMin > block.startMinutes
+            // === Botón guardar ===
+            SaveButton(
+                label       = if (subjectId == null || subjectId == 0L) "Crear materia" else "Guardar cambios",
+                accentColor = selectedColor
+            ) {
+                // Validaciones
+                when {
+                    subjectName.isBlank() ->
+                        errorMessage = "Escribe el nombre de la materia."
+                    credits.toIntOrNull() == null || (credits.toIntOrNull() ?: 0) <= 0 ->
+                        errorMessage = "Los créditos deben ser un número mayor a 0."
+                    selectedDays.isEmpty() ->
+                        errorMessage = "Selecciona al menos un día de clase."
+                    endHour <= startHour ->
+                        errorMessage = "La hora de fin debe ser mayor que la de inicio."
+                    else -> {
+                        // Verificar choques de horario
+                        val startMinutes = startHour * 60
+                        val endMinutes   = endHour * 60
+                        val hasConflict  = selectedDays.any { day ->
+                            existingBlocks.any { block ->
+                                block.dayOfWeek == day &&
+                                startMinutes < block.endMinutes &&
+                                endMinutes   > block.startMinutes
+                            }
                         }
-                    }
+                        if (hasConflict) {
+                            errorMessage = "Ya tienes otra materia en ese día y franja horaria."
+                            return@SaveButton
+                        }
 
-                    if (hasConflict) {
-                        conflictMessage =
-                            "Ya tienes otra materia registrada en el mismo día y franja horaria. " +
-                                    "Modifica el horario o desmarca el día en conflicto."
-                        return@SaveButton
-                    }
-                }
+                        // Todo OK - guardar
+                        scope.launch {
+                            val argb =
+                                ((selectedColor.alpha * 255).toInt() shl 24) or
+                                ((selectedColor.red   * 255).toInt() shl 16) or
+                                ((selectedColor.green * 255).toInt() shl 8)  or
+                                 (selectedColor.blue  * 255).toInt()
 
-                // ==========================================
-                //  SI NO HAY CONFLICTO, GUARDAMOS
-                // ==========================================
-                scope.launch {
+                            val savedId = viewModel.saveSubject(
+                                id      = subjectId,
+                                userId  = user.uid,
+                                name    = subjectName,
+                                color   = argb.toLong(),
+                                credits = credits.toIntOrNull() ?: 3
+                            )
 
-                    val creditInt = credits.toIntOrNull() ?: 0
+                            selectedDays.forEach { day ->
+                                viewModel.addScheduleBlock(
+                                    subjectId    = savedId,
+                                    day          = day,
+                                    startMinutes = startMinutes,
+                                    endMinutes   = endMinutes,
+                                    location     = location
+                                )
+                            }
 
-                    val argb =
-                        ((selectedColor.alpha * 255).toInt() shl 24) or
-                                ((selectedColor.red * 255).toInt() shl 16) or
-                                ((selectedColor.green * 255).toInt() shl 8) or
-                                (selectedColor.blue * 255).toInt()
-
-                    val subjectIdResult = viewModel.saveSubject(
-                        id = subjectId,
-                        userId = user.uid,
-                        name = subjectName,
-                        color = argb.toLong(),
-                        credits = creditInt
-                    )
-
-                    selectedDays.forEach { day ->
-                        val s = scheduleByDay[day] ?: DaySchedule(defaultStart, defaultEnd)
-
-                        viewModel.addScheduleBlock(
-                            subjectId = subjectIdResult,
-                            day = day,
-                            startMinutes = s.startHour * 60,
-                            endMinutes = s.endHour * 60,
-                            location = location
-                        )
-                    }
-
-                    navController.navigate(Routes.HORARIO) {
-                        popUpTo(Routes.SUBJECT_EDITOR) { inclusive = true }
+                            navController.navigate(Routes.HORARIO) {
+                                popUpTo(Routes.SUBJECT_EDITOR) { inclusive = true }
+                            }
+                        }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(dimens.gapL.dp))
+            Spacer(Modifier.height(dimens.gapL.dp * 2))
         }
 
-        // 🔹 Dialogo de conflicto de horario
-        if (conflictMessage != null) {
+        // Diálogo de error
+        if (errorMessage != null) {
             AlertDialog(
-                onDismissRequest = { conflictMessage = null },
-                title = {
+                onDismissRequest = { errorMessage = null },
+                title = { Text("No se pudo guardar", fontFamily = openSans) },
+                text  = {
                     Text(
-                        text = "Conflicto de horario",
-                        fontFamily = openSans
-                    )
-                },
-                text = {
-                    Text(
-                        text = conflictMessage ?: "",
+                        text       = errorMessage ?: "",
                         fontFamily = openSans,
-                        fontSize = 14.sp
+                        fontSize   = 14.sp
                     )
                 },
                 confirmButton = {
-                    TextButton(onClick = { conflictMessage = null }) {
-                        Text("Aceptar", fontFamily = openSans)
+                    TextButton(onClick = { errorMessage = null }) {
+                        Text("Entendido", fontFamily = openSans)
                     }
                 }
             )
@@ -343,69 +326,135 @@ fun SubjectEditorScreen(
 // ======================================================
 
 @Composable
+private fun SectionTitle(text: String) {
+    val openSans = FontFamily(Font(R.font.open_sans_regular))
+    Text(
+        text       = text,
+        color      = Color.White,
+        fontFamily = openSans,
+        fontWeight = FontWeight.SemiBold,
+        fontSize   = 18.sp,
+        modifier   = Modifier.padding(horizontal = 20.dp)
+    )
+}
+
+@Composable
 private fun LabeledField(label: String, value: String, onValueChange: (String) -> Unit) {
     val openSans = FontFamily(Font(R.font.open_sans_regular))
 
     Column(modifier = Modifier.padding(horizontal = 20.dp)) {
         Text(text = label, color = Color.White, fontFamily = openSans, fontSize = 15.sp)
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(Modifier.height(6.dp))
         TextField(
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                focusedContainerColor    = Color.White,
+                unfocusedContainerColor  = Color.White,
+                focusedIndicatorColor    = Color.Transparent,
+                unfocusedIndicatorColor  = Color.Transparent
             )
         )
     }
 }
 
+/**
+ * Selector de días estilo Google Calendar: chips circulares L M M J V S D.
+ * Visual feedback con el color de la materia.
+ */
 @Composable
-private fun MultiDayPicker(
+private fun DayPickerCalendarStyle(
     selectedDays: Set<Int>,
-    focusedDay: Int?,
-    onDayClick: (Int) -> Unit
+    accentColor: Color,
+    onDayToggle: (Int) -> Unit
 ) {
     val openSans = FontFamily(Font(R.font.open_sans_regular))
-    val days = listOf("L", "M", "X", "J", "V", "S", "D")
+    val days = listOf("L", "M", "M", "J", "V", "S", "D")
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        days.forEachIndexed { index, day ->
+        days.forEachIndexed { index, label ->
             val dayNumber = index + 1
-            val selected = dayNumber in selectedDays
-            val focused = dayNumber == focusedDay
+            val selected  = dayNumber in selectedDays
 
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(44.dp)
+                    .clip(CircleShape)
                     .background(
-                        if (selected) Color.White else Color(0xFF5A237B),
-                        shape = RoundedCornerShape(8.dp)
+                        color = if (selected) accentColor else Color.White.copy(alpha = 0.10f)
                     )
                     .border(
-                        width = if (focused) 2.dp else 1.dp,
-                        color = if (focused) Color(0xFFFFC107) else Color.White.copy(alpha = 0.3f),
-                        shape = RoundedCornerShape(8.dp)
+                        width = 1.5.dp,
+                        color = if (selected) accentColor else Color.White.copy(alpha = 0.35f),
+                        shape = CircleShape
                     )
-                    .clickable { onDayClick(dayNumber) },
+                    .clickable { onDayToggle(dayNumber) },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = day,
-                    color = if (selected) Color.Black else Color.White,
+                    text       = label,
+                    color      = Color.White,
                     fontFamily = openSans,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontSize   = 16.sp,
+                    fontWeight = FontWeight.Bold
                 )
+            }
+        }
+    }
+}
+
+/**
+ * Grid de 12 colores en 3 filas de 4 columnas.
+ * El color seleccionado muestra un checkmark blanco.
+ */
+@Composable
+private fun ColorPickerGrid(
+    selectedColor: Color,
+    onColorSelected: (Color) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        SUBJECT_COLORS.chunked(4).forEach { rowColors ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                rowColors.forEach { sc ->
+                    val isSelected = sc.value == selectedColor
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(sc.value)
+                            .border(
+                                width = if (isSelected) 3.dp else 0.dp,
+                                color = Color.White,
+                                shape = CircleShape
+                            )
+                            .clickable { onColorSelected(sc.value) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Color seleccionado",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -415,56 +464,50 @@ private fun MultiDayPicker(
 @Composable
 private fun HourDropdown(
     label: String,
-    currentHour: Int?,
+    value: Int,
     hours: List<Int>,
-    enabled: Boolean,
     expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
-    onSelect: (Int) -> Unit
+    onExpand: (Boolean) -> Unit,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val openSans = FontFamily(Font(R.font.open_sans_regular))
 
-    Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-
-        Text(text = label, color = Color.White, fontFamily = openSans, fontSize = 15.sp)
-
-        Spacer(modifier = Modifier.height(6.dp))
+    Column(modifier = modifier) {
+        Text(text = label, color = Color.White, fontFamily = openSans, fontSize = 14.sp)
+        Spacer(Modifier.height(6.dp))
 
         ExposedDropdownMenuBox(
             expanded = expanded,
-            onExpandedChange = { if (enabled) onExpandedChange(!expanded) }
+            onExpandedChange = { onExpand(!expanded) }
         ) {
             TextField(
-                value = currentHour?.let { "$it:00" } ?: "--:--",
+                value         = "%02d:00".format(value),
                 onValueChange = {},
-                readOnly = true,
-                enabled = enabled,
-                modifier = Modifier
+                readOnly      = true,
+                modifier      = Modifier
                     .menuAnchor()
                     .fillMaxWidth(),
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                },
+                shape = RoundedCornerShape(10.dp),
+                trailingIcon  = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
+                    focusedContainerColor   = Color.White,
                     unfocusedContainerColor = Color.White,
-                    disabledContainerColor = Color.White.copy(alpha = 0.4f),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
+                    focusedIndicatorColor   = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
                 )
             )
 
             ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { onExpandedChange(false) }
+                expanded         = expanded,
+                onDismissRequest = { onExpand(false) }
             ) {
                 hours.forEach { h ->
                     DropdownMenuItem(
-                        text = { Text("$h:00", fontFamily = openSans) },
+                        text    = { Text("%02d:00".format(h), fontFamily = openSans) },
                         onClick = {
                             onSelect(h)
-                            onExpandedChange(false)
+                            onExpand(false)
                         }
                     )
                 }
@@ -473,66 +516,80 @@ private fun HourDropdown(
     }
 }
 
+/**
+ * Tarjeta de preview que muestra cómo se verá la materia antes de guardarla.
+ */
 @Composable
-private fun ColorPickerRow(
-    selectedColor: Color,
-    onColorSelected: (Color) -> Unit
+private fun SubjectPreview(
+    name: String,
+    color: Color,
+    days: Set<Int>,
+    startHour: Int,
+    endHour: Int,
+    location: String
 ) {
-    // Más colores que funcionan bien con texto blanco
-    val colors = listOf(
-        Color(0xFF6C3FB8), // morado base
-        Color(0xFFB83F93), // fucsia
-        Color(0xFF3F92B8), // azul verdoso
-        Color(0xFF3FB86B), // verde
-        Color(0xFFB88F3F), // dorado
-        Color(0xFFB83F3F), // rojo
-        Color(0xFF2E86AB), // azul profundo
-        Color(0xFF264653)  // teal oscuro
-    )
+    val openSans = FontFamily(Font(R.font.open_sans_regular))
+    val dayNames = mapOf(1 to "Lun", 2 to "Mar", 3 to "Mié", 4 to "Jue", 5 to "Vie", 6 to "Sáb", 7 to "Dom")
+    val daysText = days.sorted().joinToString(", ") { dayNames[it] ?: "" }
 
-    Row(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
-        horizontalArrangement = Arrangement.SpaceAround
+        colors = CardDefaults.cardColors(containerColor = color),
+        shape  = RoundedCornerShape(14.dp)
     ) {
-        colors.forEach { color ->
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .background(color, shape = RoundedCornerShape(8.dp))
-                    .border(
-                        width = if (color == selectedColor) 3.dp else 1.dp,
-                        color = if (color == selectedColor) Color.White else Color.Gray,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .clickable { onColorSelected(color) }
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text       = name,
+                color      = Color.White,
+                fontFamily = openSans,
+                fontWeight = FontWeight.Bold,
+                fontSize   = 18.sp
             )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text       = "$daysText · %02d:00 – %02d:00".format(startHour, endHour),
+                color      = Color.White.copy(alpha = 0.95f),
+                fontFamily = openSans,
+                fontSize   = 14.sp
+            )
+            if (location.isNotBlank()) {
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text       = location,
+                    color      = Color.White.copy(alpha = 0.85f),
+                    fontFamily = openSans,
+                    fontSize   = 13.sp
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun SaveButton(label: String, onClick: () -> Unit) {
+private fun SaveButton(label: String, accentColor: Color, onClick: () -> Unit) {
     val openSans = FontFamily(Font(R.font.open_sans_regular))
 
     Button(
-        onClick = onClick,
+        onClick  = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .height(52.dp),
+            .height(54.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF5A237B),
-            contentColor = Color.White
+            containerColor = accentColor,
+            contentColor   = Color.White
         ),
-        shape = RoundedCornerShape(10.dp)
+        shape = RoundedCornerShape(14.dp)
     ) {
         Text(
-            text = label,
+            text       = label,
             fontFamily = openSans,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp
+            fontWeight = FontWeight.Bold,
+            fontSize   = 16.sp
         )
     }
 }

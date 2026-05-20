@@ -28,7 +28,6 @@ import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.BottomNavBar
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
 import co.edu.unab.sebastianlizcano.unabgo.ui.theme.LocalAppDimens
-import co.edu.unab.sebastianlizcano.unabgo.utils.LockOrientationPortrait
 
 data class ProgramaItem(
     val title: String,
@@ -42,8 +41,7 @@ fun QuieroSerUnabScreen(navController: NavController) {
     val openSans = FontFamily(Font(R.font.open_sans_regular))
     val dimens   = LocalAppDimens.current
 
-    // Bloqueamos la pantalla en vertical, asi se ve igual en cualquier dispositivo
-    LockOrientationPortrait()
+    // Orientación gestionada por el Manifest
 
     val programas = listOf(
         ProgramaItem(
