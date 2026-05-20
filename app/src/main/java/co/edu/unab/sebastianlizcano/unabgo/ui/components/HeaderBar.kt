@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -27,50 +26,39 @@ fun HeaderBar(
     modifier: Modifier = Modifier,
     subtitleRes: Int = R.string.header_exploring,
     onBackClick: () -> Unit = { navController?.popBackStack() }
-
 ) {
     val dimens = LocalAppDimens.current
     val openSans = FontFamily(Font(R.font.open_sans_regular))
 
     val headerHeight = (dimens.heroImageSize * 0.65f).dp
-    val logoSize = (dimens.logoSize * 0.78f).dp
+    val logoSize     = (dimens.logoSize * 0.78f).dp
     val subtitleSize = (dimens.titleL * 0.9f).sp
-    val titleSize = dimens.titleXL.sp
-    val paddingSide = dimens.gapM.dp
+    val titleSize    = dimens.titleXL.sp
+    val paddingSide  = dimens.gapM.dp
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            // statusBarsPadding(): respeta el alto del status bar del dispositivo
-            //   - En celulares con notch (la mayoria) se mantiene como antes.
-            //   - En emuladores sin notch o pantallas pequenas, la flecha ya NO
-            //     queda detras del reloj/iconos del sistema.
-            .statusBarsPadding()
             .height(headerHeight)
     ) {
         // Fondo
         Image(
-            painter = painterResource(id = R.drawable.rectangle_6),
+            painter            = painterResource(id = R.drawable.rectangle_6),
             contentDescription = "Encabezado UNAB GO",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds
+            modifier           = Modifier.fillMaxSize(),
+            contentScale       = ContentScale.FillBounds
         )
 
-        // Flecha atrás funcional — area de toque ampliada (44x44 dp minimo recomendado)
-        Box(
+        // Flecha atrás (versión original que funciona en Xiaomi)
+        Image(
+            painter            = painterResource(id = R.drawable.flecha),
+            contentDescription = "Volver atrás",
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = dimens.gapS.dp, top = dimens.gapS.dp)
-                .size(44.dp)
-                .clickable { onBackClick() },
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.flecha),
-                contentDescription = "Volver atrás",
-                modifier = Modifier.size((dimens.gapM * 1.5f).dp)
-            )
-        }
+                .padding(start = (dimens.gapM * 1.4f).dp, top = (dimens.gapM * 1.3f).dp)
+                .size((dimens.gapM * 1.5f).dp)
+                .clickable { onBackClick() }
+        )
 
         // Contenido central
         Row(
@@ -80,33 +68,32 @@ fun HeaderBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter            = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo UNAB",
-                modifier = Modifier
-                    .size(logoSize),
-                contentScale = ContentScale.Fit
+                modifier           = Modifier.size(logoSize),
+                contentScale       = ContentScale.Fit
             )
 
             Spacer(modifier = Modifier.width(dimens.gapS.dp))
 
             Column(horizontalAlignment = Alignment.Start) {
                 Text(
-                    text = stringResource(subtitleRes).uppercase(),
+                    text  = androidx.compose.ui.res.stringResource(subtitleRes).uppercase(),
                     style = TextStyle(
-                        fontSize = subtitleSize,
+                        fontSize   = subtitleSize,
                         fontFamily = openSans,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White.copy(alpha = 0.95f)
+                        color      = Color.White.copy(alpha = 0.95f)
                     )
                 )
 
                 Text(
-                    text = "UNAB GO!",
+                    text  = "UNAB GO!",
                     style = TextStyle(
-                        fontSize = titleSize,
+                        fontSize   = titleSize,
                         fontFamily = openSans,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color      = Color.White
                     )
                 )
             }

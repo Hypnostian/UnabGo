@@ -11,12 +11,10 @@
         aunque la app esté instalada -> el botón Carnet siempre acababa en Play Store.
     -->
     <queries>
-        <!-- App de carnet digital UNAB (Veridda VECard) -->
         <package android:name="com.veriddica.vecard" />
         <package android:name="co.edu.unab.vecard" />
         <package android:name="co.edu.unab.carnet" />
 
-        <!-- Para que startActivity con http/https siempre funcione -->
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
@@ -43,36 +41,25 @@
         android:theme="@style/Theme.UnabGo">
 
         <!--
-            CLAVE PARA ELIMINAR "Gira tu telefono" DE HYPEROS/MIUI/Pixel emulators:
+            Manifest LIMPIO: sin screenOrientation, sin configChanges, sin
+            resizeableActivity, sin supports_size_changes.
 
-            android.supports_size_changes = true le dice al OS que la app maneja
-            cambios de tamano de ventana correctamente (foldables, split screen,
-            tablets, freeform). Esto desactiva el "Display compatibility mode"
-            de Xiaomi/HyperOS que es el que muestra el overlay "Gira tu telefono".
-        -->
-        <meta-data
-            android:name="android.supports_size_changes"
-            android:value="true" />
+            Razón: cualquier declaración relacionada con orientación o tamaño
+            de ventana en el Manifest hace que HyperOS/MIUI active su feature
+            "Modo de pantalla compatible" que dibuja el overlay "Gira tu telefono".
 
-        <!--
-            NO declaramos screenOrientation a proposito.
-              - Si lo ponemos "portrait", HyperOS/Pixel 8 emulator muestran el
-                overlay "Gira tu telefono para ver el contenido".
-              - Sin ese atributo, la app respeta la rotacion natural del
-                dispositivo. Los Composables son responsive (LazyColumn,
-                Column con verticalScroll, fillMaxSize) y se ven bien en
-                portrait Y landscape.
-              - En portrait (uso normal) la experiencia es identica a antes.
+            Este overlay es un FEATURE DEL SISTEMA OPERATIVO XIAOMI controlado
+            por el usuario en:
+                Ajustes > Aplicaciones > Gestionar apps > UnabGo > Otros permisos
+                > Modo de pantalla compatible (DESACTIVAR)
 
-            resizeableActivity=true confirma soporte para multi-window.
-            configChanges evita reinicios al rotar/cambiar idioma.
+            Sin esa declaración el SO respeta la orientación natural del
+            dispositivo (portrait por defecto en celulares).
         -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:resizeableActivity="true"
-            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density|locale|fontScale|layoutDirection|uiMode|keyboardHidden"
             android:theme="@style/Theme.UnabGo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
