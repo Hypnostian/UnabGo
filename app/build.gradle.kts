@@ -16,18 +16,17 @@ plugins {
 
 android {
     namespace = "co.edu.unab.sebastianlizcano.unabgo"
-    compileSdk = 36
+    // compileSdk y targetSdk = 35 (Android 15 estable). Android 16 (API 36)
+    // introdujo "Universal Resizability" que dispara el overlay "Gira tu
+    // telefono" incluso aunque el Manifest declare orientacion fija.
+    // Usar 35 evita ese comportamiento y mantiene compatibilidad con APIs
+    // recientes.
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "co.edu.unab.sebastianlizcano.unabgo"
         minSdk = 26
-        // targetSdk = 34 (Android 14) — bajamos hasta 34 para que Android NO
-        // aplique ningun comportamiento de "universal resizability" ni de
-        // "forced letterbox" que muestra el overlay "Gira tu telefono".
-        // Android 14 es la ultima version donde screenOrientation="portrait"
-        // se respeta sin excepciones en TODOS los dispositivos.
-        // compileSdk se queda en 36 para tener APIs nuevas disponibles.
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -124,8 +123,10 @@ dependencies {
     //COIL (para cargar imágenes con Compose)
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    // Adaptación en todas las Screens
-    implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
+    // material3-window-size-class REMOVIDA: declaraba a la app como "responsive
+    // a multiples tamanos" lo cual entraba en conflicto con screenOrientation
+    // y disparaba el overlay del sistema. Ya no se necesita - usamos
+    // LocalConfiguration.screenWidthDp directamente en MainActivity.
 
     // Detectar el QR (ML Kit) / Lanzar el selector de imágenes (Activity Result API) /
     implementation("com.google.mlkit:barcode-scanning:17.2.0")

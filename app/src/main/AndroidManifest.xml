@@ -41,28 +41,31 @@
         android:theme="@style/Theme.UnabGo">
 
         <!--
-            screenOrientation="sensor"
-              La app acepta CUALQUIER orientacion (portrait, landscape, reverse).
-              El sistema rota con el sensor del telefono.
+            CONFIGURACION DEFINITIVA para forzar portrait sin disparar el overlay:
 
-              Esta es la clave para eliminar el overlay "Gira tu telefono":
-              si la app NO declara una orientacion fija, Android NO tiene
-              motivo para mostrar la sugerencia de rotar.
+            1. screenOrientation="portrait" -> bloqueo vertical.
+            2. resizeableActivity="false"   -> NO se adapta a multi-window/foldable.
+            3. configChanges totales        -> manejamos rotacion internamente.
+            4. NO incluimos maxAspectRatio  -> deja que Android use el del theme.
 
-              Los Composables son responsive (LazyColumn, verticalScroll,
-              fillMaxSize) y funcionan bien en portrait Y landscape.
+            Combinado con:
+              - Theme moderno actualizado (themes.xml)
+              - compileSdk=35 + targetSdk=35
+              - material3-window-size-class REMOVIDA del build.gradle
+              - No usamos calculateWindowSizeClass en MainActivity
 
-            configChanges hace que la app NO se recree al rotar, manejamos
-            el cambio internamente.
+            => la app NUNCA declara que es "responsive a multiples tamanos",
+               por lo tanto Android NO tiene motivo para mostrar el overlay.
         -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:screenOrientation="sensor"
+            android:screenOrientation="portrait"
+            android:resizeableActivity="false"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density|uiMode|keyboardHidden|locale|fontScale|layoutDirection|navigation"
             android:theme="@style/Theme.UnabGo"
-            tools:ignore="DiscouragedApi">
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
