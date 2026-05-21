@@ -115,6 +115,15 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
             NewsWebScreen(navController = navController, url = url)
         }
 
+        // Detalle nativo de una noticia (via WordPress REST API)
+        composable(
+            route     = Routes.NEWS_DETAIL,
+            arguments = listOf(navArgument("postId") { type = NavType.LongType })
+        ) { entry ->
+            val postId = entry.arguments?.getLong("postId") ?: 0L
+            NewsDetailScreen(navController = navController, postId = postId)
+        }
+
         composable(Routes.MATERIAL_ESTUDIO) {
             MaterialEstudioScreen(navController = navController)
         }

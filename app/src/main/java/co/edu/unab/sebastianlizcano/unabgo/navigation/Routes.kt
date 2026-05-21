@@ -14,6 +14,7 @@ object Routes {
     const val CHECKING = "checking"
     const val AVISOS = "avisos"
     const val NEWS_WEB = "newsWeb"
+    const val NEWS_DETAIL = "newsDetail/{postId}"  // detalle nativo via WP REST API
 
     const val DOCENTES = "docentes"
     const val CALCULADORA = "calculadora"
