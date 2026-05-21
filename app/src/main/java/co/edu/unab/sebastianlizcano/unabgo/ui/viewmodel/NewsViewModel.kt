@@ -13,7 +13,9 @@ import kotlinx.coroutines.launch
 
 /** IDs reales de las categorías oficiales UNAB (verificados con la API). */
 object UnabCategoryIds {
-    const val ALL                      : Int? = null  // sin filtro = todas
+    // 'val' simple (no 'const') porque Kotlin solo permite const val en
+    // tipos NO-nulos primitivos / String. ALL es Int? = null.
+    val ALL: Int? = null                          // sin filtro = todas
     const val ACTUALIDAD_INSTITUCIONAL  = 2
     const val INVESTIGACION             = 35
     const val ARTE_CULTURA              = 202
