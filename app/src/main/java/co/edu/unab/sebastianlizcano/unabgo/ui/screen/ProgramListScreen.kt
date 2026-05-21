@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -145,14 +144,8 @@ fun ProgramListScreen(
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Filled.OpenInBrowser,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(Modifier.width(8.dp))
                                 Text(
-                                    text       = "Ver todos en unab.edu.co",
+                                    text       = "🌐  Ver todos en unab.edu.co",
                                     fontFamily = openSans,
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize   = 14.sp
@@ -192,14 +185,8 @@ fun ProgramListScreen(
                             ),
                             shape = RoundedCornerShape(14.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Filled.OpenInBrowser,
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(Modifier.width(10.dp))
                             Text(
-                                text       = "Ver en unab.edu.co",
+                                text       = "🌐  Ver en unab.edu.co",
                                 fontFamily = openSans,
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize   = 15.sp
