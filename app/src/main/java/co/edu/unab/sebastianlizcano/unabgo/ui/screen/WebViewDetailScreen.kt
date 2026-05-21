@@ -1,7 +1,6 @@
 package co.edu.unab.sebastianlizcano.unabgo.ui.screen
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -15,52 +14,16 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
 
-private const val DESKTOP_USER_AGENT =
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-    "AppleWebKit/537.36 (KHTML, like Gecko) " +
-    "Chrome/130.0.0.0 Safari/537.36"
-
-/**
- * JS que oculta y elimina el div #rotate-warning que la web de UNAB
- * muestra cuando detecta viewport pequeño. Triple estrategia:
- * CSS !important + remove del DOM + MutationObserver.
- */
-private val HIDE_ROTATE_WARNING_JS = """
-    (function() {
-        function hideWarning() {
-            var warnings = document.querySelectorAll(
-                '#rotate-warning, .rotate-warning, [class*="rotate-warning"], [id*="rotate-warning"]'
-            );
-            warnings.forEach(function(el) {
-                el.style.display = 'none';
-                el.style.visibility = 'hidden';
-                if (el.parentNode) el.parentNode.removeChild(el);
-            });
-        }
-        if (!document.getElementById('unab-go-hide-rotate')) {
-            var s = document.createElement('style');
-            s.id = 'unab-go-hide-rotate';
-            s.innerHTML =
-                '#rotate-warning, .rotate-warning, [class*="rotate-warning"] {' +
-                '  display: none !important;' +
-                '  visibility: hidden !important;' +
-                '  opacity: 0 !important;' +
-                '  height: 0 !important;' +
-                '  width: 0 !important;' +
-                '  position: absolute !important;' +
-                '  left: -9999px !important;' +
-                '}';
-            (document.head || document.documentElement).appendChild(s);
-        }
-        hideWarning();
-        if (document.body) {
-            new MutationObserver(hideWarning).observe(
-                document.body,
-                { childList: true, subtree: true }
-            );
-        }
-    })();
-""".trimIndent()
+/** Mismo JS minimalista que NewsWebScreen: solo CSS, sin tocar el DOM. */
+private const val HIDE_ROTATE_WARNING_CSS = """
+javascript:(function(){
+  if (document.getElementById('unab-go-hide-rotate')) return;
+  var s = document.createElement('style');
+  s.id = 'unab-go-hide-rotate';
+  s.innerHTML = '#rotate-warning, .rotate-warning { display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; }';
+  (document.head || document.documentElement).appendChild(s);
+})();
+"""
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -85,31 +48,30 @@ fun WebViewDetailScreen(
                         domStorageEnabled    = true
                         useWideViewPort      = true
                         loadWithOverviewMode = true
-                        builtInZoomControls  = true
+                        builtInZoomControls  = false
                         displayZoomControls  = false
                         javaScriptCanOpenWindowsAutomatically = true
                         cacheMode            = WebSettings.LOAD_DEFAULT
                         mediaPlaybackRequiresUserGesture = false
                         mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
-                        userAgentString  = DESKTOP_USER_AGENT
+                        // User-Agent por defecto (movil): la web entrega la version
+                        // responsive correcta. Solo ocultamos el rotate-warning con CSS.
                     }
 
                     webViewClient = object : WebViewClient() {
-                        override fun onPageStarted(
-                            view: WebView?,
-                            url: String?,
-                            favicon: Bitmap?
-                        ) {
-                            super.onPageStarted(view, url, favicon)
-                            view?.evaluateJavascript(HIDE_ROTATE_WARNING_JS, null)
-                        }
-
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
-                            view?.evaluateJavascript(HIDE_ROTATE_WARNING_JS, null)
+                            view?.evaluateJavascript(HIDE_ROTATE_WARNING_CSS, null)
                         }
                     }
-                    webChromeClient = WebChromeClient()
+                    webChromeClient = object : WebChromeClient() {
+                        override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                            super.onProgressChanged(view, newProgress)
+                            if (newProgress > 20) {
+                                view?.evaluateJavascript(HIDE_ROTATE_WARNING_CSS, null)
+                            }
+                        }
+                    }
                     loadUrl(url)
                 }
             }
