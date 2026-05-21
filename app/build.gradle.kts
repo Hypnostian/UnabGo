@@ -16,16 +16,20 @@ plugins {
 
 android {
     namespace = "co.edu.unab.sebastianlizcano.unabgo"
-    // compileSdk y targetSdk = 35 (Android 15 estable). Android 16 (API 36)
-    // introdujo "Universal Resizability" que dispara el overlay "Gira tu
-    // telefono" incluso aunque el Manifest declare orientacion fija.
-    // Usar 35 evita ese comportamiento y mantiene compatibilidad con APIs
-    // recientes.
-    compileSdk = 35
+    // compileSdk = 36 es OBLIGATORIO porque las dependencias androidx
+    // (activity 1.11.0, core 1.17.0) requieren compilar contra APIs de
+    // Android 16. compileSdk SOLO afecta contra qué APIs se compila,
+    // no cambia el comportamiento runtime de la app.
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "co.edu.unab.sebastianlizcano.unabgo"
         minSdk = 26
+        // targetSdk = 35 (Android 15) es LA CLAVE para evitar el overlay
+        // "Gira tu telefono". Android 16 (target 36) introdujo "Universal
+        // Resizability" que dispara ese overlay. Bajando target a 35,
+        // Android trata la app como compatible-con-Android-15 y NO aplica
+        // esa restriccion en RUNTIME, aunque compilemos contra APIs de 36.
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
