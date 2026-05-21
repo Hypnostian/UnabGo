@@ -5,16 +5,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!--
-        Android 11+ (API 30) restringe la visibilidad de otras apps instaladas.
-        Sin estas <queries>, getLaunchIntentForPackage() siempre devuelve null
-        aunque la app esté instalada -> el botón Carnet siempre acababa en Play Store.
-    -->
+    <!-- Necesario en Android 11+ para abrir la app de Carnet UNAB y Play Store -->
     <queries>
         <package android:name="com.veriddica.vecard" />
         <package android:name="co.edu.unab.vecard" />
         <package android:name="co.edu.unab.carnet" />
-
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
@@ -40,63 +35,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.UnabGo">
 
-        <!--
-            ========================================================================
-            PARCHE OFICIAL DE GOOGLE PARA ANDROID 16 (API 36+)
-            ========================================================================
-            Android 16 introdujo "Universal Resizability" que IGNORA por completo
-            android:screenOrientation="portrait" en pantallas mayores a 600dp,
-            modos multi-window o ciertos emuladores.
-
-            Esta <property> oficial le dice a Android 16:
-              "Por favor, respeta mi screenOrientation y resizeableActivity
-               mientras adapto la app a la nueva politica."
-
-            Documentado en:
-            - https://android-developers.googleblog.com/2025/01/orientation-and-resizability-changes-in-android-16.html
-            - https://stackoverflow.com/questions/79741258/
-
-            Es la SOLUCION OFICIAL documentada por Google para mantener
-            screenOrientation funcional en Android 16+.
-        -->
-        <property
-            android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
-            android:value="true" />
-
-        <!--
-            Bandera adicional para reforzar (algunos OEMs requieren esta variante).
-            Si no esta soportada en el dispositivo es ignorada silenciosamente.
-        -->
-        <property
-            android:name="android.window.PROPERTY_COMPAT_IGNORE_REQUESTED_ORIENTATION"
-            android:value="false" />
-
-        <!--
-            CONFIGURACION DEFINITIVA para forzar portrait sin disparar el overlay:
-
-            1. screenOrientation="portrait" -> bloqueo vertical.
-            2. resizeableActivity="false"   -> NO se adapta a multi-window/foldable.
-            3. configChanges totales        -> manejamos rotacion internamente.
-            4. NO incluimos maxAspectRatio  -> deja que Android use el del theme.
-
-            Combinado con:
-              - Theme moderno actualizado (themes.xml)
-              - compileSdk=35 + targetSdk=35
-              - material3-window-size-class REMOVIDA del build.gradle
-              - No usamos calculateWindowSizeClass en MainActivity
-
-            => la app NUNCA declara que es "responsive a multiples tamanos",
-               por lo tanto Android NO tiene motivo para mostrar el overlay.
-        -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:resizeableActivity="false"
-            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density|uiMode|keyboardHidden|locale|fontScale|layoutDirection|navigation"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|locale|layoutDirection|keyboardHidden|uiMode"
             android:theme="@style/Theme.UnabGo"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

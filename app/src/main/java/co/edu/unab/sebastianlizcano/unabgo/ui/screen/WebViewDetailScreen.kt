@@ -14,6 +14,13 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
 
+// User-Agent de escritorio (Chrome Windows) — evita que la web de UNAB
+// muestre el aviso "Gira tu telefono" que dispara cuando detecta movil.
+private const val DESKTOP_USER_AGENT =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+    "AppleWebKit/537.36 (KHTML, like Gecko) " +
+    "Chrome/130.0.0.0 Safari/537.36"
+
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun WebViewDetailScreen(
@@ -21,38 +28,29 @@ fun WebViewDetailScreen(
     url: String,
     title: String
 ) {
-    // Orientación gestionada por el Manifest
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF2F024C))
     ) {
-
         HeaderBar(navController = navController)
 
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory  = { context ->
                 WebView(context).apply {
-                    // Configuración mobile-responsive
                     with(settings) {
-                        javaScriptEnabled            = true
-                        domStorageEnabled            = true
-                        useWideViewPort              = true     // respeta <meta viewport>
-                        loadWithOverviewMode         = true     // arranca ajustado a la pantalla
-                        builtInZoomControls          = true
-                        displayZoomControls          = false
+                        javaScriptEnabled    = true
+                        domStorageEnabled    = true
+                        useWideViewPort      = true
+                        loadWithOverviewMode = true
+                        builtInZoomControls  = true
+                        displayZoomControls  = false
                         javaScriptCanOpenWindowsAutomatically = true
-                        cacheMode                    = WebSettings.LOAD_DEFAULT
+                        cacheMode            = WebSettings.LOAD_DEFAULT
                         mediaPlaybackRequiresUserGesture = false
                         mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
-                        layoutAlgorithm  = WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING
-                        userAgentString  = userAgentString
-                            .replace("; wv", "")
-                            .let { ua ->
-                                if (ua.contains("Mobile")) ua
-                                else "$ua Mobile"
-                            }
+                        userAgentString = DESKTOP_USER_AGENT
                     }
                     webViewClient   = WebViewClient()
                     webChromeClient = WebChromeClient()

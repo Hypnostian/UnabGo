@@ -1,31 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--
-        Theme.UnabGo basado en Theme.Material.Light.NoActionBar de manera EXPLICITA
-        para evitar conflictos con la deteccion de "app responsive" en Android.
-
-        windowNoTitle + noActionBar = pantalla limpia sin chrome del sistema.
-        windowFullscreen = false para mantener visible el status bar.
-        windowDrawsSystemBarBackgrounds = true para edge-to-edge correcto.
-    -->
-    <style name="Theme.UnabGo" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <!--
-            android:windowIsTranslucent=false  IMPORTANTE: NO debe ser translucent,
-            si fuera true Android trataria la activity como overlay y podria
-            disparar el "rotate device" overlay del sistema.
-        -->
-        <item name="android:windowIsTranslucent">false</item>
-        <!--
-            android:windowDisablePreview=true evita el preview de splash que
-            algunas veces causa flickering al inicio en pantallas grandes y
-            puede confundir al SO sobre el aspect ratio inicial.
-        -->
-        <item name="android:windowDisablePreview">true</item>
-    </style>
+    <style name="Theme.UnabGo" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
