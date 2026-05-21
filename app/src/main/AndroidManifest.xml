@@ -41,13 +41,28 @@
         android:theme="@style/Theme.UnabGo">
 
         <!--
-            screenOrientation="portrait" fuerza la app en vertical. Esto funciona
-            correctamente con targetSdk=35 (Android 15) sin disparar el overlay
-            "Gira tu telefono" que Android 16 (targetSdk=36) muestra como parte
-            de su nueva politica de "Universal Resizability".
+            CONFIGURACION INTEGRAL ANTI-OVERLAY "Gira tu telefono":
 
-            android:resizeableActivity="false" indica que la app no soporta
-            multi-window/foldables, lo cual REFUERZA la portrait-lock.
+            1. screenOrientation="portrait"
+               Bloquea la app en vertical.
+
+            2. resizeableActivity="false"
+               Le dice al SO: "esta app NO se adapta a multi-window/multi-size,
+               NO la trates como app responsive". Esto evita el conflicto que
+               disparaba el overlay del sistema.
+
+            3. configChanges
+               Manejamos cambios de configuracion nosotros, sin recrear la
+               Activity. Evita que el SO intercepte la rotacion.
+
+            4. android:maxAspectRatio="2.4"
+               Le dice al SO el aspect ratio maximo que soporta la app.
+               Sin esto, Android intenta letterboxear pantallas muy alargadas
+               y eso a veces dispara el overlay.
+
+            5. android:supportsPictureInPicture="false"
+               Confirma que no usamos PiP, otro feature que podria activar
+               comportamientos extranios de window management.
         -->
         <activity
             android:name=".MainActivity"
@@ -55,6 +70,9 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:resizeableActivity="false"
+            android:supportsPictureInPicture="false"
+            android:maxAspectRatio="2.4"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density|uiMode|keyboardHidden|locale|fontScale|layoutDirection|navigation"
             android:theme="@style/Theme.UnabGo"
             tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>

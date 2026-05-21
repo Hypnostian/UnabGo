@@ -21,13 +21,13 @@ android {
     defaultConfig {
         applicationId = "co.edu.unab.sebastianlizcano.unabgo"
         minSdk = 26
-        // targetSdk = 35 (Android 15) — Android 16 (API 36) introdujo "universal
-        // resizability" que IGNORA screenOrientation="portrait" y muestra el
-        // overlay "Gira tu telefono para ver el contenido" en pantallas
-        // medianas/grandes. Bajando el target SDK a 35, Android 16 trata la app
-        // como compatible-con-15 y no aplica esa restriccion.
-        // compileSdk se queda en 36 para tener las APIs nuevas disponibles.
-        targetSdk = 35
+        // targetSdk = 34 (Android 14) — bajamos hasta 34 para que Android NO
+        // aplique ningun comportamiento de "universal resizability" ni de
+        // "forced letterbox" que muestra el overlay "Gira tu telefono".
+        // Android 14 es la ultima version donde screenOrientation="portrait"
+        // se respeta sin excepciones en TODOS los dispositivos.
+        // compileSdk se queda en 36 para tener APIs nuevas disponibles.
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
