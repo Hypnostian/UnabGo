@@ -1,6 +1,7 @@
 package co.edu.unab.sebastianlizcano.unabgo.ui.screen
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -14,12 +15,52 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
 
-// User-Agent de escritorio (Chrome Windows) — evita que la web de UNAB
-// muestre el aviso "Gira tu telefono" que dispara cuando detecta movil.
 private const val DESKTOP_USER_AGENT =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
     "AppleWebKit/537.36 (KHTML, like Gecko) " +
     "Chrome/130.0.0.0 Safari/537.36"
+
+/**
+ * JS que oculta y elimina el div #rotate-warning que la web de UNAB
+ * muestra cuando detecta viewport pequeño. Triple estrategia:
+ * CSS !important + remove del DOM + MutationObserver.
+ */
+private val HIDE_ROTATE_WARNING_JS = """
+    (function() {
+        function hideWarning() {
+            var warnings = document.querySelectorAll(
+                '#rotate-warning, .rotate-warning, [class*="rotate-warning"], [id*="rotate-warning"]'
+            );
+            warnings.forEach(function(el) {
+                el.style.display = 'none';
+                el.style.visibility = 'hidden';
+                if (el.parentNode) el.parentNode.removeChild(el);
+            });
+        }
+        if (!document.getElementById('unab-go-hide-rotate')) {
+            var s = document.createElement('style');
+            s.id = 'unab-go-hide-rotate';
+            s.innerHTML =
+                '#rotate-warning, .rotate-warning, [class*="rotate-warning"] {' +
+                '  display: none !important;' +
+                '  visibility: hidden !important;' +
+                '  opacity: 0 !important;' +
+                '  height: 0 !important;' +
+                '  width: 0 !important;' +
+                '  position: absolute !important;' +
+                '  left: -9999px !important;' +
+                '}';
+            (document.head || document.documentElement).appendChild(s);
+        }
+        hideWarning();
+        if (document.body) {
+            new MutationObserver(hideWarning).observe(
+                document.body,
+                { childList: true, subtree: true }
+            );
+        }
+    })();
+""".trimIndent()
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -50,9 +91,24 @@ fun WebViewDetailScreen(
                         cacheMode            = WebSettings.LOAD_DEFAULT
                         mediaPlaybackRequiresUserGesture = false
                         mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
-                        userAgentString = DESKTOP_USER_AGENT
+                        userAgentString  = DESKTOP_USER_AGENT
                     }
-                    webViewClient   = WebViewClient()
+
+                    webViewClient = object : WebViewClient() {
+                        override fun onPageStarted(
+                            view: WebView?,
+                            url: String?,
+                            favicon: Bitmap?
+                        ) {
+                            super.onPageStarted(view, url, favicon)
+                            view?.evaluateJavascript(HIDE_ROTATE_WARNING_JS, null)
+                        }
+
+                        override fun onPageFinished(view: WebView?, url: String?) {
+                            super.onPageFinished(view, url)
+                            view?.evaluateJavascript(HIDE_ROTATE_WARNING_JS, null)
+                        }
+                    }
                     webChromeClient = WebChromeClient()
                     loadUrl(url)
                 }
