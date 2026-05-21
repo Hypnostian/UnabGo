@@ -124,6 +124,15 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
             NewsDetailScreen(navController = navController, postId = postId)
         }
 
+        // Lista nativa de programas UNAB por modalidad (sin WebView)
+        composable(
+            route     = Routes.PROGRAM_LIST,
+            arguments = listOf(navArgument("modalityId") { type = NavType.StringType })
+        ) { entry ->
+            val modalityId = entry.arguments?.getString("modalityId") ?: ""
+            ProgramListScreen(navController = navController, modalityId = modalityId)
+        }
+
         composable(Routes.MATERIAL_ESTUDIO) {
             MaterialEstudioScreen(navController = navController)
         }
@@ -216,23 +225,6 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
 
         composable(Routes.MAPA) {
             MapaInteractivoScreen(navController = navController)
-        }
-
-        composable(
-            route = "${Routes.WEBVIEW_DETAIL}?url={url}&title={title}",
-            arguments = listOf(
-                navArgument("url") { type = NavType.StringType; nullable = false; defaultValue = "https://unab.edu.co" },
-                navArgument("title") { type = NavType.StringType; nullable = false; defaultValue = "Detalle" }
-            )
-        ) { backStackEntry ->
-            val url   = backStackEntry.arguments?.getString("url") ?: "https://unab.edu.co"
-            val title = backStackEntry.arguments?.getString("title") ?: "Detalle"
-
-            WebViewDetailScreen(
-                navController = navController,
-                url           = url,
-                title         = title
-            )
         }
 
     }

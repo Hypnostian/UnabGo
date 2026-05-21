@@ -1,24 +1,27 @@
 package co.edu.unab.sebastianlizcano.unabgo.ui.screen
 
 import co.edu.unab.sebastianlizcano.unabgo.R
+import co.edu.unab.sebastianlizcano.unabgo.data.local.Modality
+import co.edu.unab.sebastianlizcano.unabgo.data.local.UnabPrograms
 import co.edu.unab.sebastianlizcano.unabgo.navigation.Routes
 
-import android.net.Uri
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -29,47 +32,16 @@ import co.edu.unab.sebastianlizcano.unabgo.ui.components.BottomNavBar
 import co.edu.unab.sebastianlizcano.unabgo.ui.components.HeaderBar
 import co.edu.unab.sebastianlizcano.unabgo.ui.theme.LocalAppDimens
 
-data class ProgramaItem(
-    val title: String,
-    val url: String,
-    val iconRes: Int
-)
-
+/**
+ * Pantalla "Quiero ser UNAB" - 100% nativa, sin WebView.
+ * Muestra las 5 modalidades de programas UNAB como cards.
+ * Toca una -> navega a ProgramListScreen con el detalle nativo.
+ */
 @Composable
 fun QuieroSerUnabScreen(navController: NavController) {
 
     val openSans = FontFamily(Font(R.font.open_sans_regular))
     val dimens   = LocalAppDimens.current
-
-    // Orientación gestionada por el Manifest
-
-    val programas = listOf(
-        ProgramaItem(
-            stringResource(R.string.programs_tech),
-            "https://unab.edu.co/programas-tecnicos-y-tecnologias/",
-            R.drawable.progtecytecno
-        ),
-        ProgramaItem(
-            stringResource(R.string.programs_undergrad),
-            "https://unab.edu.co/pregrados/",
-            R.drawable.pregradolog
-        ),
-        ProgramaItem(
-            stringResource(R.string.programs_postgrad),
-            "https://unab.edu.co/posgrado/",
-            R.drawable.posgradolog
-        ),
-        ProgramaItem(
-            stringResource(R.string.programs_virtual),
-            "https://unab.edu.co/programas-virtuales/",
-            R.drawable.virtualog
-        ),
-        ProgramaItem(
-            stringResource(R.string.programs_continued),
-            "https://unab.edu.co/educacion-continua/",
-            R.drawable.educontinualog
-        )
-    )
 
     Box(
         modifier = Modifier
@@ -83,32 +55,43 @@ fun QuieroSerUnabScreen(navController: NavController) {
                 subtitleRes   = R.string.header_exploring
             )
 
-            // LazyColumn ocupa el espacio restante; padding inferior dimensionado al BottomNavBar
-            // para que ningún card quede oculto detrás de él.
+            Text(
+                text       = "¿Qué quieres estudiar?",
+                color      = Color.White,
+                fontFamily = openSans,
+                fontWeight = FontWeight.Bold,
+                fontSize   = 22.sp,
+                modifier   = Modifier.padding(start = 20.dp, top = 16.dp, bottom = 4.dp)
+            )
+            Text(
+                text       = "Elige una modalidad para ver los programas disponibles",
+                color      = Color.White.copy(alpha = 0.75f),
+                fontFamily = openSans,
+                fontSize   = 13.sp,
+                modifier   = Modifier.padding(horizontal = 20.dp)
+            )
+
+            Spacer(Modifier.height(16.dp))
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = (dimens.buttonHeight * 1.9f).dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(
+                    top    = 4.dp,
+                    bottom = (dimens.buttonHeight * 1.9f).dp
+                )
             ) {
-
-                item { Spacer(modifier = Modifier.height(20.dp)) }
-
-                items(programas) { item ->
-
-                    val encodedUrl   = Uri.encode(item.url)
-                    val encodedTitle = Uri.encode(item.title)
-
-                    ProgramaCard(item = item, onClick = {
-                        navController.navigate(
-                            "${Routes.WEBVIEW_DETAIL}?url=$encodedUrl&title=$encodedTitle"
-                        )
-                    })
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                items(UnabPrograms.ALL, key = { it.id }) { modality ->
+                    ModalityCard(
+                        modality = modality,
+                        openSans = openSans,
+                        onClick  = {
+                            navController.navigate("programList/${modality.id}")
+                        }
+                    )
                 }
-
-                item { Spacer(modifier = Modifier.height(20.dp)) }
             }
         }
 
@@ -120,38 +103,73 @@ fun QuieroSerUnabScreen(navController: NavController) {
 }
 
 @Composable
-fun ProgramaCard(item: ProgramaItem, onClick: () -> Unit) {
-
-    val openSans = FontFamily(Font(R.font.open_sans_regular))
+private fun ModalityCard(
+    modality: Modality,
+    openSans: FontFamily,
+    onClick: () -> Unit
+) {
+    val accent = Color(modality.color)
 
     Card(
         modifier = Modifier
-            .padding(horizontal = 20.dp)
             .fillMaxWidth()
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color(0x805A237B)),
-        shape  = CardDefaults.shape
+        shape  = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF3A105D))
     ) {
         Row(
-            modifier = Modifier.padding(18.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Icono emoji grande con fondo de color
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(accent.copy(alpha = 0.25f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text     = modality.emoji,
+                    fontSize = 28.sp
+                )
+            }
 
-            Image(
-                painter = painterResource(item.iconRes),
-                contentDescription = "Ícono ${item.title}",
-                modifier = Modifier.size(70.dp)
-            )
+            Spacer(Modifier.width(14.dp))
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text       = modality.name,
+                    color      = Color.White,
+                    fontFamily = openSans,
+                    fontWeight = FontWeight.Bold,
+                    fontSize   = 16.sp
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text       = modality.description,
+                    color      = Color.White.copy(alpha = 0.7f),
+                    fontFamily = openSans,
+                    fontSize   = 12.sp
+                )
+                if (modality.programs.isNotEmpty()) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text       = "${modality.programs.size} programas",
+                        color      = accent,
+                        fontFamily = openSans,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize   = 11.sp
+                    )
+                }
+            }
 
-            Text(
-                text = item.title,
-                color = Color.White,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = openSans,
-                modifier = Modifier.weight(1f)
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "Ver",
+                tint = Color.White.copy(alpha = 0.6f)
             )
         }
     }

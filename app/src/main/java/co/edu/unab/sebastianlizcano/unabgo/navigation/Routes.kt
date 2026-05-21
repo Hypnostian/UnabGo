@@ -15,6 +15,7 @@ object Routes {
     const val AVISOS = "avisos"
     const val NEWS_WEB = "newsWeb"
     const val NEWS_DETAIL = "newsDetail/{postId}"  // detalle nativo via WP REST API
+    const val PROGRAM_LIST = "programList/{modalityId}"  // lista nativa de programas UNAB
 
     const val DOCENTES = "docentes"
     const val CALCULADORA = "calculadora"
@@ -29,7 +30,8 @@ object Routes {
     const val CALCULADORA_DETALLE = "calculatorDetail/{subjectId}"
     const val COMMENTS = "comments"
     const val BANU_IA = "banu_ia"
-    const val WEBVIEW_DETAIL = "webview_detail"
+    // WEBVIEW_DETAIL eliminado: ahora todos los detalles son nativos
+    // (NewsDetailScreen, ProgramListScreen) o se abren en navegador externo.
 
 
 }
