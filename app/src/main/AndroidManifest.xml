@@ -41,26 +41,22 @@
         android:theme="@style/Theme.UnabGo">
 
         <!--
-            Manifest LIMPIO: sin screenOrientation, sin configChanges, sin
-            resizeableActivity, sin supports_size_changes.
+            screenOrientation="portrait" fuerza la app en vertical. Esto funciona
+            correctamente con targetSdk=35 (Android 15) sin disparar el overlay
+            "Gira tu telefono" que Android 16 (targetSdk=36) muestra como parte
+            de su nueva politica de "Universal Resizability".
 
-            Razón: cualquier declaración relacionada con orientación o tamaño
-            de ventana en el Manifest hace que HyperOS/MIUI active su feature
-            "Modo de pantalla compatible" que dibuja el overlay "Gira tu telefono".
-
-            Este overlay es un FEATURE DEL SISTEMA OPERATIVO XIAOMI controlado
-            por el usuario en:
-                Ajustes > Aplicaciones > Gestionar apps > UnabGo > Otros permisos
-                > Modo de pantalla compatible (DESACTIVAR)
-
-            Sin esa declaración el SO respeta la orientación natural del
-            dispositivo (portrait por defecto en celulares).
+            android:resizeableActivity="false" indica que la app no soporta
+            multi-window/foldables, lo cual REFUERZA la portrait-lock.
         -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.UnabGo">
+            android:screenOrientation="portrait"
+            android:resizeableActivity="false"
+            android:theme="@style/Theme.UnabGo"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
