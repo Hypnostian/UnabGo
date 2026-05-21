@@ -1,9 +1,7 @@
 package co.edu.unab.sebastianlizcano.unabgo
 
 import android.content.Context
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -37,15 +35,6 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // =====================================================
-        // FORZAR PORTRAIT EN RUNTIME — ANTES de super.onCreate()
-        // Algunos OEM (Xiaomi/HyperOS) y Android 16 pueden ignorar el
-        // screenOrientation del Manifest. Hacerlo aqui programaticamente
-        // garantiza que la app SIEMPRE arranque en portrait.
-        // =====================================================
-        @Suppress("SourceLockedOrientationActivity")
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
         super.onCreate(savedInstanceState)
 
         // FCM token wrapped en try/catch (Firebase puede estar inactivo)
@@ -133,11 +122,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Refuerzo: si Android cambia la configuracion (e.g. multi-window forzado),
-    // volvemos a pedir portrait inmediatamente.
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        @Suppress("SourceLockedOrientationActivity")
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-    }
 }
