@@ -9,18 +9,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.navigation.compose.rememberNavController
+import co.edu.unab.sebastianlizcano.unabgo.data.local.LanguageDataStore
+import co.edu.unab.sebastianlizcano.unabgo.navigation.AppNavHost
+import co.edu.unab.sebastianlizcano.unabgo.ui.theme.AppDimens
+import co.edu.unab.sebastianlizcano.unabgo.ui.theme.LocalAppDimens
+import co.edu.unab.sebastianlizcano.unabgo.utils.LocaleManager
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class MainActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context) {
@@ -35,22 +37,21 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // =====================================================
-        // 🔥 OBTENER TOKEN FCM — NECESARIO PARA MENÚ MESSAGING
-        // =====================================================
-        FirebaseMessaging.getInstance().token
-            .addOnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Log.e("UNABGO", "Error obteniendo token FCM", task.exception)
-                    return@addOnCompleteListener
+        // FCM token wrapped en try/catch (Firebase puede estar inactivo)
+        try {
+            FirebaseMessaging.getInstance().token
+                .addOnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Log.w("UNABGO", "Token FCM no disponible: ${task.exception?.message}")
+                        return@addOnCompleteListener
+                    }
+                    Log.d("UNABGO", "TOKEN FCM: ${task.result}")
                 }
+        } catch (e: Exception) {
+            Log.w("UNABGO", "Firebase Messaging no disponible: ${e.message}")
+        }
 
-                val token = task.result
-                Log.d("UNABGO", "TOKEN FCM: $token")
-            }
-
-        // PEDIR PERMISO DE NOTIFICACIONES (Android 13+)
-
+        // PERMISO DE NOTIFICACIONES (Android 13+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val permission = android.Manifest.permission.POST_NOTIFICATIONS
             if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
@@ -59,51 +60,43 @@ class MainActivity : ComponentActivity() {
         }
 
         // INTERFAZ COMPOSE
-
         setContent {
 
-            val windowSizeClass = calculateWindowSizeClass(activity = this)
+            // =====================================================
+            // NO USAR calculateWindowSizeClass: ese cálculo le declara
+            // al sistema que la app se adapta a múltiples tamaños, lo
+            // cual entra en conflicto con screenOrientation=portrait y
+            // DISPARA el overlay "Gira tu teléfono para ver el contenido"
+            // en Android 14/15/16 (Pixel emulator, Xiaomi, Samsung, etc).
+            //
+            // En su lugar, decidimos las dimensiones segun el ancho REAL
+            // en dp del LocalConfiguration. Asi la app sigue siendo
+            // responsive sin declararlo al sistema.
+            // =====================================================
+            val configuration = LocalConfiguration.current
+            val widthDp       = configuration.screenWidthDp
 
-            // Dimensiones responsive según tamaño de pantalla
-            val (fontScale, dimens) = when (windowSizeClass.widthSizeClass) {
-                WindowWidthSizeClass.Compact -> 0.92f to AppDimens(
-                    titleXL = 38f,
-                    titleL = 20f,
-                    body = 13f,
-                    buttonHeight = 50,
-                    logoSize = 76,
-                    heroImageSize = 190,
-                    gapS = 6,
-                    gapM = 12,
-                    gapL = 24
+            val (fontScale, dimens) = when {
+                widthDp < 600  -> 0.92f to AppDimens(
+                    titleXL = 38f, titleL = 20f, body = 13f,
+                    buttonHeight = 50, logoSize = 76, heroImageSize = 190,
+                    gapS = 6, gapM = 12, gapL = 24
                 )
-                WindowWidthSizeClass.Medium -> 1.0f to AppDimens(
-                    titleXL = 45f,
-                    titleL = 22f,
-                    body = 14f,
-                    buttonHeight = 55,
-                    logoSize = 90,
-                    heroImageSize = 210,
-                    gapS = 8,
-                    gapM = 16,
-                    gapL = 32
+                widthDp < 840  -> 1.0f  to AppDimens(
+                    titleXL = 45f, titleL = 22f, body = 14f,
+                    buttonHeight = 55, logoSize = 90, heroImageSize = 210,
+                    gapS = 8, gapM = 16, gapL = 32
                 )
-                else -> 1.12f to AppDimens(
-                    titleXL = 52f,
-                    titleL = 24f,
-                    body = 16f,
-                    buttonHeight = 60,
-                    logoSize = 110,
-                    heroImageSize = 240,
-                    gapS = 10,
-                    gapM = 20,
-                    gapL = 40
+                else           -> 1.12f to AppDimens(
+                    titleXL = 52f, titleL = 24f, body = 16f,
+                    buttonHeight = 60, logoSize = 110, heroImageSize = 240,
+                    gapS = 10, gapM = 20, gapL = 40
                 )
             }
 
             val navController = rememberNavController()
-            val context = this
-            val dataStore = remember { LanguageDataStore(context) }
+            val context       = this
+            val dataStore     = remember { LanguageDataStore(context) }
 
             var currentLang by remember { mutableStateOf(LocaleManager.getCurrentLanguage(context)) }
 
@@ -128,4 +121,5 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }

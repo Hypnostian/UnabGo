@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
  * ---------------------------------------------------------
  */
 
-@Dao
+@Dao // DAO Pattern
 interface SubjectDao {
 
     @Query("SELECT * FROM subjects WHERE userId = :userId ORDER BY name ASC")
@@ -51,7 +51,7 @@ interface SubjectDao {
  * ---------------------------------------------------------
  */
 
-@Dao
+@Dao // DAO Pattern
 interface ScheduleDao {
 
     @Query("SELECT * FROM schedule_blocks WHERE subjectId = :subjectId")
@@ -79,7 +79,7 @@ interface ScheduleDao {
  * ---------------------------------------------------------
  */
 
-@Dao
+@Dao // DAO Pattern
 interface GradesDao {
 
     /**

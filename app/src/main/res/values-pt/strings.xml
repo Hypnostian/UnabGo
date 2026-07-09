@@ -121,14 +121,12 @@ Esta versão inclui:
     <string name="library_title">Biblioteca</string>
     <string name="library_text">A Biblioteca Central da UNAB é um espaço de aprendizado e pesquisa. Oferece um ambiente moderno e silencioso com acesso a coleções físicas e digitais.</string>
 
-    <!-- Avisos -->
-    <string name="category_institucional">Institucional</string>
-    <string name="category_investigacion">Ciência e Pesquisa</string>
-    <string name="category_salud">Saúde e Tecnologia</string>
-    <string name="category_ingenieria">Engenharia e Inovação</string>
-    <string name="category_cultura">Cultura e Humanidades</string>
-    <string name="category_derecho">Direito, Economia e Negócios</string>
-    <string name="category_impacto">Impacto Social</string>
+    <!-- Categorias de notícias -->
+    <string name="category_all">Todas as notícias</string>
+    <string name="category_institucional">Atualidade institucional</string>
+    <string name="category_investigacion">Pesquisa</string>
+    <string name="category_cultura">Arte e cultura</string>
+    <string name="category_impacto">Histórias de impacto</string>
     <string name="choose_category_message">Selecione uma categoria para visualizar as notícias disponíveis.</string>
 
     <!-- Barra inferior -->

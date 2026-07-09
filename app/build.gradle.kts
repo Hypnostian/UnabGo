@@ -1,4 +1,10 @@
-println("DEBUG GRADLE → KEY: ${project.findProperty("OLLAMA_API_KEY")}")
+// Lee local.properties para BuildConfig (los gradleProperty() no leen local.properties)
+import java.util.Properties
+
+val localPropertiesFile = rootProject.file("local.properties")
+val localProperties = Properties().apply {
+    if (localPropertiesFile.exists()) localPropertiesFile.inputStream().use { load(it) }
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -21,10 +27,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        //LEER EL API KEY DESDE local.properties Y PASARLO A BuildConfig
-        val ollamaKey = project.providers
-            .gradleProperty("OLLAMA_API_KEY")
-            .orNull ?: ""
+        // Lee el API key de local.properties → BuildConfig (nunca hardcodeado en el código)
+        val ollamaKey = localProperties.getProperty("OLLAMA_API_KEY", "")
         buildConfigField("String", "OLLAMA_API_KEY", "\"$ollamaKey\"")
 
     }
@@ -114,8 +118,10 @@ dependencies {
     //COIL (para cargar imágenes con Compose)
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    // Adaptación en todas las Screens
-    implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
+    // material3-window-size-class REMOVIDA: declaraba a la app como "responsive
+    // a multiples tamanos" lo cual entraba en conflicto con screenOrientation
+    // y disparaba el overlay del sistema. Ya no se necesita - usamos
+    // LocalConfiguration.screenWidthDp directamente en MainActivity.
 
     // Detectar el QR (ML Kit) / Lanzar el selector de imágenes (Activity Result API) /
     implementation("com.google.mlkit:barcode-scanning:17.2.0")

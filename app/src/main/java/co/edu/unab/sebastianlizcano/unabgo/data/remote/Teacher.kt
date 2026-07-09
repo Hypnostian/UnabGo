@@ -1,6 +1,6 @@
 package co.edu.unab.sebastianlizcano.unabgo.data.remote
 
-data class Teacher(
+data class Teacher( // DTO — mapea el documento "teacher" de Firestore
     val id: String = "",
     val fullName: String = "",
     val rating: Double = 0.0,

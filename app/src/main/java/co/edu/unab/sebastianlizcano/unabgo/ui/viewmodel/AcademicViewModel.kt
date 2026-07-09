@@ -20,12 +20,12 @@ data class SubjectDetailState(
     val average: Float? = null
 )
 
-class AcademicViewModel(
-    private val repository: AcademicRepository
+class AcademicViewModel( // ViewModel (MVVM)
+    private val repository: AcademicRepository // Repository Pattern + Manual DI
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(AcademicUiState())
-    val uiState: StateFlow<AcademicUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(AcademicUiState()) // Observer Pattern (StateFlow)
+    val uiState: StateFlow<AcademicUiState> = _uiState.asStateFlow() // Observer Pattern
 
     private val _detailState = MutableStateFlow(SubjectDetailState())
     val detailState: StateFlow<SubjectDetailState> = _detailState.asStateFlow()
@@ -200,6 +200,16 @@ class AcademicViewModel(
             val subject = uiState.value.subjects.firstOrNull { it.id == subjectId } ?: return@launch
             repository.deleteSubject(subject)
         }
+    }
+
+    /**
+     * Elimina TODOS los bloques de horario de una materia.
+     * Usado al editar una materia: borramos los bloques antiguos y agregamos los nuevos
+     * para que el usuario no acabe con bloques duplicados.
+     */
+    suspend fun deleteAllBlocksForSubject(subjectId: Long) {
+        val current = repository.getBlocksForSubject(subjectId).firstOrNull() ?: return
+        current.forEach { repository.deleteBlock(it) }
     }
 
     /**
